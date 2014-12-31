@@ -108,6 +108,7 @@
 				D9D1A0CB1A53C93F00F29D26 /* AppDelegate.m */,
 				D9D1A0D91A53C93F00F29D26 /* Images.xcassets */,
 				D9D1A0DB1A53C93F00F29D26 /* LaunchScreen.xib */,
+				D9D1A0F31A53C95500F29D26 /* resources */,
 				D9D1A0C61A53C93F00F29D26 /* Supporting Files */,
 			);
 			path = baobeiwansha;
@@ -119,7 +120,6 @@
 				D9D1A0F51A53D41200F29D26 /* PrefixHeader.pch */,
 				D9D1A0C71A53C93F00F29D26 /* Info.plist */,
 				D9D1A0C81A53C93F00F29D26 /* main.m */,
-				D9D1A0F31A53C95500F29D26 /* resources */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
