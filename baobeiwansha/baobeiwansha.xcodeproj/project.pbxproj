@@ -14,6 +14,11 @@
 		D9D1A0DD1A53C93F00F29D26 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0DB1A53C93F00F29D26 /* LaunchScreen.xib */; };
 		D9D1A0E91A53C94000F29D26 /* baobeiwanshaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0E81A53C94000F29D26 /* baobeiwanshaTests.m */; };
 		D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0F61A53D7DD00F29D26 /* commentButton.png */; };
+		D9D1A1011A53DA1100F29D26 /* AboutUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */; };
+		D9D1A1021A53DA1100F29D26 /* AboutUsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */; };
+		D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */; };
+		D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */; };
+		D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +47,15 @@
 		D9D1A0E81A53C94000F29D26 /* baobeiwanshaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = baobeiwanshaTests.m; sourceTree = "<group>"; };
 		D9D1A0F51A53D41200F29D26 /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		D9D1A0F61A53D7DD00F29D26 /* commentButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = commentButton.png; path = ResourceFolder/commentButton.png; sourceTree = "<group>"; };
+		D9D1A0F81A53DA1100F29D26 /* AboutUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutUsViewController.h; sourceTree = "<group>"; };
+		D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutUsViewController.m; sourceTree = "<group>"; };
+		D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutUsViewController.xib; sourceTree = "<group>"; };
+		D9D1A0FB1A53DA1100F29D26 /* BabyInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BabyInfoViewController.h; sourceTree = "<group>"; };
+		D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BabyInfoViewController.m; sourceTree = "<group>"; };
+		D9D1A0FD1A53DA1100F29D26 /* FeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
+		D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
+		D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +158,15 @@
 		D9D1A0F21A53C94E00F29D26 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				D9D1A0F81A53DA1100F29D26 /* AboutUsViewController.h */,
+				D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */,
+				D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */,
+				D9D1A0FB1A53DA1100F29D26 /* BabyInfoViewController.h */,
+				D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */,
+				D9D1A0FD1A53DA1100F29D26 /* FeedbackViewController.h */,
+				D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */,
+				D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */,
+				D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */,
 			);
 			name = settings;
 			sourceTree = "<group>";
@@ -238,6 +261,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9D1A1021A53DA1100F29D26 /* AboutUsViewController.xib in Resources */,
 				D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */,
 				D9D1A0DD1A53C93F00F29D26 /* LaunchScreen.xib in Resources */,
 				D9D1A0DA1A53C93F00F29D26 /* Images.xcassets in Resources */,
@@ -291,8 +315,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */,
 				D9D1A0CC1A53C93F00F29D26 /* AppDelegate.m in Sources */,
+				D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */,
+				D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */,
 				D9D1A0C91A53C93F00F29D26 /* main.m in Sources */,
+				D9D1A1011A53DA1100F29D26 /* AboutUsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
