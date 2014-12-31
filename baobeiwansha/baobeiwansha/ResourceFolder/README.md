@@ -1,1 +1,0 @@
-resources in this group should come from files in ResouceFolder.
