@@ -6,11 +6,14 @@
 //  Copyright (c) 2014年 上海震渊信息技术有限公司. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
+@property (nonatomic,strong) NSString *rootURL;
+
+@property (nonatomic, retain) NSString *generatedUserID;
 
 
 @end

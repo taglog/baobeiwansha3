@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "AFHTTPRequestOperationManager.h"
+
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface AppDelegate ()
 
@@ -17,6 +20,52 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    //设置服务器跟目录
+    
+    self.rootURL = @"http://blogtest.yhb360.com/baobaowansha/";
+    
+    // generate UserID using VenderID
+    
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"generatedUserID"] == nil) {
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
+            self.generatedUserID = [UIDevice currentDevice].identifierForVendor.UUIDString;
+        else
+            self.generatedUserID = ((__bridge NSString *)(CFUUIDCreateString(NULL, CFUUIDCreate(NULL))));
+        NSLog(@"generate UserID from UIDevice, %@", self.generatedUserID);
+        [[NSUserDefaults standardUserDefaults] setObject:self.generatedUserID forKey:@"generatedUserID"];
+    } else {
+        self.generatedUserID = [[NSUserDefaults standardUserDefaults] objectForKey:@"generatedUserID"];
+        NSLog(@"get UserID from NSUserDefaults, %@", self.generatedUserID);
+    }
+    
+    
+    
+    
+    
+    // send information(id, and start time) to serverside
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //TODO, update db
+        AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
+        afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+        NSString * settingURL = [self.rootURL stringByAppendingString:@"/serverside/app_statistic.php?action=app_start"];
+        NSMutableDictionary * dict = [[NSMutableDictionary alloc] init];
+        [dict setObject:self.generatedUserID forKey:@"userIdStr"];
+        NSLog(@"sending statistic info: %@", dict);
+        [afnmanager POST:settingURL parameters:dict success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"App statistic update Success: %@", responseObject);
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"App statistic update Error: %@", error);
+        }];
+    });
+    
+    //push notification setting
+    [AVOSCloud setApplicationId:@"zul2tbfbwbfhtzka27mea6ozakqg3m86v2dpk349e7hh9syv"
+                      clientKey:@"0mikvyvihrejfctvqarlhwvuet67pahni8fjvrse8sai4okj"];
+    [AVAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+
+    
     return YES;
 }
 
