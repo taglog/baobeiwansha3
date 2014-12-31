@@ -13,6 +13,7 @@
 		D9D1A0DA1A53C93F00F29D26 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0D91A53C93F00F29D26 /* Images.xcassets */; };
 		D9D1A0DD1A53C93F00F29D26 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0DB1A53C93F00F29D26 /* LaunchScreen.xib */; };
 		D9D1A0E91A53C94000F29D26 /* baobeiwanshaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0E81A53C94000F29D26 /* baobeiwanshaTests.m */; };
+		D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0F61A53D7DD00F29D26 /* commentButton.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		D9D1A0E71A53C94000F29D26 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D9D1A0E81A53C94000F29D26 /* baobeiwanshaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = baobeiwanshaTests.m; sourceTree = "<group>"; };
 		D9D1A0F51A53D41200F29D26 /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		D9D1A0F61A53D7DD00F29D26 /* commentButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = commentButton.png; path = ResourceFolder/commentButton.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +103,6 @@
 		D9D1A0C51A53C93F00F29D26 /* baobeiwansha */ = {
 			isa = PBXGroup;
 			children = (
-				D9D1A0F31A53C95500F29D26 /* resources */,
 				D9D1A0F21A53C94E00F29D26 /* settings */,
 				D9D1A0CA1A53C93F00F29D26 /* AppDelegate.h */,
 				D9D1A0CB1A53C93F00F29D26 /* AppDelegate.m */,
@@ -118,6 +119,7 @@
 				D9D1A0F51A53D41200F29D26 /* PrefixHeader.pch */,
 				D9D1A0C71A53C93F00F29D26 /* Info.plist */,
 				D9D1A0C81A53C93F00F29D26 /* main.m */,
+				D9D1A0F31A53C95500F29D26 /* resources */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -149,6 +151,7 @@
 		D9D1A0F31A53C95500F29D26 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				D9D1A0F61A53D7DD00F29D26 /* commentButton.png */,
 			);
 			name = resources;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */,
 				D9D1A0DD1A53C93F00F29D26 /* LaunchScreen.xib in Resources */,
 				D9D1A0DA1A53C93F00F29D26 /* Images.xcassets in Resources */,
 			);
