@@ -1,0 +1,79 @@
+PODS:
+  - AFNetworking (2.4.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+    - AFNetworking/UIKit
+  - AFNetworking/NSURLConnection (2.4.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.4.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.4.1)
+  - AFNetworking/Security (2.4.1)
+  - AFNetworking/Serialization (2.4.1)
+  - AFNetworking/UIKit (2.4.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+  - AVOSCloud (2.6.8)
+  - DTCoreText (1.6.14):
+    - DTFoundation/Core (~> 1.7.1)
+    - DTFoundation/DTAnimatedGIF (~> 1.7.1)
+    - DTFoundation/DTHTMLParser (~> 1.7.1)
+    - DTFoundation/UIKit (~> 1.7.1)
+  - DTFoundation/Core (1.7.3)
+  - DTFoundation/DTAnimatedGIF (1.7.3)
+  - DTFoundation/DTHTMLParser (1.7.3):
+    - DTFoundation/Core
+  - DTFoundation/UIKit (1.7.3):
+    - DTFoundation/Core
+  - iCarousel (1.8.1)
+  - iRate (1.11.3)
+  - JGProgressHUD (1.2.2)
+  - MMDrawerController (0.5.7):
+    - MMDrawerController/Core
+    - MMDrawerController/MMDrawerBarButtonItem
+    - MMDrawerController/MMDrawerVisualStates
+    - MMDrawerController/Subclass
+  - MMDrawerController/Core (0.5.7)
+  - MMDrawerController/MMDrawerBarButtonItem (0.5.7):
+    - MMDrawerController/Core
+  - MMDrawerController/MMDrawerVisualStates (0.5.7):
+    - MMDrawerController/Core
+  - MMDrawerController/Subclass (0.5.7):
+    - MMDrawerController/Core
+  - REFormattedNumberField (1.1.5)
+  - RETableViewManager (1.5.14):
+    - REFormattedNumberField (~> 1.1.5)
+    - REValidation (~> 0.1.4)
+  - REValidation (0.1.4)
+
+DEPENDENCIES:
+  - AFNetworking (~> 2.4.1)
+  - AVOSCloud
+  - DTCoreText (~> 1.6.14)
+  - iCarousel (~> 1.8.1)
+  - iRate (~> 1.11.3)
+  - JGProgressHUD (~> 1.2.2)
+  - MMDrawerController (~> 0.5.7)
+  - RETableViewManager (~> 1.5.14)
+
+SPEC CHECKSUMS:
+  AFNetworking: 0aabc6fae66d6e5d039eeb21c315843c7aae51ab
+  AVOSCloud: 529dff2aaf5c04452cda300ef4199ac051898ddb
+  DTCoreText: 1fc0aadfa238d14c6cc56035af4e2b76b958e3b1
+  DTFoundation: 360bc65ab44f588611f47324b8cfb0f18e04b263
+  iCarousel: 5acab560f10dc13da2440c89f35a0ad278b5147d
+  iRate: 5e1978bac8b3f3f0296dbeccc0dd7b50e6e50657
+  JGProgressHUD: a7c58f711eec0b67f257a0821c0bac9194c72398
+  MMDrawerController: c3ab7a318ddc7e2bcd133139c3161af08c6e1197
+  REFormattedNumberField: 86318c549b60130a6d7a05abebb142f08f671319
+  RETableViewManager: 62cab967dd2d24545283cf4751e94c222268533a
+  REValidation: a0033a582415848854e875dfcbe69c107de19f81
+
+COCOAPODS: 0.34.4
