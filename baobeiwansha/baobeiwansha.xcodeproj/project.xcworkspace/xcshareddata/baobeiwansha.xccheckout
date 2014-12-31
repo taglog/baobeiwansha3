@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>0C1B36F4-42D6-4BC3-8721-3AC2A33A1EB0</string>
+	<key>IDESourceControlProjectName</key>
+	<string>baobeiwansha</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>DF486B8F26C66D693B36C6DD43E5F0E078D656D3</key>
+		<string>github.com:taglog/baobeiwansha3.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>baobeiwansha/baobeiwansha.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>DF486B8F26C66D693B36C6DD43E5F0E078D656D3</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:taglog/baobeiwansha3.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>DF486B8F26C66D693B36C6DD43E5F0E078D656D3</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DF486B8F26C66D693B36C6DD43E5F0E078D656D3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>github_taglog_bbws2</string>
+		</dict>
+	</array>
+</dict>
+</plist>
