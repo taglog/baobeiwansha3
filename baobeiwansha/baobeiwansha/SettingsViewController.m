@@ -29,21 +29,21 @@
     self.title = @"设置";
     
     self.manager = [[RETableViewManager alloc] initWithTableView:self.tableView];
-    RETableViewSection *section1 = [RETableViewSection sectionWithHeaderTitle:@"宝贝信息" footerTitle:@""];
+    //RETableViewSection *section1 = [RETableViewSection sectionWithHeaderTitle:@"宝贝信息" footerTitle:@""];
     RETableViewSection *section2 = [RETableViewSection sectionWithHeaderTitle:@"系统设置" footerTitle:@""];
     RETableViewSection *section3 = [RETableViewSection sectionWithHeaderTitle:@"" footerTitle:@""];
     
-    [self.manager addSection:section1];
+    //[self.manager addSection:section1];
     [self.manager addSection:section2];
     [self.manager addSection:section3];
     if (self.babyInfoVC == nil) {
         self.babyInfoVC = [[BabyInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
     }
     
-    [section1 addItem:[RETableViewItem itemWithTitle:@"设置宝贝信息" accessoryType:UITableViewCellAccessoryDisclosureIndicator selectionHandler:^(RETableViewItem *item) {
-        [item deselectRowAnimated:YES];
-        [self.navigationController pushViewController:self.babyInfoVC animated:YES];
-    }]];
+//    [section1 addItem:[RETableViewItem itemWithTitle:@"设置宝贝信息" accessoryType:UITableViewCellAccessoryDisclosureIndicator selectionHandler:^(RETableViewItem *item) {
+//        [item deselectRowAnimated:YES];
+//        [self.navigationController pushViewController:self.babyInfoVC animated:YES];
+//    }]];
 
     [section2 addItem:[REBoolItem itemWithTitle:@"接收推送信息" value:YES switchValueChangeHandler:^(REBoolItem *item) {
         NSLog(@"Value: %@", item.value ? @"YES" : @"NO");

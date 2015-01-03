@@ -1,11 +1,9 @@
 //
 //  BabyInfoViewController.m
-//  baobaowansha2
-//  babyinfo has 2 status: stored locally/synced remotely
-//  press sync btn will only sync remotely.
+//  baobeiwansha
 //
-//  Created by 刘昕 on 14/11/17.
-//  Copyright (c) 2014年 刘昕. All rights reserved.
+//  Created by PanYongfeng on 15/1/2.
+//  Copyright (c) 2015年 上海震渊信息技术有限公司. All rights reserved.
 //
 
 #import "BabyInfoViewController.h"
@@ -13,7 +11,7 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "JGProgressHUD.h"
 #import "JGProgressHUDSuccessIndicatorView.h"
-#import "LeftSideDrawerViewController.h"
+
 
 @interface BabyInfoViewController ()
 
@@ -148,7 +146,7 @@
             item.title = @"保存中...";
             // save baby birthday into UserDefaults for leftSideDrawerViewController header image use
             [[NSUserDefaults standardUserDefaults] setObject:self.dateTimeItem.value forKey:@"babyBirthday"];
-            [self.appDelegate.drawerController.leftDrawerViewController viewWillAppear:YES ];
+            //[self.appDelegate.drawerController.leftDrawerViewController viewWillAppear:YES ];
             [self syncBabyInfoSettings:item];
             [item reloadRowWithAnimation:UITableViewRowAnimationAutomatic];
     }];

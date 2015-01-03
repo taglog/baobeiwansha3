@@ -19,6 +19,13 @@
 		D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */; };
 		D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */; };
 		D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */; };
+		D9D7814F1A5555A8008D6E06 /* VPImageCropperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D7814E1A5555A8008D6E06 /* VPImageCropperViewController.m */; };
+		D9D781521A561887008D6E06 /* UserInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D781511A561887008D6E06 /* UserInfoViewController.m */; };
+		D9D781541A5638F9008D6E06 /* defaultBackGroundImage.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D781531A5638F9008D6E06 /* defaultBackGroundImage.png */; };
+		D9D781571A568998008D6E06 /* setting.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D781551A568998008D6E06 /* setting.png */; };
+		D9D781581A568998008D6E06 /* setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D781561A568998008D6E06 /* setting@2x.png */; };
+		D9D7815E1A56969B008D6E06 /* UserInfoSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */; };
+		D9D781621A56D236008D6E06 /* ALEInlineDatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D781611A56D236008D6E06 /* ALEInlineDatePickerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +63,17 @@
 		D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
 		D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		D9D7814D1A5555A8008D6E06 /* VPImageCropperViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VPImageCropperViewController.h; sourceTree = "<group>"; };
+		D9D7814E1A5555A8008D6E06 /* VPImageCropperViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VPImageCropperViewController.m; sourceTree = "<group>"; };
+		D9D781501A561887008D6E06 /* UserInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoViewController.h; sourceTree = "<group>"; };
+		D9D781511A561887008D6E06 /* UserInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoViewController.m; sourceTree = "<group>"; };
+		D9D781531A5638F9008D6E06 /* defaultBackGroundImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = defaultBackGroundImage.png; path = ResourceFolder/defaultBackGroundImage.png; sourceTree = "<group>"; };
+		D9D781551A568998008D6E06 /* setting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = setting.png; path = ResourceFolder/setting.png; sourceTree = "<group>"; };
+		D9D781561A568998008D6E06 /* setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "setting@2x.png"; path = "ResourceFolder/setting@2x.png"; sourceTree = "<group>"; };
+		D9D7815C1A56969B008D6E06 /* UserInfoSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoSettingViewController.h; sourceTree = "<group>"; };
+		D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoSettingViewController.m; sourceTree = "<group>"; };
+		D9D781601A56D236008D6E06 /* ALEInlineDatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ALEInlineDatePickerViewController.h; path = ALEInlineDatePickerViewController/ALEInlineDatePickerViewController.h; sourceTree = "<group>"; };
+		D9D781611A56D236008D6E06 /* ALEInlineDatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ALEInlineDatePickerViewController.m; path = ALEInlineDatePickerViewController/ALEInlineDatePickerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +135,7 @@
 		D9D1A0C51A53C93F00F29D26 /* baobeiwansha */ = {
 			isa = PBXGroup;
 			children = (
+				D9D7814B1A555515008D6E06 /* referenceLibs */,
 				D9D1A0F21A53C94E00F29D26 /* settings */,
 				D9D1A0CA1A53C93F00F29D26 /* AppDelegate.h */,
 				D9D1A0CB1A53C93F00F29D26 /* AppDelegate.m */,
@@ -167,6 +186,10 @@
 				D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */,
 				D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */,
 				D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */,
+				D9D781501A561887008D6E06 /* UserInfoViewController.h */,
+				D9D781511A561887008D6E06 /* UserInfoViewController.m */,
+				D9D7815C1A56969B008D6E06 /* UserInfoSettingViewController.h */,
+				D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */,
 			);
 			name = settings;
 			sourceTree = "<group>";
@@ -174,9 +197,39 @@
 		D9D1A0F31A53C95500F29D26 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				D9D781551A568998008D6E06 /* setting.png */,
+				D9D781561A568998008D6E06 /* setting@2x.png */,
+				D9D781531A5638F9008D6E06 /* defaultBackGroundImage.png */,
 				D9D1A0F61A53D7DD00F29D26 /* commentButton.png */,
 			);
 			name = resources;
+			sourceTree = "<group>";
+		};
+		D9D7814B1A555515008D6E06 /* referenceLibs */ = {
+			isa = PBXGroup;
+			children = (
+				D9D7815F1A56D21D008D6E06 /* ALEInlineDatePickerViewController */,
+				D9D7814C1A555557008D6E06 /* VPImageCropper */,
+			);
+			name = referenceLibs;
+			sourceTree = "<group>";
+		};
+		D9D7814C1A555557008D6E06 /* VPImageCropper */ = {
+			isa = PBXGroup;
+			children = (
+				D9D7814D1A5555A8008D6E06 /* VPImageCropperViewController.h */,
+				D9D7814E1A5555A8008D6E06 /* VPImageCropperViewController.m */,
+			);
+			name = VPImageCropper;
+			sourceTree = "<group>";
+		};
+		D9D7815F1A56D21D008D6E06 /* ALEInlineDatePickerViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D9D781601A56D236008D6E06 /* ALEInlineDatePickerViewController.h */,
+				D9D781611A56D236008D6E06 /* ALEInlineDatePickerViewController.m */,
+			);
+			name = ALEInlineDatePickerViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -263,8 +316,11 @@
 			files = (
 				D9D1A1021A53DA1100F29D26 /* AboutUsViewController.xib in Resources */,
 				D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */,
+				D9D781581A568998008D6E06 /* setting@2x.png in Resources */,
+				D9D781571A568998008D6E06 /* setting.png in Resources */,
 				D9D1A0DD1A53C93F00F29D26 /* LaunchScreen.xib in Resources */,
 				D9D1A0DA1A53C93F00F29D26 /* Images.xcassets in Resources */,
+				D9D781541A5638F9008D6E06 /* defaultBackGroundImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,12 +371,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9D781621A56D236008D6E06 /* ALEInlineDatePickerViewController.m in Sources */,
+				D9D781521A561887008D6E06 /* UserInfoViewController.m in Sources */,
 				D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */,
 				D9D1A0CC1A53C93F00F29D26 /* AppDelegate.m in Sources */,
 				D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */,
+				D9D7814F1A5555A8008D6E06 /* VPImageCropperViewController.m in Sources */,
 				D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */,
 				D9D1A0C91A53C93F00F29D26 /* main.m in Sources */,
 				D9D1A1011A53DA1100F29D26 /* AboutUsViewController.m in Sources */,
+				D9D7815E1A56969B008D6E06 /* UserInfoSettingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

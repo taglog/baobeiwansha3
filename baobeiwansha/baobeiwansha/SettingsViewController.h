@@ -6,8 +6,6 @@
 //  Copyright (c) 2014年 刘昕. All rights reserved.
 //
 
-#import "CustomizedUITableViewController.h"
-
-@interface SettingsViewController : CustomizedUIViewController
+@interface SettingsViewController : UITableViewController
 
 @end

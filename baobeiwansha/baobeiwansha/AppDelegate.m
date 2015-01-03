@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "UserInfoViewController.h"
 
 #import <AVOSCloud/AVOSCloud.h>
 
@@ -39,8 +40,12 @@
         NSLog(@"get UserID from NSUserDefaults, %@", self.generatedUserID);
     }
     
+    UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
+    UINavigationController *centerNavigation = [[UINavigationController alloc] initWithRootViewController:UserInfoVC];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
     
-    
+    [self.window setRootViewController:centerNavigation];
     
     
     // send information(id, and start time) to serverside
@@ -65,7 +70,7 @@
     [AVAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
 
-    
+    [self.window makeKeyAndVisible];
     return YES;
 }
 

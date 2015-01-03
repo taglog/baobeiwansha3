@@ -1,12 +1,11 @@
 //
 //  BabyInfoViewController.h
-//  baobaowansha2
+//  baobeiwansha
 //
-//  Created by 刘昕 on 14/11/17.
-//  Copyright (c) 2014年 刘昕. All rights reserved.
+//  Created by PanYongfeng on 15/1/2.
+//  Copyright (c) 2015年 上海震渊信息技术有限公司. All rights reserved.
 //
 
-#import "CustomizedUITableViewController.h"
 #import "AppDelegate.h"
 
 @interface BabyInfoViewController : UITableViewController

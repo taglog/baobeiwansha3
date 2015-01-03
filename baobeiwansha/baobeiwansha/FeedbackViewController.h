@@ -6,10 +6,9 @@
 //  Copyright (c) 2014年 刘昕. All rights reserved.
 //
 
-#import "CustomizedUITableViewController.h"
 #import "RETableViewManager.h"
 #import "AppDelegate.h"
 
-@interface FeedbackViewController : CustomizedUIViewController
+@interface FeedbackViewController : UITableViewController
 
 @end
