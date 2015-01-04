@@ -19,6 +19,8 @@
 @property (nonatomic, retain) AppDelegate *appDelegate;
 @property (nonatomic, retain) UIImageView *userBackgroundImageView;
 @property (nonatomic, retain) UIImageView *userAvatarImageView;
+@property (nonatomic, retain) UILabel *userNickNameTextView;
+@property (nonatomic, retain) UILabel *userAgeTextView;
 @property (nonatomic, retain) SettingsViewController *settingsVC;
 @property (nonatomic, retain) UITableView *homeTableView;
 @property (nonatomic, retain) FeedbackViewController *feedbackVC;
@@ -96,18 +98,19 @@
     
     
     // 头像旁边文字，nickname
-    UILabel *userNickNameTextView = [[UILabel alloc]initWithFrame:CGRectMake(160.0f, 60.0f, self.view.frame.size.width-160.0f, 30.0f)];
+    self.userNickNameTextView = [[UILabel alloc]initWithFrame:CGRectMake(160.0f, 60.0f, self.view.frame.size.width-160.0f, 30.0f)];
     //userNickNameTextView.backgroundColor = [UIColor clearColor];
-    userNickNameTextView.textColor = [UIColor whiteColor];
+    self.userNickNameTextView.textColor = [UIColor whiteColor];
     //[userNickNameTextView sizeToFit];
-    userNickNameTextView.text = @"pan_yong_feng";
-    userNickNameTextView.font = [UIFont boldSystemFontOfSize:18.0f];
+
+    self.userNickNameTextView.text = @"设置昵称";
+    self.userNickNameTextView.font = [UIFont boldSystemFontOfSize:18.0f];
     // 头像旁边用户名
-    UILabel *userAgeTextView = [[UILabel alloc]initWithFrame:CGRectMake(160.0f, 90.0f, self.view.frame.size.width-160.0f, 20.0f)];
-    //userAgeTextView.backgroundColor = [UIColor clearColor];
-    userAgeTextView.textColor = [UIColor colorWithRed:220/255.0f green:223/255.0f blue:226/255.0f alpha:1.0f];
-    userAgeTextView.text = @"1 years old";
-    userAgeTextView.font = [UIFont fontWithName:@"HelveticaNeue" size:16];
+    self.userAgeTextView = [[UILabel alloc]initWithFrame:CGRectMake(160.0f, 90.0f, self.view.frame.size.width-160.0f, 20.0f)];
+    self.userAgeTextView.textColor = [UIColor colorWithRed:220/255.0f green:223/255.0f blue:226/255.0f alpha:1.0f];
+
+    self.userAgeTextView.text = @"设置年龄";
+    self.userAgeTextView.font = [UIFont fontWithName:@"HelveticaNeue" size:16];
     
     
     // 头像旁边编辑提示按钮
@@ -123,8 +126,8 @@
     
     // 添加信息
     [userInfoView addSubview:_userBackgroundImageView];
-    [userInfoView addSubview:userNickNameTextView];
-    [userInfoView addSubview:userAgeTextView];
+    [userInfoView addSubview:self.userNickNameTextView];
+    [userInfoView addSubview:self.userAgeTextView];
     [userInfoView addSubview:_userAvatarImageView];
     [userInfoView addSubview:editHint];
     
@@ -267,6 +270,32 @@
     self.userBackgroundImageView.image = bgImage;
 }
 
+-(void)updateUserNickNameText: (NSString *) nicknameText {
+    self.userNickNameTextView.text = nicknameText;
+}
+
+-(void)updateUserAgeDate: (NSDate *) ageDate {
+    //self.userAgeTextView.text = ageDate;
+    NSTimeInterval intv = -1*ageDate.timeIntervalSinceNow;
+    double inDays = intv/(24*3600);
+    
+    if (inDays < 0) {
+        self.userAgeTextView.text = @"设置宝贝年龄";
+    } else if (inDays < 7*12) {
+        int inWeeks = inDays/7;
+        self.userAgeTextView.text = [NSString stringWithFormat:@"宝贝%d周",inWeeks];
+    } else if (inDays < 12*30) {
+        int inMonths = inDays/30;
+        self.userAgeTextView.text = [NSString stringWithFormat:@"宝贝%d个月",inMonths];
+    } else {
+        int inYears = inDays/365;
+        int restDays = (int)inDays%365;
+        int inMonths = restDays/30;
+        self.userAgeTextView.text = [NSString stringWithFormat:@"宝贝%d岁%d个月",inYears, inMonths];
+
+    }
+
+}
 
 
 @end

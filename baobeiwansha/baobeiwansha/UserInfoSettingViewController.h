@@ -7,11 +7,14 @@
 //
 
 #import "ALEInlineDatePickerViewController.h"
+#import "UserNameViewController.h"
 
 @protocol UserInfoSettingDelegate <NSObject>
 
 -(void)updateAvatarImage: (UIImage *) avatarImage;
 -(void)updateBackgroundImage: (UIImage *) bgImage;
+-(void)updateUserNickNameText: (NSString *) nicknameText;
+-(void)updateUserAgeDate: (NSDate *) ageDate;
 
 @end
 

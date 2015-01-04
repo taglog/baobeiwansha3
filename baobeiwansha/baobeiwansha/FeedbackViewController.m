@@ -15,6 +15,7 @@
 @interface FeedbackViewController ()
 @property (strong, readwrite, nonatomic) RETableViewManager *manager;
 @property (strong, readwrite, nonatomic) RELongTextItem *longTextItem;
+@property (strong, readwrite, nonatomic) RETextItem *contactTextItem;
 @property int delayCount;
 
 
@@ -33,9 +34,15 @@
     self.longTextItem = [RELongTextItem itemWithValue:nil placeholder:@"请告诉我们您的想法！感谢！"];
     self.longTextItem.cellHeight = 166;
     
+    RETableViewSection *section2 = [RETableViewSection sectionWithHeaderTitle:@"您的联系方式(可选)" footerTitle:@""];
+    self.contactTextItem = [RETextItem itemWithTitle:@"" value:@"" placeholder:@"您的电话或邮箱"];
+    [section2 addItem:self.contactTextItem];
+    
     [section addItem:self.longTextItem];
     
+    
     [self.manager addSection:section];
+    [self.manager addSection:section2];
     
     [self addButton];
     
@@ -66,7 +73,7 @@
             [item reloadRowWithAnimation:UITableViewRowAnimationAutomatic];
         } else {
             [self submitFeedback:item];
-            NSLog(@"longTextItem.value = %@", self.longTextItem.value);
+            //NSLog(@"longTextItem.value = %@", self.longTextItem.value);
             item.title = @"提交中...";
             [item reloadRowWithAnimation:UITableViewRowAnimationAutomatic];
         }
@@ -122,6 +129,7 @@
     afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict setObject:self.longTextItem.value forKey:@"feedback"];
+    [dict setObject:self.contactTextItem.value forKey:@"contact"];
     [dict setObject:appDelegate.generatedUserID forKey:@"userIdStr"];
     NSLog(@"feedback sending: %@", dict);
     

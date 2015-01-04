@@ -17,12 +17,17 @@
 #define ORIGINAL_MAX_WIDTH 640.0f
 #define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
 
-@interface UserInfoSettingViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, VPImageCropperDelegate>
+@interface UserInfoSettingViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, VPImageCropperDelegate, UserNameSettingDelegate>
 
 @property (nonatomic, strong) NSIndexPath *firstDatePickerIndexPath;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *userAvatarImageView;
+@property (nonatomic, strong) NSString *nickNameString;
+@property (nonatomic, strong) NSString *babyGenderString;
+@property (nonatomic, strong) NSString *userGenderString;
 @property BOOL bgOrAvatar;
+@property (nonatomic, strong) UserNameViewController *userNameVC;
+@property (nonatomic, strong) NSDate *birthdayDate;
 
 @end
 
@@ -31,13 +36,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.title = @"个人设置";
-    self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:1 inSection:1];
+    self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:2 inSection:1];
     self.datePickerPossibleIndexPaths = @[self.firstDatePickerIndexPath];
     [self setDate:[NSDate date] forIndexPath:self.firstDatePickerIndexPath];
     
@@ -62,7 +62,7 @@
     if (section == 0) {
         return numberOfRows+2;
     } else {
-        return numberOfRows+3;
+        return numberOfRows+4;
     }
     
 }
@@ -121,23 +121,38 @@
         } else {
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"昵称";
-            } else if (indexPath.row == 1) {
+                if (_nickNameString == nil) {
+                    _nickNameString = @"";
+                }
+                cell.detailTextLabel.text = _nickNameString;
+            } else if (indexPath.row == 2) {
                 cell.textLabel.text = @"宝贝出生日期";
-            } else {
+            } else if (indexPath.row == 1) {
                 cell.textLabel.text = @"宝贝性别";
+                if (_babyGenderString == nil) {
+                    _babyGenderString = @"";
+                }
+                cell.detailTextLabel.text = _babyGenderString;
+            } else if (indexPath.row == 3){
+                cell.textLabel.text = @"您的性别";
+                if (_userGenderString == nil) {
+                    _userGenderString = @"";
+                }
+                cell.detailTextLabel.text = _userGenderString;
             }
         }
         
     }
     
-    if (indexPath.row == 1 && indexPath.section == 1) {
-        NSDate *firstDate = [self dateForIndexPath:self.firstDatePickerIndexPath];
+    if (indexPath.row == 2 && indexPath.section == 1) {
+        self.birthdayDate = [self dateForIndexPath:self.firstDatePickerIndexPath];
         NSLocale *cnLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"];
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.timeStyle = NSDateFormatterNoStyle;
         dateFormatter.dateStyle = NSDateFormatterMediumStyle;
         [dateFormatter setLocale:cnLocale];
-        cell.detailTextLabel.text = [dateFormatter stringFromDate:firstDate];
+        cell.detailTextLabel.text = [dateFormatter stringFromDate:self.birthdayDate];
+        [self.delegate updateUserAgeDate:self.birthdayDate];
     }
     
     return cell;
@@ -168,6 +183,20 @@
         else if (indexPath.row == 1) {
             self.bgOrAvatar = NO;
             [self editPortrait];
+        }
+    } else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            if (_userNameVC == nil) {
+                _userNameVC = [[UserNameViewController alloc] initWithStyle:UITableViewStyleGrouped];
+                _userNameVC.delegate = self;
+            }
+            [self.navigationController pushViewController:_userNameVC animated:YES];
+        } else if (indexPath.row == 2) {
+            //[self.delegate updateUserAgeDate:self.birthdayDate];
+        } else if (indexPath.row == 1) {
+            [self editBabyGender];
+        } else if (indexPath.row == 3) {
+            [self editUserGender];
         }
     }
     
@@ -202,45 +231,63 @@
 
 #pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        // 拍照
-        if ([self isCameraAvailable] && [self doesCameraSupportTakingPhotos]) {
-            UIImagePickerController *controller = [[UIImagePickerController alloc] init];
-            controller.sourceType = UIImagePickerControllerSourceTypeCamera;
-            if ([self isFrontCameraAvailable]) {
-                controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+    if ([actionSheet.title  isEqual: @"请选择宝贝性别"]) {
+        if (buttonIndex == 0) {
+            self.babyGenderString = @"女";
+        } else if (buttonIndex == 1){
+            self.babyGenderString = @"男";
+        }
+        [self.tableView reloadData];
+    } else if ([actionSheet.title isEqual:@"请选择您的角色"]) {
+        if (buttonIndex == 0) {
+            self.userGenderString = @"我是妈妈";
+        } else if (buttonIndex == 1) {
+            self.userGenderString = @"我是爸爸";
+        } else if (buttonIndex == 2){
+            self.userGenderString = @"其他";
+        }
+        [self.tableView reloadData];
+    } else {
+        if (buttonIndex == 0) {
+            // 拍照
+            if ([self isCameraAvailable] && [self doesCameraSupportTakingPhotos]) {
+                UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+                controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+                if ([self isFrontCameraAvailable]) {
+                    controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                }
+                NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
+                [mediaTypes addObject:(__bridge NSString *)kUTTypeImage];
+                controller.mediaTypes = mediaTypes;
+                controller.delegate = self;
+                [self presentViewController:controller
+                                   animated:YES
+                                 completion:^(void){
+                                     NSLog(@"Picker View Controller is presented");
+                                 }];
             }
-            NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
-            [mediaTypes addObject:(__bridge NSString *)kUTTypeImage];
-            controller.mediaTypes = mediaTypes;
-            controller.delegate = self;
-            [self presentViewController:controller
-                               animated:YES
-                             completion:^(void){
-                                 NSLog(@"Picker View Controller is presented");
-                             }];
+            
+        } else if (buttonIndex == 1) {
+            // 从相册中选取
+            if ([self isPhotoLibraryAvailable]) {
+                UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+                controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
+                [mediaTypes addObject:(__bridge NSString *)kUTTypeImage];
+                controller.mediaTypes = mediaTypes;
+                controller.delegate = self;
+                [self presentViewController:controller
+                                   animated:YES
+                                 completion:^(void){
+                                     NSLog(@"Picker View Controller is presented");
+                                 }];
+            }
+        } else if (buttonIndex == 2) {
+            //恢复默认背景图片
+            UIImage *tImg = [UIImage imageNamed:DEFAULTBGIMGURL];
+            self.bgImageView.image = tImg;
+            [self.delegate updateBackgroundImage:tImg];
         }
-        
-    } else if (buttonIndex == 1) {
-        // 从相册中选取
-        if ([self isPhotoLibraryAvailable]) {
-            UIImagePickerController *controller = [[UIImagePickerController alloc] init];
-            controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
-            [mediaTypes addObject:(__bridge NSString *)kUTTypeImage];
-            controller.mediaTypes = mediaTypes;
-            controller.delegate = self;
-            [self presentViewController:controller
-                               animated:YES
-                             completion:^(void){
-                                 NSLog(@"Picker View Controller is presented");
-                             }];
-        }
-    } else if (buttonIndex == 2) {
-        //恢复默认背景图片
-        UIImage *tImg = [UIImage imageNamed:DEFAULTBGIMGURL];
-        self.bgImageView.image = tImg;
-        [self.delegate updateBackgroundImage:tImg];
     }
 }
 
@@ -402,6 +449,36 @@
         [choiceSheet showInView:self.view];
     }
 }
+
+
+- (void)editBabyGender {
+    UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:@"请选择宝贝性别"
+                                                             delegate:self
+                                                    cancelButtonTitle:@"取消"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"女孩", @"男孩", nil];
+    [choiceSheet showInView:self.view];
+}
+
+- (void)editUserGender {
+    UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:@"请选择您的角色"
+                                                             delegate:self
+                                                    cancelButtonTitle:@"取消"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"我是妈妈", @"我是爸爸", @"其他", nil];
+    [choiceSheet showInView:self.view];
+
+}
+
+
+
+-(void)updateUserNickNameText: (NSString *) nicknameText {
+    [self.delegate updateUserNickNameText:nicknameText];
+    self.nickNameString = nicknameText;
+    [self.tableView reloadData];
+}
+
+
 
 
 @end

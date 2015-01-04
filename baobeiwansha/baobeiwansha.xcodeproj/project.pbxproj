@@ -26,6 +26,7 @@
 		D9D781581A568998008D6E06 /* setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D781561A568998008D6E06 /* setting@2x.png */; };
 		D9D7815E1A56969B008D6E06 /* UserInfoSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */; };
 		D9D781621A56D236008D6E06 /* ALEInlineDatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D781611A56D236008D6E06 /* ALEInlineDatePickerViewController.m */; };
+		D9D781651A590BCB008D6E06 /* UserNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D781641A590BCB008D6E06 /* UserNameViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,8 @@
 		D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoSettingViewController.m; sourceTree = "<group>"; };
 		D9D781601A56D236008D6E06 /* ALEInlineDatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ALEInlineDatePickerViewController.h; path = ALEInlineDatePickerViewController/ALEInlineDatePickerViewController.h; sourceTree = "<group>"; };
 		D9D781611A56D236008D6E06 /* ALEInlineDatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ALEInlineDatePickerViewController.m; path = ALEInlineDatePickerViewController/ALEInlineDatePickerViewController.m; sourceTree = "<group>"; };
+		D9D781631A590BCB008D6E06 /* UserNameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNameViewController.h; sourceTree = "<group>"; };
+		D9D781641A590BCB008D6E06 /* UserNameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserNameViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +193,8 @@
 				D9D781511A561887008D6E06 /* UserInfoViewController.m */,
 				D9D7815C1A56969B008D6E06 /* UserInfoSettingViewController.h */,
 				D9D7815D1A56969B008D6E06 /* UserInfoSettingViewController.m */,
+				D9D781631A590BCB008D6E06 /* UserNameViewController.h */,
+				D9D781641A590BCB008D6E06 /* UserNameViewController.m */,
 			);
 			name = settings;
 			sourceTree = "<group>";
@@ -377,6 +382,7 @@
 				D9D1A0CC1A53C93F00F29D26 /* AppDelegate.m in Sources */,
 				D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */,
 				D9D7814F1A5555A8008D6E06 /* VPImageCropperViewController.m in Sources */,
+				D9D781651A590BCB008D6E06 /* UserNameViewController.m in Sources */,
 				D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */,
 				D9D1A0C91A53C93F00F29D26 /* main.m in Sources */,
 				D9D1A1011A53DA1100F29D26 /* AboutUsViewController.m in Sources */,
