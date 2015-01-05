@@ -29,7 +29,7 @@
     [self addButton];
     
     if (self.nameItem == nil) {
-        self.nameItem = [RETextItem itemWithTitle:nil value:nil placeholder:@""];
+        self.nameItem = [RETextItem itemWithTitle:nil value:self.orgNickName placeholder:@""];
     }
     [section1 addItem:self.nameItem];
 

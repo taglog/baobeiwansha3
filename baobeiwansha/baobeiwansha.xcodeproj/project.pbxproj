@@ -16,7 +16,6 @@
 		D9D1A0F71A53D7DD00F29D26 /* commentButton.png in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0F61A53D7DD00F29D26 /* commentButton.png */; };
 		D9D1A1011A53DA1100F29D26 /* AboutUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */; };
 		D9D1A1021A53DA1100F29D26 /* AboutUsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */; };
-		D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */; };
 		D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */; };
 		D9D1A1051A53DA1100F29D26 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A1001A53DA1100F29D26 /* SettingsViewController.m */; };
 		D9D7814F1A5555A8008D6E06 /* VPImageCropperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D7814E1A5555A8008D6E06 /* VPImageCropperViewController.m */; };
@@ -58,8 +57,6 @@
 		D9D1A0F81A53DA1100F29D26 /* AboutUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutUsViewController.h; sourceTree = "<group>"; };
 		D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutUsViewController.m; sourceTree = "<group>"; };
 		D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutUsViewController.xib; sourceTree = "<group>"; };
-		D9D1A0FB1A53DA1100F29D26 /* BabyInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BabyInfoViewController.h; sourceTree = "<group>"; };
-		D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BabyInfoViewController.m; sourceTree = "<group>"; };
 		D9D1A0FD1A53DA1100F29D26 /* FeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedbackViewController.h; sourceTree = "<group>"; };
 		D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedbackViewController.m; sourceTree = "<group>"; };
 		D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
@@ -183,8 +180,6 @@
 				D9D1A0F81A53DA1100F29D26 /* AboutUsViewController.h */,
 				D9D1A0F91A53DA1100F29D26 /* AboutUsViewController.m */,
 				D9D1A0FA1A53DA1100F29D26 /* AboutUsViewController.xib */,
-				D9D1A0FB1A53DA1100F29D26 /* BabyInfoViewController.h */,
-				D9D1A0FC1A53DA1100F29D26 /* BabyInfoViewController.m */,
 				D9D1A0FD1A53DA1100F29D26 /* FeedbackViewController.h */,
 				D9D1A0FE1A53DA1100F29D26 /* FeedbackViewController.m */,
 				D9D1A0FF1A53DA1100F29D26 /* SettingsViewController.h */,
@@ -378,7 +373,6 @@
 			files = (
 				D9D781621A56D236008D6E06 /* ALEInlineDatePickerViewController.m in Sources */,
 				D9D781521A561887008D6E06 /* UserInfoViewController.m in Sources */,
-				D9D1A1031A53DA1100F29D26 /* BabyInfoViewController.m in Sources */,
 				D9D1A0CC1A53C93F00F29D26 /* AppDelegate.m in Sources */,
 				D9D1A1041A53DA1100F29D26 /* FeedbackViewController.m in Sources */,
 				D9D7814F1A5555A8008D6E06 /* VPImageCropperViewController.m in Sources */,

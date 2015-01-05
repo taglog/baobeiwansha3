@@ -12,19 +12,27 @@
 #import "FeedbackViewController.h"
 #import "UserInfoSettingViewController.h"
 
+#define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
+#define DEFAULTAVATARIMGURL @"defaultBackGroundImage.png"
 
 @interface UserInfoViewController ()
 
+@property (nonatomic,retain)AppDelegate *appDelegate;
+
 @property (nonatomic, retain) UIScrollView * scrollView;
-@property (nonatomic, retain) AppDelegate *appDelegate;
 @property (nonatomic, retain) UIImageView *userBackgroundImageView;
 @property (nonatomic, retain) UIImageView *userAvatarImageView;
 @property (nonatomic, retain) UILabel *userNickNameTextView;
+@property (nonatomic, retain) NSDate *userAgeDate;
 @property (nonatomic, retain) UILabel *userAgeTextView;
+@property (nonatomic, retain) NSString *babyGender;
+@property (nonatomic, retain) NSString *userGender;
 @property (nonatomic, retain) SettingsViewController *settingsVC;
 @property (nonatomic, retain) UITableView *homeTableView;
 @property (nonatomic, retain) FeedbackViewController *feedbackVC;
 @property (nonatomic, retain) UserInfoSettingViewController *userInfoSettingVC;
+
+@property (nonatomic, retain) NSMutableDictionary *dict;
 
 @end
 
@@ -38,6 +46,45 @@
     [self setupRightBarButton];
     //初始化数据
     [self initViews];
+    //self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    // 取出存储的数据进行初始化
+    NSString *filePath = [self dataFilePath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        NSLog(@"will load persisted data from file");
+        self.dict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+        self.userBackgroundImageView.image = [UIImage imageWithData:[self.dict valueForKey:@"bgImage"]];
+        self.userAvatarImageView.image = [UIImage imageWithData:[self.dict valueForKey:@"avatarImage"]];
+    } else {
+        NSLog(@"file is not exist and need init self.dict");
+        self.dict = [[NSMutableDictionary alloc] init];
+        [self.dict setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTBGIMGURL]) forKey:@"bgImage"];
+        [self.dict setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTAVATARIMGURL]) forKey:@"avatarImage"];
+        [self.dict setObject:@"" forKey:@"babyGender"];
+        [self.dict setObject:@"" forKey:@"userGender"];
+        [self.dict setObject:@"设置昵称" forKey:@"nickName"];
+        [self.dict setObject:[NSDate date] forKey:@"userAgeDate"];
+        // 优化
+        self.userBackgroundImageView.image = [UIImage imageWithContentsOfFile:DEFAULTBGIMGURL];
+        self.userAvatarImageView.image = [UIImage imageWithContentsOfFile:DEFAULTAVATARIMGURL];
+    }
+    
+    // 初始化
+    
+    self.babyGender = [self.dict valueForKey:@"babyGender"];
+    self.userGender = [self.dict valueForKey:@"userGender"];
+    self.userNickNameTextView.text = [self.dict valueForKey:@"nickName"];
+    self.userAgeDate = [self.dict valueForKey:@"userAgeDate"];
+    [self updateUserAgeDate:self.userAgeDate];
+
+
+    // register callback for plist storage
+    UIApplication *app = [UIApplication sharedApplication];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:app];
+
     
 }
 
@@ -63,14 +110,13 @@
 
 - (void)initUserView {
     // 显示用户头像等信息的区域
-    UIView *userInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 160.0f)];
+    UIView *userInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width/2)];
     // 背景图片
-    _userBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 160.0f)];
+    _userBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width/2)];
 
     // TODO: update bgImage to user setting or default value
-    UIImage * bgImage = [UIImage imageNamed:@"defaultBackGroundImage.png"];
-    
-    _userBackgroundImageView.image = bgImage;
+    //UIImage * bgImage = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+    //_userBackgroundImageView.image = bgImage;
     //[_userBackgroundImageView.image resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0) resizingMode:UIImageResizingModeTile];
     _userBackgroundImageView.layer.masksToBounds = YES;
     
@@ -82,8 +128,8 @@
     _userAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
     
     // TODO: update bgImage to user setting or default value
-    UIImage * avatarImage = [UIImage imageNamed:@"defaultBackGroundImage.png"];
-    _userAvatarImageView.image = avatarImage;
+    //UIImage * avatarImage = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+    //_userAvatarImageView.image = avatarImage;
     [_userAvatarImageView.layer setCornerRadius:(_userAvatarImageView.frame.size.height/2)];
     [_userAvatarImageView.layer setMasksToBounds:YES];
     //[_userAvatarImageView setContentMode:UIViewContentModeScaleAspectFill];
@@ -103,13 +149,13 @@
     self.userNickNameTextView.textColor = [UIColor whiteColor];
     //[userNickNameTextView sizeToFit];
 
-    self.userNickNameTextView.text = @"设置昵称";
+    //self.userNickNameTextView.text = @"设置昵称";
     self.userNickNameTextView.font = [UIFont boldSystemFontOfSize:18.0f];
     // 头像旁边用户名
     self.userAgeTextView = [[UILabel alloc]initWithFrame:CGRectMake(160.0f, 90.0f, self.view.frame.size.width-160.0f, 20.0f)];
     self.userAgeTextView.textColor = [UIColor colorWithRed:220/255.0f green:223/255.0f blue:226/255.0f alpha:1.0f];
 
-    self.userAgeTextView.text = @"设置年龄";
+    //self.userAgeTextView.text = @"设置年龄";
     self.userAgeTextView.font = [UIFont fontWithName:@"HelveticaNeue" size:16];
     
     
@@ -255,6 +301,7 @@
     if (self.userInfoSettingVC == nil) {
         self.userInfoSettingVC = [[UserInfoSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
         [self.userInfoSettingVC setDelegate:self];
+        [self.userInfoSettingVC setDict:self.dict];
     }
     [self.navigationController pushViewController:self.userInfoSettingVC animated:YES];
 }
@@ -280,7 +327,7 @@
     double inDays = intv/(24*3600);
     
     if (inDays < 0) {
-        self.userAgeTextView.text = @"设置宝贝年龄";
+        self.userAgeTextView.text = @"宝贝未出生";
     } else if (inDays < 7*12) {
         int inWeeks = inDays/7;
         self.userAgeTextView.text = [NSString stringWithFormat:@"宝贝%d周",inWeeks];
@@ -296,6 +343,54 @@
     }
 
 }
+
+-(void)updateUserGender:(NSString *)gender {
+    self.userGender = gender;
+}
+
+-(void)updateBabyGender:(NSString *)gender {
+    self.babyGender = gender;
+}
+
+
+#pragma mark - misc
+
+- (NSMutableDictionary *)formatUserInfoNeedUpload
+{
+    // 头像和背景图片不上传
+    NSMutableDictionary *dictForUpload = [[NSMutableDictionary alloc] init];
+    [dictForUpload setObject:self.babyGender forKey:@"babyGender"];
+    [dictForUpload setObject:self.userGender forKey:@"userGender"];
+    [dictForUpload setObject:self.userNickNameTextView.text forKey:@"nickName"];
+    //[dictForUpload setObject:@"test" forKey:@"nickName"];
+    [dictForUpload setObject:self.userAgeDate forKey:@"userAgeDate"];
+
+    return dictForUpload;
+}
+
+- (void) applicationWillResignActive:(NSNotification *)notification
+{
+    NSString *filePath = [self dataFilePath];
+    self.dict  = [[self formatUserInfoNeedUpload] mutableCopy];
+    // 目前我们将图片也存在plist里面，性能上看不出差别,也可能后续需要修改 TODO
+    [self.dict setObject:UIImagePNGRepresentation(self.userBackgroundImageView.image) forKey:@"bgImage"];
+    [self.dict setObject:UIImagePNGRepresentation(self.userAvatarImageView.image) forKey:@"avatarImage"];
+    [self.dict writeToFile:filePath atomically:YES];
+    //NSLog(@"Baby Information is persistented into plist: %@", self.dict);
+}
+
+
+
+// get plist path
+- (NSString *)dataFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
+}
+
+
 
 
 @end

@@ -39,7 +39,10 @@
     self.title = @"个人设置";
     self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:2 inSection:1];
     self.datePickerPossibleIndexPaths = @[self.firstDatePickerIndexPath];
-    [self setDate:[NSDate date] forIndexPath:self.firstDatePickerIndexPath];
+    // 初始化上次保存的值
+    
+    [self setDate:[self.dict objectForKey:@"userAgeDate"] forIndexPath:self.firstDatePickerIndexPath];
+    
     
 }
 
@@ -88,11 +91,12 @@
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"背景图";
                 if (_bgImageView == nil) {
-                    CGFloat w = 80.0f; CGFloat h = 60.0f;
+                    CGFloat w = 80.0f; CGFloat h = w/2;
                     CGFloat x = self.view.frame.size.width - w - 40.0f;
                     CGFloat y = 10.0f;
                     _bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
-                    _bgImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+                    //_bgImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+                    self.bgImageView.image = [UIImage imageWithData:[self.dict objectForKey:@"bgImage"]];
                     [_bgImageView.layer setMasksToBounds:YES];
                     [_bgImageView setClipsToBounds:YES];
                     _bgImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
@@ -103,11 +107,12 @@
                 cell.textLabel.text = @"头像";
 
                 if (_userAvatarImageView == nil) {
-                    CGFloat w = 60.0f; CGFloat h = w;
+                    CGFloat w = 40.0f; CGFloat h = w;
                     CGFloat x = self.view.frame.size.width - 40.0f - w;
                     CGFloat y = 10.0f;
                     _userAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
-                    _userAvatarImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+                    //_userAvatarImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
+                    self.userAvatarImageView.image = [UIImage imageWithData:[self.dict objectForKey:@"avatarImage"]];
                     [_userAvatarImageView.layer setCornerRadius:(_userAvatarImageView.frame.size.height/2)];
                     [_userAvatarImageView.layer setMasksToBounds:YES];
                     [_userAvatarImageView setClipsToBounds:YES];
@@ -122,7 +127,7 @@
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"昵称";
                 if (_nickNameString == nil) {
-                    _nickNameString = @"";
+                    _nickNameString = [self.dict objectForKey:@"nickName"];
                 }
                 cell.detailTextLabel.text = _nickNameString;
             } else if (indexPath.row == 2) {
@@ -130,13 +135,13 @@
             } else if (indexPath.row == 1) {
                 cell.textLabel.text = @"宝贝性别";
                 if (_babyGenderString == nil) {
-                    _babyGenderString = @"";
+                    _babyGenderString = [self.dict objectForKey:@"babyGender"];
                 }
                 cell.detailTextLabel.text = _babyGenderString;
             } else if (indexPath.row == 3){
                 cell.textLabel.text = @"您的性别";
                 if (_userGenderString == nil) {
-                    _userGenderString = @"";
+                    _userGenderString = [self.dict objectForKey:@"userGender"];
                 }
                 cell.detailTextLabel.text = _userGenderString;
             }
@@ -164,7 +169,7 @@
     if (rowHeight == 0) {
         rowHeight = self.tableView.rowHeight;
         if (indexPath.section == 0) {
-            rowHeight = 80.0f;
+            rowHeight = 60.0f;
         }
     }
     return rowHeight;
@@ -189,6 +194,7 @@
             if (_userNameVC == nil) {
                 _userNameVC = [[UserNameViewController alloc] initWithStyle:UITableViewStyleGrouped];
                 _userNameVC.delegate = self;
+                _userNameVC.orgNickName = [self.dict objectForKey:@"nickName"];
             }
             [self.navigationController pushViewController:_userNameVC animated:YES];
         } else if (indexPath.row == 2) {
@@ -233,19 +239,22 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if ([actionSheet.title  isEqual: @"请选择宝贝性别"]) {
         if (buttonIndex == 0) {
-            self.babyGenderString = @"女";
+            self.babyGenderString = @"女孩";
         } else if (buttonIndex == 1){
-            self.babyGenderString = @"男";
+            self.babyGenderString = @"男孩";
         }
+        [self.delegate updateBabyGender:self.babyGenderString];
         [self.tableView reloadData];
     } else if ([actionSheet.title isEqual:@"请选择您的角色"]) {
         if (buttonIndex == 0) {
             self.userGenderString = @"我是妈妈";
+            
         } else if (buttonIndex == 1) {
             self.userGenderString = @"我是爸爸";
         } else if (buttonIndex == 2){
             self.userGenderString = @"其他";
         }
+        [self.delegate updateUserGender:self.userGenderString];
         [self.tableView reloadData];
     } else {
         if (buttonIndex == 0) {
@@ -297,7 +306,12 @@
         UIImage *portraitImg = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
         portraitImg = [self imageByScalingToMaxSize:portraitImg];
         // present the cropper view controller
-        VPImageCropperViewController *imgCropperVC = [[VPImageCropperViewController alloc] initWithImage:portraitImg cropFrame:CGRectMake(0, 100.0f, self.view.frame.size.width, self.view.frame.size.width) limitScaleRatio:3.0];
+        float ratio = 1;
+        if (self.bgOrAvatar) {
+            ratio = 2;
+        }
+        float orgHeight = (self.view.frame.size.height - self.view.frame.size.width/ratio)/2;
+        VPImageCropperViewController *imgCropperVC = [[VPImageCropperViewController alloc] initWithImage:portraitImg cropFrame:CGRectMake(0, orgHeight, self.view.frame.size.width, self.view.frame.size.width/ratio) limitScaleRatio:2.0];
         imgCropperVC.delegate = self;
         [self presentViewController:imgCropperVC animated:YES completion:^{
             // TO DO

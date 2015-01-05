@@ -9,13 +9,12 @@
 #import "SettingsViewController.h"
 #import "RETableViewManager.h"
 #import "AboutUsViewController.h"
-#import "BabyInfoViewController.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "AppDelegate.h"
 
 @interface SettingsViewController ()
 
 @property (strong, readwrite, nonatomic) RETableViewManager *manager;
-@property (retain, nonatomic) BabyInfoViewController *babyInfoVC;
 
 @end
 
@@ -36,14 +35,7 @@
     //[self.manager addSection:section1];
     [self.manager addSection:section2];
     [self.manager addSection:section3];
-    if (self.babyInfoVC == nil) {
-        self.babyInfoVC = [[BabyInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    }
-    
-//    [section1 addItem:[RETableViewItem itemWithTitle:@"设置宝贝信息" accessoryType:UITableViewCellAccessoryDisclosureIndicator selectionHandler:^(RETableViewItem *item) {
-//        [item deselectRowAnimated:YES];
-//        [self.navigationController pushViewController:self.babyInfoVC animated:YES];
-//    }]];
+
 
     [section2 addItem:[REBoolItem itemWithTitle:@"接收推送信息" value:YES switchValueChangeHandler:^(REBoolItem *item) {
         NSLog(@"Value: %@", item.value ? @"YES" : @"NO");

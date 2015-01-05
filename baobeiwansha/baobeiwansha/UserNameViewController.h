@@ -16,6 +16,7 @@
 
 @interface UserNameViewController : UITableViewController
 
-@property (nonatomic,retain) id <UserNameSettingDelegate>delegate;
+@property (nonatomic, retain) id <UserNameSettingDelegate>delegate;
+@property (nonatomic, retain) NSString * orgNickName;
 
 @end
