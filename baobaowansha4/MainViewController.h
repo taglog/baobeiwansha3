@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MainViewController.h
 //  baobaowansha4
 //
 //  Created by 刘昕 on 15/1/4.
@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BubblesView.h"
 
-@interface ViewController : UIViewController
+@interface MainViewController : UIViewController<BubblesViewDelegate>
 
+-(void)resumeAnimation;
 
 @end
-
