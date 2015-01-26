@@ -43,6 +43,7 @@
     
     self.bubbleTitles = @[@"创造力",@"手眼协调",@"守规则",@"专注力",@"寒假",@"爱上吃饭吧"];
     
+    UIFont *font = [UIFont fontWithName:@"Helvetica" size:14.0f];
     
     self.mainButton = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 53, self.frame.size.height/2 - 120,110,123)];
     
@@ -51,7 +52,7 @@
   
     [self.mainButton addTarget:self action:@selector(getRecommended) forControlEvents:UIControlEventTouchUpInside];
     
-    self.mainButton.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    self.mainButton.titleLabel.font = font;
     UIImageView *mainLine;
     if(self.frame.size.height <= 480){
         mainLine = [[UIImageView alloc]initWithFrame:CGRectMake(55, 120, 63.5, 226)];
@@ -65,7 +66,6 @@
     
     self.bubbleButton1 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 103, self.frame.size.height/2 - 210, 74, 85)];
     [self.bubbleButton1 setBackgroundImage:[UIImage imageNamed:@"balloon1"] forState:UIControlStateNormal];
-    self.bubbleButton1.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton1.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(-3));
     self.bubbleButton1.tag = 0;
     UIImageView *line1 = [[UIImageView alloc]initWithFrame:CGRectMake(38, 77, 3.5, 144.5)];
@@ -73,7 +73,7 @@
     [self.bubbleButton1 addSubview:line1];
     
     UILabel *title1 = [[UILabel alloc]initWithFrame:CGRectMake(3, 20, 74, 40)];
-    title1.font = [UIFont systemFontOfSize:14.0];
+    title1.font = font;
     title1.text = self.bubbleTitles[0];
     title1.textColor = [UIColor whiteColor];
     title1.tag = 1;
@@ -85,7 +85,6 @@
     
     self.bubbleButton2 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 143, self.frame.size.height/2 - 150, 70, 77.5)];
     [self.bubbleButton2 setBackgroundImage:[UIImage imageNamed:@"balloon2"] forState:UIControlStateNormal];
-    self.bubbleButton2.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton2.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(2));
     self.bubbleButton2.tag = 1;
 
@@ -94,7 +93,7 @@
     [self.bubbleButton2 addSubview:line2];
     
     UILabel *title2 = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 70, 40)];
-    title2.font = [UIFont systemFontOfSize:14.0];
+    title2.font = font;
     title2.text = self.bubbleTitles[1];
     title2.textColor = [UIColor whiteColor];
     title2.textAlignment = NSTextAlignmentCenter;
@@ -110,7 +109,7 @@
     self.bubbleButton3.tag = 2;
 
     UILabel *title3 = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 75.5, 40)];
-    title3.font = [UIFont systemFontOfSize:14.0];
+    title3.font = font;
     title3.text = self.bubbleTitles[2];
     title3.textColor = [UIColor whiteColor];
     title3.textAlignment = NSTextAlignmentCenter;
@@ -123,11 +122,10 @@
     
     self.bubbleButton4 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 + 30, self.frame.size.height/2, 72, 86)];
     [self.bubbleButton4 setBackgroundImage:[UIImage imageNamed:@"balloon4"] forState:UIControlStateNormal];
-    self.bubbleButton4.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton4.tag = 3;
 
     UILabel *title4 = [[UILabel alloc]initWithFrame:CGRectMake(2, 20, 72, 40)];
-    title4.font = [UIFont systemFontOfSize:14.0];
+    title4.font = font;
     title4.text = self.bubbleTitles[3];
     title4.textColor = [UIColor whiteColor];
     title4.textAlignment = NSTextAlignmentCenter;
@@ -141,12 +139,11 @@
     
     self.bubbleButton5 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 + 65, self.frame.size.height/2 - 75, 76, 76.5)];
     [self.bubbleButton5 setBackgroundImage:[UIImage imageNamed:@"balloon5"] forState:UIControlStateNormal];
-    self.bubbleButton5.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton5.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(-3));
     self.bubbleButton5.tag = 4;
 
     UILabel *title5 = [[UILabel alloc]initWithFrame:CGRectMake(3, 18, 76, 40)];
-    title5.font = [UIFont systemFontOfSize:14.0];
+    title5.font = font;
     title5.text = self.bubbleTitles[4];
     title5.textColor = [UIColor whiteColor];
     title5.textAlignment = NSTextAlignmentCenter;
@@ -158,12 +155,11 @@
     
     self.bubbleButton6 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 + 55, self.frame.size.height/2 - 175, 67, 75)];
     [self.bubbleButton6 setBackgroundImage:[UIImage imageNamed:@"balloon6"] forState:UIControlStateNormal];
-    self.bubbleButton6.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton6.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(2));
     self.bubbleButton6.tag = 5;
 
     UILabel *title6 = [[UILabel alloc]initWithFrame:CGRectMake(0, 17, 67, 40)];
-    title6.font = [UIFont systemFontOfSize:14.0];
+    title6.font = font;
     title6.text = self.bubbleTitles[5];
     title6.numberOfLines = 2;
     title6.textColor = [UIColor whiteColor];
@@ -180,14 +176,13 @@
         self.bubbleButton7 = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 88, self.frame.size.height - 226, 74, 80)];
     }
     [self.bubbleButton7 setBackgroundImage:[UIImage imageNamed:@"balloon7"] forState:UIControlStateNormal];
-    self.bubbleButton7.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.bubbleButton7.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(2));
     UIImageView *line7 = [[UIImageView alloc]initWithFrame:CGRectMake(40, 70, 11, 45)];
     line7.image = [UIImage imageNamed:@"line7"];
     [self.bubbleButton7 addSubview:line7];
     
     UILabel *title7 = [[UILabel alloc]initWithFrame:CGRectMake(25, 3, 74, 80)];
-    title7.font = [UIFont systemFontOfSize:14.0];
+    title7.font = font;
     title7.text = @"更多";
     title7.textColor = [UIColor whiteColor];
     [self.bubbleButton7 addSubview:title7];

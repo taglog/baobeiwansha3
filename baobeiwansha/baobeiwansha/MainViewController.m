@@ -79,7 +79,7 @@
 }
 -(void)initUserInfo{
     
-    UIButton *profileButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 40, 24, 24)];
+    UIButton *profileButton = [[UIButton alloc]initWithFrame:CGRectMake(20, 30, 24, 24)];
     [profileButton setBackgroundImage:[UIImage imageNamed:@"profile"] forState:UIControlStateNormal];
     [profileButton addTarget:self action:@selector(userProfile) forControlEvents:UIControlEventTouchUpInside];
     profileButton.tintColor = [UIColor redColor];
