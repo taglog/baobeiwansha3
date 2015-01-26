@@ -11,8 +11,6 @@
 #import "MainViewController.h"
 #import "PanPopNavigationController.h"
 
-#import "UserInfoViewController.h"
-
 #import <AVOSCloud/AVOSCloud.h>
 
 @interface AppDelegate ()
@@ -28,6 +26,7 @@
     
     self.mainViewController = [[MainViewController alloc]init];
     PanPopNavigationController *mainNavigation = [[PanPopNavigationController alloc]initWithRootViewController:self.mainViewController];
+    
     //设置服务器跟目录
     
     self.rootURL = @"http://blogtest.yhb360.com/baobaowansha/";
@@ -52,12 +51,11 @@
     self.window.layer.backgroundColor = [UIColor clearColor].CGColor;
     self.window.rootViewController = mainNavigation;
     
-    UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
-    UINavigationController *centerNavigation = [[UINavigationController alloc] initWithRootViewController:UserInfoVC];
+   
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
     
-    [self.window setRootViewController:centerNavigation];
+    [self.window setRootViewController:mainNavigation];
     
     
     // send information(id, and start time) to serverside

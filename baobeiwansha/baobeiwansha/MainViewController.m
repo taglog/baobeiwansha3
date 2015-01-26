@@ -12,7 +12,7 @@
 #import "TagViewController.h"
 #import "OBShapedButton.h"
 #import "Reachability.h"
-
+#import "UserInfoViewController.h"
 #define HeadButtonSize 70
 
 @interface MainViewController ()
@@ -49,7 +49,8 @@
     [self initReachability];
     [self initBubbles];
     [self initView];
-    
+    [self initUserInfo];
+
     
     self.recommendViewController = [[RecommendViewController alloc]init];
     
@@ -76,7 +77,22 @@
     [super viewWillDisappear:animated];
     
 }
+-(void)initUserInfo{
+    
+    UIButton *profileButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 40, 24, 24)];
+    [profileButton setBackgroundImage:[UIImage imageNamed:@"profile"] forState:UIControlStateNormal];
+    [profileButton addTarget:self action:@selector(userProfile) forControlEvents:UIControlEventTouchUpInside];
+    profileButton.tintColor = [UIColor redColor];
+    
+    [self.view addSubview:profileButton];
+    
+}
+-(void)userProfile{
+    
+    UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
+    [self customPushViewController:UserInfoVC];
 
+}
 -(void)initBubbles{
     
     self.bubbleView = [[BubblesView alloc]initWithFrame:self.view.frame];
