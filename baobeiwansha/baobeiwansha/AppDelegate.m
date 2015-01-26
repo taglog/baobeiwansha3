@@ -8,11 +8,15 @@
 
 #import "AppDelegate.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "MainViewController.h"
+#import "PanPopNavigationController.h"
+
 #import "UserInfoViewController.h"
 
 #import <AVOSCloud/AVOSCloud.h>
 
 @interface AppDelegate ()
+@property (nonatomic,strong) MainViewController *mainViewController;
 
 @end
 
@@ -22,6 +26,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    self.mainViewController = [[MainViewController alloc]init];
+    PanPopNavigationController *mainNavigation = [[PanPopNavigationController alloc]initWithRootViewController:self.mainViewController];
     //设置服务器跟目录
     
     self.rootURL = @"http://blogtest.yhb360.com/baobaowansha/";
@@ -39,6 +45,12 @@
         self.generatedUserID = [[NSUserDefaults standardUserDefaults] objectForKey:@"generatedUserID"];
         NSLog(@"get UserID from NSUserDefaults, %@", self.generatedUserID);
     }
+    
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    UIImage *backgroundImage = [UIImage imageNamed:@"mainbg"];
+    self.window.layer.contents = (id) backgroundImage.CGImage;
+    self.window.layer.backgroundColor = [UIColor clearColor].CGColor;
+    self.window.rootViewController = mainNavigation;
     
     UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
     UINavigationController *centerNavigation = [[UINavigationController alloc] initWithRootViewController:UserInfoVC];
