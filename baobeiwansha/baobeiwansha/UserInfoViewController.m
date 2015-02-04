@@ -34,6 +34,7 @@
 @property (nonatomic, retain) UserInfoSettingViewController *userInfoSettingVC;
 
 @property (nonatomic, retain) NSMutableDictionary *dict;
+@property (nonatomic, retain) NSMutableDictionary *dictForImg;
 
 @end
 
@@ -68,16 +69,31 @@
     } else {
         NSLog(@"file is not exist and need init self.dict");
         self.dict = [[NSMutableDictionary alloc] init];
-        [self.dict setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTBGIMGURL]) forKey:@"bgImage"];
-        [self.dict setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTAVATARIMGURL]) forKey:@"avatarImage"];
         [self.dict setObject:@"" forKey:@"babyGender"];
         [self.dict setObject:@"" forKey:@"userGender"];
         [self.dict setObject:@"设置昵称" forKey:@"nickName"];
         [self.dict setObject:[NSDate date] forKey:@"babyBirthday"];
-        // 优化
-        self.userBackgroundImageView.image = [UIImage imageWithContentsOfFile:DEFAULTBGIMGURL];
-        self.userAvatarImageView.image = [UIImage imageWithContentsOfFile:DEFAULTAVATARIMGURL];
     }
+    
+    // 单独存储背景图片和头像图片
+    NSString *imgFilePath = [self dataFilePathForImage];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:imgFilePath]) {
+        NSLog(@"will load persisted data from imgfile");
+        self.dictForImg = [[NSMutableDictionary alloc] initWithContentsOfFile:imgFilePath];
+        self.userBackgroundImageView.image = [UIImage imageWithData:[self.dictForImg valueForKey:@"bgImage"]];
+        self.userAvatarImageView.image = [UIImage imageWithData:[self.dictForImg valueForKey:@"avatarImage"]];
+    } else {
+        NSLog(@"file is not exist and need init dictForImg");
+        self.dictForImg = [[NSMutableDictionary alloc] init];
+        [self.dictForImg setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTBGIMGURL]) forKey:@"bgImage"];
+        [self.dictForImg setObject:UIImagePNGRepresentation([UIImage imageNamed:DEFAULTAVATARIMGURL]) forKey:@"avatarImage"];
+        // 优化
+        self.userBackgroundImageView.image = [UIImage imageNamed:DEFAULTBGIMGURL];
+        self.userAvatarImageView.image = [UIImage imageNamed:DEFAULTAVATARIMGURL];
+    }
+
+    
+    
     
     // 初始化
     
@@ -332,6 +348,7 @@
         self.userInfoSettingVC = [[UserInfoSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
         [self.userInfoSettingVC setDelegate:self];
         [self.userInfoSettingVC setDict:self.dict];
+        [self.userInfoSettingVC setDictImg:self.dictForImg];
     }
     [self.navigationController pushViewController:self.userInfoSettingVC animated:YES];
 }
@@ -401,15 +418,17 @@
     return dictForUpload;
 }
 
-//会出错
+//
 - (void) applicationWillResignActive:(NSNotification *)notification
 {
     NSString *filePath = [self dataFilePath];
     self.dict  = [[self formatUserInfoNeedUpload] mutableCopy];
-    // 目前我们将图片也存在plist里面，性能上看不出差别,也可能后续需要修改 TODO
-    [self.dict setObject:UIImagePNGRepresentation(self.userBackgroundImageView.image) forKey:@"bgImage"];
-    [self.dict setObject:UIImagePNGRepresentation(self.userAvatarImageView.image) forKey:@"avatarImage"];
     [self.dict writeToFile:filePath atomically:YES];
+    // 目前我们将图片也存在plist里面，性能上看不出差别,也可能后续需要修改 TODO
+    NSString *filePathImage = [self dataFilePathForImage];
+    [self.dictForImg setObject:UIImagePNGRepresentation(self.userBackgroundImageView.image) forKey:@"bgImage"];
+    [self.dictForImg setObject:UIImagePNGRepresentation(self.userAvatarImageView.image) forKey:@"avatarImage"];
+    [self.dictForImg writeToFile:filePathImage atomically:YES];
     //NSLog(@"Baby Information is persistented into plist: %@", self.dict);
 }
 
@@ -424,6 +443,15 @@
     return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
 }
 
+
+// get plist path
+- (NSString *)dataFilePathForImage
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"userinfoimg.plist"];
+}
 
 
 

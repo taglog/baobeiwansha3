@@ -125,6 +125,8 @@ static NSString *DateCellIdentifier = @"DateCell";
     
     cell.datePicker.datePickerMode = UIDatePickerModeDate;
     
+    
+    
     if (!date) {
         date = [NSDate date];
     }
