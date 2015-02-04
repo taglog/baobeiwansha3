@@ -32,8 +32,7 @@
 @property BOOL bgOrAvatar;
 @property (nonatomic, strong) UserNameViewController *userNameVC;
 @property (nonatomic, strong) NSDate *birthdayDate;
-@property (nonatomic,retain) AppDelegate *appDelegate;
-
+@property (nonatomic, retain) AppDelegate *appDelegate;
 
 @end
 
@@ -43,7 +42,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"个人设置";
-    
     self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:3 inSection:1];
     self.datePickerPossibleIndexPaths = @[self.firstDatePickerIndexPath];
     // 初始化上次保存的值
@@ -74,7 +72,7 @@
 
 -(void)initSubmitButton{
     UIButton *submitButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width - 30, 40)];
-    [submitButton setBackgroundColor:[UIColor redColor]];
+    [submitButton setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:209.0f/255.0f blue:77.0f/255.0f alpha:1.0]];
     [submitButton setTitle:@"完成" forState:UIControlStateNormal];
     [submitButton addTarget:self action:@selector(syncBabyInfoSetting) forControlEvents:UIControlEventTouchUpInside];
     self.tableView.tableFooterView = submitButton;
@@ -97,9 +95,11 @@
         
         NSLog(@"sending: %@", self.dict);
         
-        [self.dict setObject:self.appDelegate.generatedUserID forKey:@"userIdStr"];
+        NSDictionary *postParam = [[NSDictionary alloc]initWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[self.dict valueForKey:@"nickName"],@"nickName",[self.dict valueForKey:@"babyGender"],@"babyGender",[self.dict valueForKey:@"userGender"],@"userGender",[self.dict valueForKey:@"babyBirthday"],@"babyBirthday",nil];
+        
         
         NSString * userInfoURL = [self.appDelegate.rootURL stringByAppendingString:@"serverside/user_info.php"];
+        
         NSString *urlString = [userInfoURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
         
@@ -107,7 +107,7 @@
         afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         
         
-        [afnmanager POST:urlString parameters:self.dict success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [afnmanager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSLog(@"Sync successed: %@", responseObject);
             
