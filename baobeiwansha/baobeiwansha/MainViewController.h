@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "BubblesView.h"
+#import "UserInfoViewController.h"
+@interface MainViewController : UIViewController<BubblesViewDelegate,UserInfoViewDelegate>
 
-@interface MainViewController : UIViewController<BubblesViewDelegate>
+@property (nonatomic,retain) NSArray *bubbleTitles;
 
 -(void)resumeAnimation;
 

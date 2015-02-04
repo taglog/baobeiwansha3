@@ -14,15 +14,18 @@
 
 -(void)showHUD:(NSString *)text;
 -(void)dismissHUD;
+
 @end
 
 
 @interface ContentFirstViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,EGORefreshDelegate,iCarouselDataSource, iCarouselDelegate>
 
-@property(nonatomic,strong) NSString *tag;
-@property(nonatomic,strong) NSDictionary *requestURL;
+@property (nonatomic,strong) NSString *tag;
+@property (nonatomic,strong) NSDictionary *requestURL;
+@property (nonatomic,assign) NSInteger ageChoosen;
+@property (nonatomic,assign) BOOL isAgeSet;
 
-@property(nonatomic,retain)id<ContentFirstViewDelegate> delegate;
+@property (nonatomic,retain)id<ContentFirstViewDelegate> delegate;
 
 
 -(void)simulatePullDownRefresh;

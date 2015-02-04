@@ -10,11 +10,15 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "MainViewController.h"
 #import "PanPopNavigationController.h"
-
 #import <AVOSCloud/AVOSCloud.h>
+#import "PostViewTimeAnalytics.h"   
 
 @interface AppDelegate ()
+
 @property (nonatomic,strong) MainViewController *mainViewController;
+@property (nonatomic,strong) IntroControll * introcontroller;
+@property (nonatomic,strong) UINavigationController *initialNav;
+@property (nonatomic,strong) PanPopNavigationController *mainNavigation;
 
 @end
 
@@ -24,8 +28,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    self.mainViewController = [[MainViewController alloc]init];
-    PanPopNavigationController *mainNavigation = [[PanPopNavigationController alloc]initWithRootViewController:self.mainViewController];
     
     //设置服务器跟目录
     
@@ -45,17 +47,6 @@
         NSLog(@"get UserID from NSUserDefaults, %@", self.generatedUserID);
     }
     
-    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
-    UIImage *backgroundImage = [UIImage imageNamed:@"mainbg"];
-    self.window.layer.contents = (id) backgroundImage.CGImage;
-    self.window.layer.backgroundColor = [UIColor clearColor].CGColor;
-    self.window.rootViewController = mainNavigation;
-    
-   
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.backgroundColor = [UIColor whiteColor];
-    
-    [self.window setRootViewController:mainNavigation];
     
     
     // send information(id, and start time) to serverside
@@ -79,6 +70,46 @@
                       clientKey:@"0mikvyvihrejfctvqarlhwvuet67pahni8fjvrse8sai4okj"];
     [AVAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
+    
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    self.mainViewController = [[MainViewController alloc]init];
+    self.mainNavigation = [[PanPopNavigationController alloc]initWithRootViewController:self.mainViewController];
+    
+    UIImage *backgroundImage = [UIImage imageNamed:@"mainbg"];
+    self.window.layer.contents = (id) backgroundImage.CGImage;
+    self.window.layer.backgroundColor = [UIColor clearColor].CGColor;
+    
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"firstStart"]) {
+    
+        
+        IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro1.jpg"];
+        
+        IntroModel *model2 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro2.jpg"];
+        
+        IntroModel *model3 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro3.jpg"];
+        
+        CGRect bounds = [[UIScreen mainScreen] bounds];
+        self.introcontroller = [[IntroControll alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, bounds.size.height) pages:@[model1, model2, model3]];
+        
+        self.introcontroller.delegate = self;
+        
+        InitSettingViewController * userInfoVC = [[InitSettingViewController alloc]init];
+        userInfoVC.delegate = self;
+        
+        self.initialNav = [[UINavigationController alloc]initWithRootViewController:userInfoVC];
+    
+        [self.initialNav.view addSubview:self.introcontroller];
+        
+        self.window.rootViewController = self.initialNav;
+
+        
+    }else{
+        
+        [self getBubbleFromServer];
+    }
+
 
     [self.window makeKeyAndVisible];
     return YES;
@@ -87,6 +118,8 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    [PostViewTimeAnalytics disableLogPageView];
+
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -104,6 +137,82 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+#pragma -IntroDelegate
+- (void) IntroFinished {
+    
+    NSLog(@"Intro finished, animated to hide");
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self.introcontroller.alpha = 0;
+    } completion:^(BOOL finished) {
+        
+    }];
+    
+    
+}
+-(void)popInitUserInfoSetting{
+    
+    [UIView animateWithDuration:0.4 animations:^{
+        self.initialNav.view.alpha = 0;
+    } completion:^(BOOL finished) {
+        [self.initialNav removeFromParentViewController];
+        [self getBubbleFromServer];
+    }];
+
+}
+- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+    NSLog(@"applicate device token is called with tocken:%@", deviceToken);
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)app didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@"register notification failed with code: %@", error);
+}
+
+-(void)getBubbleFromServer{
+    
+    //网络活动指示器
+    UIApplication *app=[UIApplication sharedApplication];
+    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    
+    
+    
+    //请求的地址
+    NSString *postRouter = @"tag/hotSix";
+    NSString *postRequestUrl = [self.rootURL stringByAppendingString:postRouter];
+    
+    //发送请求
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer.timeoutInterval = 20;
+    [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
+        NSArray *responseArray = [responseObject valueForKey:@"data"];
+        NSMutableArray *bubbleTitle = [[NSMutableArray alloc]initWithCapacity:6];
+        for(NSDictionary *bubbleName in responseArray){
+            [bubbleTitle addObject:[bubbleName objectForKey:@"name"]];
+        }
+        if(bubbleTitle != nil){
+            self.mainViewController.bubbleTitles = bubbleTitle;
+        }else{
+            self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"春节",@"运动"];
+        }
+
+        self.window.rootViewController = self.mainNavigation;
+        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"%@",error);
+        
+        self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"寒假",@"运动"];
+        self.window.rootViewController = self.mainNavigation;
+
+        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    }];
+    
+    
 }
 
 @end

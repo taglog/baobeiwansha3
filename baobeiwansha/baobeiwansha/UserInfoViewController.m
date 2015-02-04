@@ -11,6 +11,7 @@
 #import "SettingsViewController.h"
 #import "FeedbackViewController.h"
 #import "UserInfoSettingViewController.h"
+#import "HomeViewController.h"
 
 #define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
 #define DEFAULTAVATARIMGURL @"defaultBackGroundImage.png"
@@ -50,6 +51,8 @@
     // Do any additional setup after loading the view.
     self.title = @"我";
     self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self setupLeftBarButton];
     [self setupRightBarButton];
     //初始化数据
     [self initViews];
@@ -70,7 +73,7 @@
         [self.dict setObject:@"" forKey:@"babyGender"];
         [self.dict setObject:@"" forKey:@"userGender"];
         [self.dict setObject:@"设置昵称" forKey:@"nickName"];
-        [self.dict setObject:[NSDate date] forKey:@"userAgeDate"];
+        [self.dict setObject:[NSDate date] forKey:@"babyBirthday"];
         // 优化
         self.userBackgroundImageView.image = [UIImage imageWithContentsOfFile:DEFAULTBGIMGURL];
         self.userAvatarImageView.image = [UIImage imageWithContentsOfFile:DEFAULTAVATARIMGURL];
@@ -81,7 +84,7 @@
     self.babyGender = [self.dict valueForKey:@"babyGender"];
     self.userGender = [self.dict valueForKey:@"userGender"];
     self.userNickNameTextView.text = [self.dict valueForKey:@"nickName"];
-    self.userAgeDate = [self.dict valueForKey:@"userAgeDate"];
+    self.userAgeDate = [self.dict valueForKey:@"babyBirthday"];
     [self updateUserAgeDate:self.userAgeDate];
 
 
@@ -97,7 +100,6 @@
 
 
 - (void)initViews{
-    
     [self initScrollView];
     [self initUserView];
     [self initTableView];
@@ -278,7 +280,18 @@
         }
         [self.navigationController pushViewController:self.feedbackVC animated:YES];
     } else {
-        // TODO
+        if(indexPath.row == 0 ){
+            HomeViewController *collectionViewController = [[HomeViewController alloc]init];
+            collectionViewController.requestURL = @{@"requestRouter":@"post/mycollection"};
+            collectionViewController.controllerTitle = @"我的收藏";
+            [self.navigationController pushViewController:collectionViewController animated:YES];
+        }else if(indexPath.row == 1){
+            HomeViewController *commentViewController = [[HomeViewController alloc]init];
+            commentViewController.requestURL = @{@"requestRouter":@"post/mycollection"};
+            commentViewController.controllerTitle = @"我的评论";
+            [self.navigationController pushViewController:commentViewController animated:YES];
+
+        }
     }
     
     [self.homeTableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -286,7 +299,16 @@
 }
 
 
-
+-(void)setupLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
+-(void)popViewController{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 // setup right setting button
 - (void)setupRightBarButton {
     UIBarButtonItem * rightBarButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"setting.png"] style:UIBarButtonItemStylePlain target:self action:@selector(settingButtonPress:)];
@@ -313,6 +335,9 @@
     [self.navigationController pushViewController:self.userInfoSettingVC animated:YES];
 }
 
+-(void)UpdateRecommendTitle{
+    [self.delegate updateRecommendViewControllerTitle];
+}
 
 #pragma mark - UserInfoSettingDelegate
 
@@ -370,11 +395,12 @@
     [dictForUpload setObject:self.userGender forKey:@"userGender"];
     [dictForUpload setObject:self.userNickNameTextView.text forKey:@"nickName"];
     //[dictForUpload setObject:@"test" forKey:@"nickName"];
-    [dictForUpload setObject:self.userAgeDate forKey:@"userAgeDate"];
+    [dictForUpload setObject:self.userAgeDate forKey:@"babyBirthday"];
 
     return dictForUpload;
 }
 
+//会出错
 - (void) applicationWillResignActive:(NSNotification *)notification
 {
     NSString *filePath = [self dataFilePath];

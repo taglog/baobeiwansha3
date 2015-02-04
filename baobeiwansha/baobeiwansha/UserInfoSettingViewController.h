@@ -19,6 +19,8 @@
 -(void)updateBabyGender:(NSString *) gender;
 -(void)updateUserGender:(NSString *) gender;
 
+-(void)UpdateRecommendTitle;
+
 @end
 
 @interface UserInfoSettingViewController : ALEInlineDatePickerViewController<UITableViewDelegate,UITableViewDataSource>

@@ -75,6 +75,7 @@
         [self.contentView addSubview:commentNumber];
         self.commentNumber = commentNumber;
         
+        self.isViewed = NO;
     }
     return self;
 }
@@ -116,14 +117,20 @@
     NSString *endAge;
     NSString *showAge;
     
-    if([[dict valueForKey:@"fit_month_begin_1"]integerValue]>=24){
+    if([[dict valueForKey:@"fit_month_begin_1"]integerValue]>24){
         beginAge = [NSString stringWithFormat:@"%ld岁%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12,[[dict valueForKey:@"fit_month_begin_1"]integerValue]%12];
+        if([[dict valueForKey:@"fit_month_begin_1"]integerValue]%12 == 0){
+            beginAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12];
+        }
     }else{
         beginAge = [NSString stringWithFormat:@"%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]];
     }
     
-    if([[dict valueForKey:@"fit_month_end_1"]integerValue]>=24){
+    if([[dict valueForKey:@"fit_month_end_1"]integerValue]>24){
         endAge = [NSString stringWithFormat:@"%ld岁%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12,[[dict valueForKey:@"fit_month_end_1"]integerValue]%12];
+        if([[dict valueForKey:@"fit_month_end_1"]integerValue]%12 == 0){
+            endAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12];
+        }
     }else{
         endAge = [NSString stringWithFormat:@"%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]];
     }
@@ -156,8 +163,13 @@
     //标题的frame
     self.title.frame = CGRectMake(107.0f, paddingVer, self.aFrame.size.width - 100.0, 20.0);
     
-    self.title.textColor = [UIColor colorWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
-    self.title.font = [UIFont systemFontOfSize:17.0f];
+    if(self.isViewed){
+        self.title.textColor = [UIColor colorWithRed:153.0f/255.0f green:153.0f/255.0f blue:153.0f/255.0f alpha:1.0f];
+    }else{
+        self.title.textColor = [UIColor colorWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
+    }
+        self.title.font = [UIFont systemFontOfSize:17.0f];
+    
     
     //摘要的frame
     self.introduction.frame = CGRectMake(107.0, 27.0,self.aFrame.size.width - 120.0, 50.0);

@@ -26,19 +26,27 @@
 @property (nonatomic,retain) UIImageView *ageFilterButtonIcon;
 @property (nonatomic,retain) UILabel *ageTitleLabel;
 
-@property (nonatomic,retain) NSArray *ageList;
 @property (nonatomic,retain) UIButton *mask;
 @property (nonatomic,assign) BOOL isAgeTableViewShow;
 
 @property (nonatomic,assign) NSUInteger activeTabIndex;
 
 @property (nonatomic,assign) NSInteger beforeMonth;
-@property (nonatomic,assign) NSInteger afterMonth;
+@property (nonatomic,assign) NSInteger activeMonth;
 
 @property (nonatomic,retain) UILabel *tabLabel0;
 @property (nonatomic,retain) UILabel *tabLabel1;
 @property (nonatomic,retain) UILabel *tabLabel2;
 @property (nonatomic,retain) UILabel *tabLabel3;
+
+@property (nonatomic,assign) int babyBirthdayMonth;
+@property (nonatomic,retain) NSString *babyBirthday;
+
+
+@property (nonatomic,assign) BOOL isRefreshed0;
+@property (nonatomic,assign) BOOL isRefreshed1;
+@property (nonatomic,assign) BOOL isRefreshed2;
+@property (nonatomic,assign) BOOL isRefreshed3;
 
 @end
 
@@ -55,32 +63,11 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.ageList = @[@{@"ageMonth":@1,@"ageTitle":@"1个月"},
-                     @{@"ageMonth":@2,@"ageTitle":@"2个月"},
-                     @{@"ageMonth":@3,@"ageTitle":@"3个月"},
-                     @{@"ageMonth":@4,@"ageTitle":@"4个月"},
-                     @{@"ageMonth":@5,@"ageTitle":@"5个月"},
-                     @{@"ageMonth":@6,@"ageTitle":@"6个月"},
-                     @{@"ageMonth":@7,@"ageTitle":@"7个月"},
-                     @{@"ageMonth":@8,@"ageTitle":@"8个月"},
-                     @{@"ageMonth":@9,@"ageTitle":@"9个月"},
-                     @{@"ageMonth":@10,@"ageTitle":@"10个月"},
-                     @{@"ageMonth":@11,@"ageTitle":@"11个月"},
-                     @{@"ageMonth":@12,@"ageTitle":@"12个月"},
-                     @{@"ageMonth":@13,@"ageTitle":@"13个月"},
-                     @{@"ageMonth":@14,@"ageTitle":@"14个月"},
-                     @{@"ageMonth":@15,@"ageTitle":@"15个月"},
-                     @{@"ageMonth":@16,@"ageTitle":@"16个月"},
-                     @{@"ageMonth":@17,@"ageTitle":@"17个月"},
-                     @{@"ageMonth":@18,@"ageTitle":@"18个月"},
-                     @{@"ageMonth":@19,@"ageTitle":@"19个月"},
-                     @{@"ageMonth":@20,@"ageTitle":@"20个月"},
-                     @{@"ageMonth":@21,@"ageTitle":@"21个月"}];
-    
-    
-    self.view.backgroundColor = [UIColor whiteColor];
     
     [self initTitleView];
+
+    [self initUserInfo];
+    
     
     [self initAgeTableView];
     
@@ -93,26 +80,111 @@
     
     self.isHudShow = NO;
 }
+-(id)init{
+    
+    self = [super init];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    return self;
+}
+
+#pragma mark - 获取用户年龄
+-(void)initUserInfo{
+    [self getUserInfo];
+    
+     if(self.babyBirthday){
+        
+        if(self.ageTitleLabel){
+            self.ageTitleLabel.text = self.babyBirthday;
+        }
+        self.beforeMonth = self.babyBirthdayMonth;
+        self.activeMonth = self.babyBirthdayMonth;
+        
+    }
+    
+}
+-(void)updateUserInfo{
+    
+    [self getUserInfo];
+    
+    if(self.ageTitleLabel){
+        self.ageTitleLabel.text = self.babyBirthday;
+    }
+
+    self.activeMonth = self.babyBirthdayMonth;
+    
+    //更改目录页刷新的age
+    self.contentViewControllerFirst.ageChoosen = self.babyBirthdayMonth;
+    self.contentViewControllerFirst.isAgeSet = YES;
+    self.contentViewControllerSecond.ageChoosen = self.babyBirthdayMonth;
+    self.contentViewControllerSecond.isAgeSet = YES;
+    self.contentViewControllerThird.ageChoosen = self.babyBirthdayMonth;
+    self.contentViewControllerThird.isAgeSet = YES;
+    self.contentViewControllerFourth.ageChoosen = self.babyBirthdayMonth;
+    self.contentViewControllerFourth.isAgeSet = YES;
+    
+    [self resetRefreshStatus];
+    [self refreshActiveViewController];
+
+    
+}
+-(void)getUserInfo{
+    
+    // 取出存储的数据进行初始化
+    NSString *filePath = [self dataFilePath];
+    
+    //如果存在userinfo.plist
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
+        NSDate *date = [dict objectForKey:@"babyBirthday"];
+        NSString *timeStamp = [NSString stringWithFormat:@"%ld", (long)[date timeIntervalSince1970]];
+        int time = [timeStamp intValue];
+        NSDate *nowDate = [NSDate date];
+        NSString *nowStamp = [NSString stringWithFormat:@"%ld", (long)[nowDate timeIntervalSince1970]];
+        int now = [nowStamp intValue];
+        
+        int babyBirthdayStamp = now - time;
+        self.babyBirthdayMonth = floor(babyBirthdayStamp/60/60/24/30);
+        
+        if(self.babyBirthdayMonth > 24){
+            self.babyBirthday = [NSString stringWithFormat:@"%d岁%d个月",self.babyBirthdayMonth/12,self.babyBirthdayMonth%12];
+        }else{
+            self.babyBirthday = [NSString stringWithFormat:@"%d个月",self.babyBirthdayMonth];
+        }
+        
+    }
+}
+
+
+- (NSString *)dataFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
+}
+
 
 #pragma mark - 初始化views
 -(void)initTitleView{
     
     if(self.ageFilterButton == nil){
-        self.ageFilterButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 120, 36)];
+        self.ageFilterButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 120, 44)];
         
         self.ageTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 120, 44)];
-        self.ageTitleLabel.text = @"1岁2个月";
+        self.ageTitleLabel.text = @"";
         self.ageTitleLabel.textAlignment = NSTextAlignmentCenter;
         
         
-        self.ageFilterButtonIcon = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"arrowdown2"]];
+        self.ageFilterButtonIcon = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"arrowdown"]];
         self.ageFilterButtonIcon.tag = 1;
         self.ageFilterButtonIcon.frame = CGRectMake(95, 10, 24, 24);
         [self.ageFilterButton addTarget:self action:@selector(showAgeTableView) forControlEvents:UIControlEventTouchUpInside];
         
         [self.ageFilterButton addSubview:self.ageFilterButtonIcon];
         [self.ageFilterButton addSubview:self.ageTitleLabel];
-
+        
         self.navigationItem.titleView = self.ageFilterButton;
     }
     
@@ -121,7 +193,7 @@
 }
 
 -(void)initBarButtonItem{
-        
+    
     UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
     leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
     self.navigationItem.leftBarButtonItem = leftBarButton;
@@ -159,20 +231,20 @@
 -(void)initContentViewController{
     
     self.requestURL = @{@"requestRouter":@"post/category"};
-
+    
     //4个标签，需要4个实例
     if (self.contentViewControllerFirst == nil) {
         
         self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
         self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
         self.contentViewControllerFirst.delegate = self;
-    
+        
     }
     if(self.contentViewControllerSecond == nil){
         
         self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
         self.contentViewControllerSecond.delegate = self;
-    
+        
     }
     if (self.contentViewControllerThird == nil) {
         
@@ -181,10 +253,10 @@
         
     }
     if (self.contentViewControllerFourth == nil) {
-    
+        
         self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
         self.contentViewControllerFourth.delegate = self;
-    
+        
     }
     
     
@@ -251,7 +323,7 @@
     }
     
     
-
+    
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont systemFontOfSize:13.0];
     label.textAlignment = NSTextAlignmentCenter;
@@ -350,27 +422,10 @@
             break;
     }
 
-    if(self.beforeMonth != self.afterMonth){
+    if(self.beforeMonth != self.activeMonth){
         
-        switch(self.activeTabIndex){
-            case 0:
-                [self.contentViewControllerFirst simulatePullDownRefresh];
-                break;
-                
-            case 1:
-                [self.contentViewControllerSecond simulatePullDownRefresh];
-                break;
-                
-            case 2:
-                [self.contentViewControllerThird simulatePullDownRefresh];
-                break;
-                
-            case 3:
-                [self.contentViewControllerFourth simulatePullDownRefresh];
-                break;
-            default:
-                break;
-        }
+        [self refreshActiveViewController];
+        
     }
     
     
@@ -382,7 +437,51 @@
     self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
     self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
     self.tabLabel3.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    
+}
+-(void)resetRefreshStatus{
+    
+    self.isRefreshed0 = NO;
+    self.isRefreshed1 = NO;
+    self.isRefreshed2 = NO;
+    self.isRefreshed3 = NO;
 
+
+}
+-(void)refreshActiveViewController{
+    
+    switch(self.activeTabIndex){
+        case 0:
+            if(!self.isRefreshed0){
+                [self.contentViewControllerFirst simulatePullDownRefresh];
+                self.isRefreshed0 = YES;
+            }
+            break;
+            
+        case 1:
+            if(!self.isRefreshed1){
+                [self.contentViewControllerSecond simulatePullDownRefresh];
+                self.isRefreshed1 = YES;
+            }
+
+            break;
+            
+        case 2:
+            if(!self.isRefreshed2){
+                [self.contentViewControllerThird simulatePullDownRefresh];
+                self.isRefreshed2 = YES;
+            }
+            break;
+            
+        case 3:
+            if(!self.isRefreshed3){
+                [self.contentViewControllerFourth simulatePullDownRefresh];
+                self.isRefreshed3 = YES;
+            }
+            break;
+        default:
+            break;
+    }
 }
 #pragma mark - 修改日期
 -(void)showAgeTableView{
@@ -403,18 +502,18 @@
     else{
         [self hideAgeTableView];
     }
-
+    
 }
 
 -(void)hideAgeTableView{
     [UIView animateWithDuration:0.2
                           delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                               self.ageFilterButtonIcon.transform = CGAffineTransformMakeRotation(0);
-
+                              
                               self.ageTableView.frame = CGRectMake(self.view.frame.size.width/2 - 70, 30, 140, 200);
                               self.ageTableView.alpha = 0.0;
                               
-
+                              
                           } completion:^(BOOL finished) {
                               self.mask.hidden = YES;
                               self.ageTableView.hidden = YES;
@@ -429,7 +528,7 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return  self.ageList.count;
+    return  73;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -437,14 +536,41 @@
     
     //创建cell
     UITableViewCell  *cell=[tableView dequeueReusableCellWithIdentifier:ID];
+    
     if(cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
+    
     cell.backgroundColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:0.9];
     cell.textLabel.textColor = [UIColor whiteColor];
-    cell.textLabel.text = [[self.ageList objectAtIndex:indexPath.row]valueForKey:@"ageTitle"];
-    cell.tag = [[[self.ageList objectAtIndex:indexPath.row]valueForKey:@"ageMonth"] integerValue];
     
+    //如果是用户当前月份，显示两个点
+    if(indexPath.row == self.babyBirthdayMonth){
+        
+        if(indexPath.row <= 24){
+            cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld个月 · · ·",(long)indexPath.row];
+            
+        }else{
+            cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld岁%ld个月 · · ·",indexPath.row/12,indexPath.row%12];
+            if(indexPath.row%12 == 0){
+                cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld岁 · · ·",indexPath.row/12];
+            }
+        }
+        
+    }else{
+        //不是用户当前的月份
+        if(indexPath.row <= 24){
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
+            
+        }else{
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row%12];
+            if(indexPath.row%12 == 0){
+                cell.textLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
+            }
+            
+        }
+        
+    }
     cell.textLabel.font = [UIFont systemFontOfSize:16.0f];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
     
@@ -457,29 +583,42 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    UITableViewCell *cell  = [tableView cellForRowAtIndexPath:indexPath];
-    
-    switch(self.activeTabIndex){
-        case 0:
-            [self.contentViewControllerFirst simulatePullDownRefresh];
-            break;
+    //如果选择的年龄和原来的年龄不一样，就进行刷新，如果一样就不进行刷新
+    if(self.activeMonth != indexPath.row){
+        
+        self.beforeMonth = self.activeMonth;
+        self.activeMonth = indexPath.row;
+        
+        
+        //更改title上的年龄
+        if(indexPath.row <= 23){
+            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld个月",indexPath.row];
             
-        case 1:
-            [self.contentViewControllerSecond simulatePullDownRefresh];
-            break;
+        }else{
+            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row % 12];
+            if(indexPath.row % 12 == 0){
+                self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
+            }
             
-        case 2:
-            [self.contentViewControllerThird simulatePullDownRefresh];
-            break;
-            
-        case 3:
-            [self.contentViewControllerFourth simulatePullDownRefresh];
-            break;
-        default:
-            break;
+            ;
+        }
+        
+        //更改目录页刷新的age
+        self.contentViewControllerFirst.ageChoosen = indexPath.row;
+        self.contentViewControllerFirst.isAgeSet = YES;
+        self.contentViewControllerSecond.ageChoosen = indexPath.row;
+        self.contentViewControllerSecond.isAgeSet = YES;
+        self.contentViewControllerThird.ageChoosen = indexPath.row;
+        self.contentViewControllerThird.isAgeSet = YES;
+        self.contentViewControllerFourth.ageChoosen = indexPath.row;
+        self.contentViewControllerFourth.isAgeSet = YES;
+        
+        [self resetRefreshStatus];
+        //当前active的页面先刷新
+        [self refreshActiveViewController];
+        
+        [self hideAgeTableView];
     }
-    
-    [self hideAgeTableView];
 }
 
 #pragma mark - 指示层delegate
@@ -505,6 +644,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 
 @end

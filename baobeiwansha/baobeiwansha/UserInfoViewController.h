@@ -8,6 +8,13 @@
 
 #import "UserInfoSettingViewController.h"
 
+@protocol UserInfoViewDelegate
+
+-(void)updateRecommendViewControllerTitle;
+
+@end
+
 @interface UserInfoViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate, UserInfoSettingDelegate>
 
+@property (nonatomic,retain) id<UserInfoViewDelegate> delegate;
 @end

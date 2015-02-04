@@ -10,14 +10,17 @@
 #import "EGORefreshCustom.h"
 
 @protocol ContentCommonViewDelegate
+
 -(void)showHUD:(NSString *)text;
 -(void)dismissHUD;
+
 @end
 @interface ContentCommonViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,EGORefreshDelegate>
 
 @property(nonatomic,assign) NSInteger type;
-@property(nonatomic,retain) UITableView *homeTableView;
 @property (nonatomic,strong)NSDictionary *requestURL;
+@property (nonatomic,assign) NSInteger ageChoosen;
+@property (nonatomic,assign) BOOL isAgeSet;
 
 @property(nonatomic,retain)id<ContentCommonViewDelegate> delegate;
 -(id)initWithURL:(NSDictionary *)dict type:(NSInteger)index;

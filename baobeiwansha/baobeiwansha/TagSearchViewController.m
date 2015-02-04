@@ -7,6 +7,7 @@
 //
 
 #import "TagSearchViewController.h"
+#import "TagPostTableViewController.h"
 
 @interface TagSearchViewController ()
 
@@ -61,9 +62,21 @@
 
 -(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar{
     [self.searchBar resignFirstResponder];
+    
+    
+}
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    
+    [self.searchBar resignFirstResponder];
+    TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]init];
+    tagPostViewController.tag = self.searchBar.text;
+    [self.navigationController pushViewController: tagPostViewController animated:YES];
+    
 }
 -(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
-    
+    [self.searchBar resignFirstResponder];
+    [self.navigationController popViewControllerAnimated:YES];
+
 }
 
 @end

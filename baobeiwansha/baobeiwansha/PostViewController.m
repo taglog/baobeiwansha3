@@ -13,6 +13,7 @@
 #import "AppDelegate.h"
 #import "JGProgressHUD.h"
 #import "JGProgressHUDSuccessIndicatorView.h"
+#import "PostViewTimeAnalytics.h"
 
 @interface PostViewController ()
 {
@@ -25,6 +26,11 @@
 @property(nonatomic,retain) DTAttributedTextView *textView;
 @property(nonatomic,retain) UITableView *commentTableView;
 @property(nonatomic,strong)UIView *commentTableHeader;
+
+@property(nonatomic,assign) CGFloat lastContentOffset;
+//底部的bar
+@property(nonatomic,retain)UIView *bottomBar;
+
 @property(nonatomic,retain) UIButton *commentCreateButton;
 //接收到的post数据
 @property(nonatomic,strong) NSDictionary *postDict;
@@ -41,7 +47,7 @@
 @property (nonatomic,retain)EGORefreshCustom *refreshFooterView;
 
 //用来更新tableViewCell的数组
-@property(nonatomic,strong)NSMutableArray *commentTableViewCell;
+@property(nonatomic,retain)NSMutableArray *commentTableViewCell;
 
 //是否reloading标志
 @property (nonatomic,assign)BOOL reloading;
@@ -50,50 +56,82 @@
 @property(nonatomic,assign)NSUInteger postID;
 
 //收藏button
-@property(nonatomic,strong)UIBarButtonItem *collectionButton;
-@property(nonatomic,strong)UIBarButtonItem *collectionButtonSelected;
-//分享到的按钮
-@property(nonatomic,strong)UIBarButtonItem *socialShareButton;
+@property(nonatomic,retain)UIButton *collectionButton;
+@property(nonatomic,retain)UIButton *collectionButtonSelected;
+//增加一个bool值，防止在收藏还没有收到服务器返回值的时候，用户进行重复点击
+@property(nonatomic,assign)BOOL collectButtonEnabled;
 
 //没有评论的时候显示
-@property(nonatomic,strong)UILabel *noCommentLabel;
+@property(nonatomic,retain)UILabel *noCommentLabel;
 
 @property(nonatomic,retain)AppDelegate *appDelegate;
 
-@property(nonatomic,strong)JGProgressHUD *HUD;
+@property(nonatomic,retain)JGProgressHUD *HUD;
 
-@property(nonatomic,assign)BOOL collectButtonEnabled;
 
 @end
 
 @implementation PostViewController
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    
+}
+-(void)viewWillDisappear:(BOOL)animated{
+    [PostViewTimeAnalytics endLogPageView:self.postID];
+
+}
+//初始化Controlller的View
+-(void)initViewWithDict:(NSDictionary *)dict{
+    
+    
+    _postDict = dict;
+    _postID = [[dict valueForKey:@"ID"]integerValue];
+    _frame = self.view.frame;
+    
+    [PostViewTimeAnalytics beginLogPageView:self.postID];
+    
+    
+    //初始化textView
+    [self initTextView];
+    
+    //初始化postScrollView
+    [self initScrollView];
+    
+    //初始化底部的bar
+    [self initBottomBar];
+    
+    //初始化评论tableview
+    [self initTableView];
+    [self initCommentTableView];
+    
+    [_postScrollView addSubview:_textView];
+    
+    
+    
+}
+
+
 
 -(void)loadView{
     [super loadView];
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    //自定义右侧收藏button
-    self.collectionButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"unstar.png"] style:UIBarButtonItemStylePlain target:self action:@selector(collectPost:)];
-    self.collectionButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-    self.collectionButton.tag = 0;
-    
-    //收藏状态的button
-    self.collectionButtonSelected = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"star.png"] style:UIBarButtonItemStylePlain target:self action:@selector(collectPost:)];
-    self.collectionButtonSelected.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-    self.collectionButtonSelected.tag = 1;
-    
-    
-    UIBarButtonItem *backButtonCustom = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
-    backButtonCustom.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-    self.navigationItem.leftBarButtonItem = backButtonCustom;
-    
+    [self initLeftBarButton];
     self.collectButtonEnabled = YES;
     //阻止自动调整滚轮位置，否则导航栏下会出现一段空间
     self.automaticallyAdjustsScrollViewInsets = NO;
     
 }
-
+-(void)initLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
 -(void)popViewController{
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -133,19 +171,28 @@
             if(status == 1){
                 
                 if(collectButtonSender.tag == 0){
-                    self.navigationItem.rightBarButtonItem =self.collectionButtonSelected;
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        
+                        self.collectionButton.hidden = YES;
+                        self.collectionButtonSelected.hidden = NO;
+                        
+                    });
+                    
                     self.HUD.textLabel.text = @"收藏成功";
                 }else{
-                    self.navigationItem.rightBarButtonItem =self.collectionButton;
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        
+                        self.collectionButton.hidden = NO;
+                        self.collectionButtonSelected.hidden = YES;
+                        
+                    });
                     self.HUD.textLabel.text = @"取消成功";
                 }
                 self.HUD.layoutChangeAnimationDuration = 0.4;
                 self.HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
                 self.HUD.detailTextLabel.text = nil;
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self.HUD dismiss];
-                    self.collectButtonEnabled = YES;
-                });
+                [self.HUD dismissAfterDelay:1.0];
+                self.collectButtonEnabled = YES;
             }else{
                 //否则的话，弹出一个指示层
                 self.HUD.textLabel.text = @"没有用户信息";
@@ -165,11 +212,9 @@
             
             self.HUD.textLabel.text = @"网络请求失败";
             self.HUD.detailTextLabel.text = nil;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.HUD dismiss];
-                self.collectButtonEnabled = YES;
-            });
-            
+            [self.HUD dismissAfterDelay:1.0];
+            self.collectButtonEnabled = YES;
+
             app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         }];
         
@@ -205,26 +250,9 @@
     [self.HUD dismiss];
 }
 
-//初始化Controlller的View
--(void)initViewWithDict:(NSDictionary *)dict{
-    
-    _postDict = dict;
-    _postID = [[dict valueForKey:@"ID"]integerValue];
-    _frame = self.view.frame;
-    
-    //是否已收藏该Post,设置顶部按钮
-    if([[dict valueForKey:@"isCollection"]integerValue] == 1){
-        //已收藏
-        self.navigationItem.rightBarButtonItem = self.collectionButtonSelected;
-    }else{
-        //未收藏
-        self.navigationItem.rightBarButtonItem = self.collectionButton;
-    }
-    
-    //初始化textView
-    [self initTextView];
-    
-    //根据textView的大小
+
+
+-(void)initScrollView{
     if(_postScrollView == nil){
         _postScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 64.0f, self.view.frame.size.width, self.view.frame.size.height - 64.0f)];
         _postScrollView.contentSize = CGSizeMake(self.view.frame.size.width, _textViewSize.height + 400);
@@ -232,30 +260,70 @@
         [self.view addSubview:_postScrollView];
         
     }
+}
+
+-(void)initBottomBar{
     
-    //初始化底部的Button
-    if(_commentCreateButton == nil){
-        _commentCreateButton = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 40.0f, self.view.frame.size.width, 40.0f)];
-        //_commentCreateButton.backgroundColor = [UIColor colorWithRed:221.0/255.0f green:221.0/255.0f blue:221.0/255.0f alpha:1.0f];
-        [_commentCreateButton setBackgroundImage:[UIImage imageNamed:@"commentButton.png"] forState:UIControlStateNormal];
-        [_commentCreateButton addTarget:self action:@selector(showCommentCreateViewController) forControlEvents:UIControlEventTouchUpInside];
+    //初始化底部的bar
+    if(!self.bottomBar){
         
         
-        UILabel *commentCreateLabel = [[UILabel alloc]initWithFrame:CGRectMake(47.0f, 12.0f, 60.0f, 20.0f)];
-        commentCreateLabel.text = @"写跟帖";
-        commentCreateLabel.textColor = [UIColor colorWithRed:80.0f/255.0f green:80.0f/255.0f blue:80.0f/255.0f alpha:1.0f];
-        commentCreateLabel.font = [UIFont systemFontOfSize:14.0f];
-        [_commentCreateButton addSubview:commentCreateLabel];
-        [self.view addSubview:_commentCreateButton];
+        self.bottomBar = [[UIView alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 40.0f, self.view.frame.size.width, 40.0f)];
+        self.bottomBar.backgroundColor = [UIColor colorWithRed:236.0/255.0f green:236.0/255.0f blue:236.0/255.0f alpha:1.0f];
+        
+        //初始化底部的Button
+        if(_commentCreateButton == nil){
+            
+            _commentCreateButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width - 40, 40.0f)];
+            [_commentCreateButton setBackgroundImage:[UIImage imageNamed:@"commentButton.png"] forState:UIControlStateNormal];
+            _commentCreateButton.backgroundColor = [UIColor redColor];
+            [_commentCreateButton addTarget:self action:@selector(showCommentCreateViewController) forControlEvents:UIControlEventTouchUpInside];
+            _commentCreateButton.adjustsImageWhenHighlighted = NO;
+            
+            UILabel *commentCreateLabel = [[UILabel alloc]initWithFrame:CGRectMake(47.0f, 12.0f, 60.0f, 20.0f)];
+            commentCreateLabel.text = @"写跟帖";
+            commentCreateLabel.textColor = [UIColor colorWithRed:80.0f/255.0f green:80.0f/255.0f blue:80.0f/255.0f alpha:1.0f];
+            commentCreateLabel.font = [UIFont systemFontOfSize:14.0f];
+            [_commentCreateButton addSubview:commentCreateLabel];
+            
+            [self.bottomBar addSubview:_commentCreateButton];
+        }
+        
+        //初始化collectButton
+        self.collectionButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 8, 24, 24)];
+        [self.collectionButton setBackgroundImage:[UIImage imageNamed:@"unstar"] forState:UIControlStateNormal];
+        [self.collectionButton addTarget:self action:@selector(collectPost:) forControlEvents:UIControlEventTouchUpInside];
+        self.collectionButton.tag = 0;
+        
+        
+        self.collectionButtonSelected = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 40, 8, 24, 24)];
+        [self.collectionButtonSelected setBackgroundImage:[UIImage imageNamed:@"star"] forState:UIControlStateNormal];
+        [self.collectionButtonSelected addTarget:self action:@selector(collectPost:) forControlEvents:UIControlEventTouchUpInside];
+        self.collectionButtonSelected.tag = 1;
+        
+        [self.bottomBar addSubview:self.collectionButton];
+        [self.bottomBar addSubview:self.collectionButtonSelected];
+        
+        
+        //是否已收藏该Post,设置收藏按钮的显示
+        if([[_postDict valueForKey:@"isCollection"]integerValue] == 1){
+            //已收藏
+            self.collectionButton.hidden = YES;
+            self.collectionButtonSelected.hidden = NO;
+        }else{
+            //未收藏
+            self.collectionButton.hidden = NO;
+            self.collectionButtonSelected.hidden = YES;
+        }
+        
+
+        
+
+        
+        [self.view addSubview:self.bottomBar];
+        
     }
-    //根据textView的大小，设置tableView的origin.y
-    [self initTableView];
-    [self initCommentTableView];
-    
-    [_postScrollView addSubview:_textView];
-    
-    
-    
+
 }
 
 //初始化textView
@@ -265,7 +333,7 @@
     self.postContent = [_postDict valueForKey:@"post_content"];
     
     //初始化PostTitle
-    NSString *htmlPostTitleStart = @"<h2 style='font-size:26px;color:#33333;margin:10px 0'>";
+    NSString *htmlPostTitleStart = @"<h2 style='font-size:24px;color:#33333;margin:10px 0'>";
     NSString *htmlPostTitleWithStart = [htmlPostTitleStart stringByAppendingString:self.postTitle];
     NSString *htmlPostTItleWithEnd = [htmlPostTitleWithStart stringByAppendingString:@"</h2>"];
     self.htmlPostContent = [htmlPostTItleWithEnd stringByAppendingString:self.postContent];
@@ -294,6 +362,7 @@
     }
     
 }
+
 //获取_textView的高度
 -(CGSize)getTextViewHeight:(NSAttributedString *)string{
     
@@ -569,9 +638,13 @@
         float ratio = imageSize.width/imageSize.height;
         CGFloat imageHeight = _frame.size.width/ratio;
         if(imageHeight/(_frame.size.width - 30) > 1.2){
-            imageHeight =(_frame.size.width - 30)*0.9;
+            imageHeight =(_frame.size.width - 100)/ratio;
+            oneAttachment.displaySize = CGSizeMake(_frame.size.width - 100, imageHeight);
+        }else{
+            oneAttachment.displaySize = CGSizeMake(_frame.size.width - 30, imageHeight);
+
         }
-        oneAttachment.displaySize = CGSizeMake(_frame.size.width - 30, imageHeight);
+        
         
     }
     _textViewSize = [self getTextViewHeight:_textView.attributedString];
@@ -797,12 +870,17 @@
 }
 
 #pragma mark - _postScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    self.lastContentOffset = scrollView.contentOffset.y;
+}
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
-    if(scrollView.contentOffset.y > (_textViewSize.height - 300.0f)){
-        [self.view bringSubviewToFront:_commentCreateButton];
+    if(self.lastContentOffset > (int)scrollView.contentOffset.y){
+        
+        [self.view bringSubviewToFront:self.bottomBar];
         [UIView animateWithDuration:0.3 animations:^{
-            _commentCreateButton.frame = CGRectMake(0,self.view.frame.size.height - 45, self.view.frame.size.width, 45.0f);
+            self.bottomBar.frame = CGRectMake(0,self.view.frame.size.height - 40, self.view.frame.size.width, 40.0f);
             //如果更改scrollView的frame，那么就会发生底部的抖动，这该怎么办
             //            scrollView.frame = CGRectMake(0, 64.0f, self.view.frame.size.width, self.view.frame.size.height - 124.0f);
         }  completion:^(BOOL finished){
@@ -810,9 +888,10 @@
         }];
         
     }else{
+        
         [UIView animateWithDuration:0.3 animations:^{
             
-            _commentCreateButton.frame = CGRectMake(0, self.view.frame.size.height , self.view.frame.size.width, 45.0f);
+            self.bottomBar.frame = CGRectMake(0, self.view.frame.size.height , self.view.frame.size.width, 40.0f);
             
         }  completion:^(BOOL finished){
             
@@ -863,7 +942,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     [manager POST:commentRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        
+        NSLog(@"%@",responseObject);
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         if(responseArray != (id)[NSNull null]&&responseArray != nil){
             [commentCreateView addUserName:responseArray];

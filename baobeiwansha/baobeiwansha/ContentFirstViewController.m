@@ -39,6 +39,7 @@
 
 @property (nonatomic,retain) AppDelegate *appDelegate;
 
+
 @property (nonatomic,strong)JGProgressHUD *HUD;
 @property (nonatomic,assign)BOOL isHudShow;
 
@@ -50,6 +51,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //轮播栏的参数，暂时不用
     self.responseData =
     @{@"banner":
           @{@"imgurl":@"chrismas.jpg", @"title":@"圣诞节",
@@ -58,8 +60,11 @@
             @"imgurl":@"halloween.jpeg", @"title":@"万圣节"
             }
       };
+
     //变量设置
     self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    //初始化views
     [self initViews];
     
 }
@@ -71,7 +76,7 @@
     self.homeTableViewCell = [[NSMutableArray alloc]init];
     
     [self initScrollView];
-    [self initCarousel];
+    //[self initCarousel];
     [self initTableView];
     [self initRefreshHeaderView];
     [self simulatePullDownRefresh];
@@ -244,6 +249,9 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    HomeTableViewCell *cell = (HomeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+    cell.isViewed = YES;
+    
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     
@@ -303,25 +311,32 @@
     
     _reloading = YES;
     
+    //网络活动指示器
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
     
-    
+    //请求的地址
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
-    postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",nil];
-    
-    
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
     
+    //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
+    if(self.isAgeSet){
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
+    }else{
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",nil];
+    }
+    
+    //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        NSLog(@"%@",responseObject);
 
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         [self.homeTableViewCell removeAllObjects];
+        
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
             if(self.noDataAlert){
@@ -385,19 +400,22 @@
     NSDictionary *postParam = nil;
     
     
-    
+    //请求的地址
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
-    postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",nil];
-    
-    
-    
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+
+    if(self.isAgeSet){
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
+    }else{
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",nil];
+        
+    }
     
+    //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        NSLog(@"%@",responseObject);
 
         if(responseArray == (id)[NSNull null]){
             //如果是最后一页

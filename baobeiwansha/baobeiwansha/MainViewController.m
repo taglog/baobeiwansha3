@@ -13,6 +13,8 @@
 #import "OBShapedButton.h"
 #import "Reachability.h"
 #import "UserInfoViewController.h"
+#import "UserInfoSettingViewController.h"
+
 #define HeadButtonSize 70
 
 @interface MainViewController ()
@@ -45,13 +47,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
     [self initReachability];
-    [self initBubbles];
     [self initView];
-    [self initUserInfo];
-
-    
     self.recommendViewController = [[RecommendViewController alloc]init];
     
 }
@@ -90,16 +87,23 @@
 -(void)userProfile{
     
     UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
+    UserInfoVC.delegate = self;
     [self customPushViewController:UserInfoVC];
 
 }
--(void)initBubbles{
+-(void)updateRecommendViewControllerTitle{
+    [self.recommendViewController updateUserInfo];
+}
+
+-(void)setBubbleTitles:(NSArray *)bubbleTitles{
     
-    self.bubbleView = [[BubblesView alloc]initWithFrame:self.view.frame];
+    self.bubbleView = [[BubblesView alloc]initWithFrame:self.view.frame bubbleTitle:bubbleTitles];
+    
     self.bubbleView.delegate = self;
-    
+   
     [self.view addSubview:self.bubbleView];
-    
+    [self initUserInfo];
+
 }
 
 -(void)initView{
@@ -122,7 +126,6 @@
 -(void)bubbleClicked:(NSString *)tag{
     
     TagPostTableViewController *tagPostTableViewController = [[TagPostTableViewController alloc]init];
-    tagPostTableViewController.requestURL = @{@"requestRouter":@"post/discover"};
     tagPostTableViewController.tag = tag;
     [self customPushViewController:tagPostTableViewController];
     
@@ -138,12 +141,17 @@
     
 }
 
+- (void)pushTagViewController{
+    TagViewController *tagViewController = [[TagViewController alloc]init];
+    [self customPushViewController:tagViewController];
+}
+
 //自定义push动画，否则会有导航栏的问题
 //window的背景需要设置成与mainViewController背景一样，否则会出现闪一下的效果
 -(void)customPushViewController:(UIViewController *)viewController{
     
     CATransition *transition = [CATransition animation];
-    transition.duration = 0.3f;
+    transition.duration = 0.3;
     transition.type = kCATransitionPush;
     transition.subtype = kCATransitionFromRight;
     [transition setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]];
@@ -163,40 +171,56 @@
 
 -(void)initReachability{
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged:)
+                                                 name:kReachabilityChangedNotification
+                                               object:nil];
     
+    __weak __block typeof(self) weakself = self;
+
     self.internetReachability = [Reachability reachabilityForInternetConnection];
+    
+    self.internetReachability.reachableBlock = ^(Reachability * reachability)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+        });
+    };
+    
+    self.internetReachability.unreachableBlock = ^(Reachability * reachability)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself showReachabilitySign];
+        });
+    };
+    
     [self.internetReachability startNotifier];
     
     self.wifiReachability = [Reachability reachabilityForLocalWiFi];
+    // we ONLY want to be reachable on WIFI - cellular is NOT an acceptable connectivity
+    self.wifiReachability.reachableOnWWAN = NO;
+    
+    self.wifiReachability.reachableBlock = ^(Reachability * reachability)
+    {
+
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+        });
+    };
+    
+    //无wifi连接的时候，是不是要通知用户
+    self.wifiReachability.unreachableBlock = ^(Reachability * reachability)
+    {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+        });
+    };
+    
     [self.wifiReachability startNotifier];
     
-    [self initReachabilityTest];
     
 }
 
-//进入viewcontroller进行第一次测试
--(void)initReachabilityTest{
-    
-    NetworkStatus netStatus = [self.internetReachability currentReachabilityStatus];
-    NetworkStatus wifiStatus = [self.wifiReachability currentReachabilityStatus];
-    
-    //not reachable
-    if(netStatus == NotReachable && wifiStatus == NotReachable){
-        self.reachability = 0;
-        [self initReachabilitySign];
-        [self showReachabilitySign];
-        
-    }else if(netStatus != NotReachable && wifiStatus == NotReachable){
-        //celluar
-        self.reachability = 1;
-    }else if(netStatus != NotReachable && wifiStatus == NotReachable){
-        //wifi
-        self.reachability = 2;
-    }
-    
-   
-}
 
 
 -(void)initReachabilitySign{
@@ -218,37 +242,22 @@
 
 -(void)reachabilityChanged:(NSNotification *)note{
     
-    Reachability* reachability = [note object];
-    NSParameterAssert([reachability isKindOfClass:[Reachability class]]);
+    Reachability * reach = [note object];
     
-    if (reachability == self.internetReachability)
+    if (reach == self.internetReachability)
     {
-        NetworkStatus netStatus = [reachability currentReachabilityStatus];
-        if(netStatus == NotReachable){
-            if(!self.reachabilitySign){
-                [self initReachabilitySign];
+        if([reach isReachable])
+        {
+            if(self.isReachabilitySignShow == YES){
+                [self hideReachabilitySign];
             }
-            [self showReachabilitySign];
-        }else{
             
-            if(self.isReachabilitySignShow == YES){
-                [self hideReachabilitySign];
-            }
         }
-    }
-    
-    if (reachability == self.wifiReachability)
-    {
-        NetworkStatus wifiStatus = [reachability currentReachabilityStatus];
-        if(wifiStatus == NotReachable){
-            if(!self.reachabilitySign){
-                [self initReachabilitySign];
-            }
+        else
+        {
+            
             [self showReachabilitySign];
-        }else{
-            if(self.isReachabilitySignShow == YES){
-                [self hideReachabilitySign];
-            }
+            
         }
     }
     
@@ -258,6 +267,9 @@
 
 -(void)showReachabilitySign{
     
+    if(!self.reachabilitySign){
+        [self initReachabilitySign];
+    }
     [UIView animateWithDuration:1.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.reachabilitySign.frame = CGRectMake(self.view.frame.size.width - 200, 20, 180, 80);
     } completion:nil];

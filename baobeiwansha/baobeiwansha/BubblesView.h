@@ -12,13 +12,14 @@
 -(void)bubbleClicked:(NSString *)tag;
 -(void)moreBubbleClicked;
 -(void)getRecommendedContent;
-
+-(void)pushTagViewController;
 @end
 
 @interface BubblesView : UIView
 
 @property (nonatomic,retain) id<BubblesViewDelegate> delegate;
 
+-(id)initWithFrame:(CGRect)frame bubbleTitle:(NSArray *)bubbleTitles;
 -(void)performShakeAnimation;
 -(void)performInitializationAnimation;
 -(void)pauseAnimation;

@@ -39,12 +39,12 @@
     [super loadView];
     
     //提交按钮
-    UIBarButtonItem *submitButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"checkmark.png"] style:UIBarButtonItemStylePlain target:self action:@selector(commentSubmit)];
+    UIBarButtonItem *submitButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"check.png"] style:UIBarButtonItemStylePlain target:self action:@selector(commentSubmit)];
     submitButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
     self.navigationItem.rightBarButtonItem = submitButton;
     
     //自定义leftBarButtonItem以取代返回按钮
-    UIBarButtonItem *backButtonCustom = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    UIBarButtonItem *backButtonCustom = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
     backButtonCustom.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
     self.navigationItem.leftBarButtonItem = backButtonCustom;
     self.view.backgroundColor = [UIColor colorWithRed:245.0/255.0f green:245.0/255.0f blue:245.0/255.0f alpha:1.0f];
@@ -138,15 +138,18 @@
 
 -(void)commentSubmit{
     
-    //初始化HUD
-    self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
-    self.HUD.textLabel.text = @"保存中...";
-    [self.HUD showInView:self.view];
+    
     
     NSString *text = _commentTextView.text;
     NSString *userNickName = _commentTextField.text;
+    
     //如果用户输入不为空
     if(![text isEqualToString:@""] && ![text isEqualToString:@"请在此输入您的评论"]&&![userNickName isEqualToString:@""]&&![text isEqualToString:@"请输入您评论的昵称"]){
+        
+        //初始化HUD
+        self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        self.HUD.textLabel.text = @"保存中...";
+        [self.HUD showInView:self.view];
         
         UIApplication *app=[UIApplication sharedApplication];
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
@@ -193,16 +196,16 @@
         
     }else{
         //用户没有输入的时候，该做些什么
+        self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
         self.HUD.textLabel.text = @"内容不能为空";
         [self.HUD showInView:self.view];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.HUD dismiss];
-        });
+        [self.HUD dismissAfterDelay:1.0];
     }
     
 }
 
 -(void)addUserName:(NSArray *)userName{
+    
     if([_commentTextField.text isEqualToString:@""] || [_commentTextField.text isEqualToString:@"请输入您评论的昵称"]){
         NSString *userSex;
         if ([userName valueForKey:@"userSex"] == 0) {
@@ -210,13 +213,15 @@
         }else{
             userSex = @"爸";
         }
-        NSString *userNickName = [[userName valueForKey:@"userBabyName"] stringByAppendingString:userSex];
-        //如果用户存得宝宝昵称不为空，就读出来显示
-        if(![[userName valueForKey:@"userBabyName"]isEqualToString:@""]&&![[userName valueForKey:@"userBabyName"]isEqualToString:@" "]){
-            _commentTextField.text = userNickName;
-            _commentTextField.textColor = [UIColor blackColor];
+        if([userName valueForKey:@"userBabyName"] !=(id)[NSNull null]){
+            NSString *userNickName = [[userName valueForKey:@"userBabyName"] stringByAppendingString:userSex];
+            //如果用户存得宝宝昵称不为空字符，就读出来显示
+            if(![[userName valueForKey:@"userBabyName"]isEqualToString:@""]&&![[userName valueForKey:@"userBabyName"]isEqualToString:@" "]){
+                _commentTextField.text = userNickName;
+                _commentTextField.textColor = [UIColor blackColor];
+            }
         }
-    }
+           }
     
 }
 - (void)didReceiveMemoryWarning {

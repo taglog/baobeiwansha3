@@ -17,6 +17,8 @@
 
 @property (nonatomic,assign)BOOL reloading;
 
+@property(nonatomic,retain) UITableView *homeTableView;
+
 @property (nonatomic,strong)NSMutableArray *homeTableViewCell;
 
 @property (nonatomic,retain)EGORefreshCustom *refreshHeaderView;
@@ -28,6 +30,8 @@
 @property (nonatomic,strong)UILabel *noDataAlert;
 
 @property (nonatomic,strong)UIView *tableViewMask;
+
+
 
 @end
 
@@ -176,11 +180,15 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    HomeTableViewCell *cell = (HomeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+    cell.isViewed = YES;
+    
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     
     PostViewController *post = [[PostViewController alloc] init];
     
+
     NSDictionary *requestParam = [NSDictionary dictionaryWithObjectsAndKeys:[self.homeTableViewCell[indexPath.row] objectForKey:@"ID"],@"postID",self.appDelegate.generatedUserID,@"userIdStr",nil];
     
     NSString *postRouter = @"/post/post";
@@ -236,18 +244,30 @@
     
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
-    postRouter = [self.requestURL valueForKey:@"requestRouter"];
-    postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",nil];
     
+    //请求的地址
+    postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+
+    //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
+    if(self.isAgeSet){
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
+
+    }else{
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",nil];
+    }
+    
+    
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         [self.homeTableViewCell removeAllObjects];
+        
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
             if(self.noDataAlert){
@@ -306,10 +326,15 @@
     
     
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
-    postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:p],@"p",nil];
-    
-    
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+
+    if(self.isAgeSet){
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
+    }else{
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:p],@"p",nil];
+    }
+    
+    
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;

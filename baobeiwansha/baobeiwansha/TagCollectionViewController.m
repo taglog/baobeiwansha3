@@ -28,6 +28,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
     self.view.backgroundColor  = [UIColor whiteColor];
     
     self.navigationItem.backBarButtonItem = nil;
@@ -83,7 +84,7 @@
                   @{@"label":@"春节",@"image":@"chun"},
                   @{@"label":@"下雪了",@"image":@"snowflake"},
                   @{@"label":@"起床",@"image":@"getup"},
-                  @{@"label":@"周末",@"image":@"head3.jpg"},
+                  @{@"label":@"周末",@"image":@"weekend"},
                   @{@"label":@"饭后半小时",@"image":@"aftermeal"},
                   @{@"label":@"春天",@"image":@"flower"},
                   @{@"label":@"落叶",@"image":@"leaf"},
@@ -115,11 +116,11 @@
                   @{@"label":@"道歉",@"image":@"head3.jpg"},
                   @{@"label":@"遵守规则",@"image":@"law"},
                   @{@"label":@"学会洗澡",@"image":@"bath"},
-                  @{@"label":@"学翻身",@"image":@"head3.jpg"},
+                  @{@"label":@"学翻身",@"image":@"scroll"},
                   ]
           };
     }
-   
+    
     
     
     [self initViews];
@@ -135,25 +136,7 @@
     
 }
 
--(void)popViewController{
-    
-    CATransition *transition = [CATransition animation];
-    
-    transition.duration = 0.2f;
-    
-    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-    
-    transition.type = kCATransitionPush;
-    
-    transition.subtype = kCATransitionFromLeft;
-    
-    transition.delegate = self;
-    
-    [self.navigationController.view.layer addAnimation:transition forKey:nil];
-    
-    [self.navigationController popViewControllerAnimated:NO];
-    
-}
+
 
 -(void)initViews{
     
@@ -162,17 +145,18 @@
     flowLayout.itemSize = CGSizeMake(self.view.frame.size.width/3,self.view.frame.size.width/3);
     flowLayout.minimumInteritemSpacing = 0;
     flowLayout.minimumLineSpacing = 0;
-    
-    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 109) collectionViewLayout:flowLayout];
-    [self.collectionView registerClass:[TagCollectionViewCell class] forCellWithReuseIdentifier:@"ttcell"];
-    
-    
-    self.collectionView.backgroundColor = [UIColor clearColor];
-    
-    self.collectionView.delegate = self;
-    self.collectionView.dataSource = self;
-    
-    [self.view addSubview:self.collectionView];
+    if(!self.collectionView){
+        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 109) collectionViewLayout:flowLayout];
+        [self.collectionView registerClass:[TagCollectionViewCell class] forCellWithReuseIdentifier:@"ttcell"];
+        
+        
+        self.collectionView.backgroundColor = [UIColor whiteColor];
+        
+        self.collectionView.delegate = self;
+        self.collectionView.dataSource = self;
+        
+        [self.view addSubview:self.collectionView];
+    }
     
     
     
@@ -191,15 +175,15 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-      NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
-
-//    if (YES == [[self.sectionFoldFlags objectAtIndex:section] boolValue]) {
-//
-//        return 3;
-//    } else {
-//
-//        return items.count;
-//    }
+    NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
+    
+    //    if (YES == [[self.sectionFoldFlags objectAtIndex:section] boolValue]) {
+    //
+    //        return 3;
+    //    } else {
+    //
+    //        return items.count;
+    //    }
     return  items.count;
 }
 
@@ -217,11 +201,11 @@
     //
     //    cell.label.text = [[items objectAtIndex:indexPath.row] objectForKey:@"title"];
     //    cell.tags = [[items objectAtIndex:indexPath.row] objectForKey:@"tags"];
-   
+    
     [cell setDataWithDict:[items objectAtIndex:indexPath.row] frame:self.view.frame];
     
-//    if (indexPath.row == 2 && (YES == [[self.sectionFoldFlags objectAtIndex:indexPath.section] boolValue])) {
-//    }
+    //    if (indexPath.row == 2 && (YES == [[self.sectionFoldFlags objectAtIndex:indexPath.section] boolValue])) {
+    //    }
     
     
     return cell;
@@ -239,7 +223,7 @@
 //设置顶部的大小
 //
 //-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-//    
+//
 //    CGSize size= CGSizeMake(self.view.frame.size.width, 50);
 //    return size;
 //}
@@ -254,18 +238,18 @@
 
 - (void)collectionView:(UICollectionView *)colView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
     
-//    TagCollectionViewCell* cell = (TagCollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
-//    
+    //    TagCollectionViewCell* cell = (TagCollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
+    //
     
     
-  }
+}
 
 
 
 - (void)collectionView:(UICollectionView *)colView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath {
     
-//    CollectionViewCell* cell = (CollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
-   
+    //    CollectionViewCell* cell = (CollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
+    
     
 }
 
@@ -289,7 +273,25 @@
 }
 
 
-
+-(void)popViewController{
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = 0.2f;
+    
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    
+    transition.type = kCATransitionPush;
+    
+    transition.subtype = kCATransitionFromLeft;
+    
+    transition.delegate = self;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
+    [self.navigationController popViewControllerAnimated:NO];
+    
+}
 
 
 

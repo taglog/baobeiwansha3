@@ -31,7 +31,17 @@
 
 @implementation TagViewController
 
+-(id)init{
+    
+    self = [super init];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    return self;
+}
+
 -(void)viewDidLoad{
+    
     [super viewDidLoad];
     
     

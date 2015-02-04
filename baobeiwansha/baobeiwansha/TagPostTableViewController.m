@@ -42,11 +42,15 @@
     self = [super init];
     self.requestURL = dict;
     self.tag = tag;
+    self.view.backgroundColor = [UIColor whiteColor];
     return self;
+    
 }
 - (void)viewWillAppear:(BOOL)animated{
+    
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    
 }
 
 - (void)viewDidLoad{
@@ -207,6 +211,9 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    HomeTableViewCell *cell = (HomeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+    cell.isViewed = YES;
+    
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     
@@ -270,7 +277,7 @@
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
     
-    postRouter = @"post/getTableByTag";
+    postRouter = @"post/tag";
     
     postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",self.tag,@"tag",nil];
     

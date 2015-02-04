@@ -13,6 +13,10 @@
 #import "VPImageCropperViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "AFHTTPRequestOperationManager.h"
+#import "JGProgressHUD.h"
+#import "JGProgressHUDSuccessIndicatorView.h"
+#import "AppDelegate.h"
 
 #define ORIGINAL_MAX_WIDTH 640.0f
 #define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
@@ -28,27 +32,126 @@
 @property BOOL bgOrAvatar;
 @property (nonatomic, strong) UserNameViewController *userNameVC;
 @property (nonatomic, strong) NSDate *birthdayDate;
+@property (nonatomic,retain) AppDelegate *appDelegate;
+
 
 @end
 
 @implementation UserInfoSettingViewController
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     self.title = @"个人设置";
-    self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:2 inSection:1];
+    
+    self.firstDatePickerIndexPath = [NSIndexPath indexPathForRow:3 inSection:1];
     self.datePickerPossibleIndexPaths = @[self.firstDatePickerIndexPath];
     // 初始化上次保存的值
+    [self setDate:[self.dict objectForKey:@"babyBirthday"] forIndexPath:self.firstDatePickerIndexPath];
+    self.birthdayDate = [self dateForIndexPath:self.firstDatePickerIndexPath];
     
-    [self setDate:[self.dict objectForKey:@"userAgeDate"] forIndexPath:self.firstDatePickerIndexPath];
-    
+    self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [self setupLeftBarButton];
+    [self initSubmitButton];
     
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)setupLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
+-(void)popViewController{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)initSubmitButton{
+    UIButton *submitButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width - 30, 40)];
+    [submitButton setBackgroundColor:[UIColor redColor]];
+    [submitButton setTitle:@"完成" forState:UIControlStateNormal];
+    [submitButton addTarget:self action:@selector(syncBabyInfoSetting) forControlEvents:UIControlEventTouchUpInside];
+    self.tableView.tableFooterView = submitButton;
+}
+
+-(void)syncBabyInfoSetting{
+    
+    BOOL isCompleted = ![[self.dict valueForKey:@"babyGender"] isEqual: @""]&&![[self.dict valueForKey:@"nickName"] isEqual:@""]&&![[self.dict valueForKey:@"nickName"] isEqual:@"请输入昵称"]&&![[self.dict valueForKey:@"userGender"] isEqual: @""];
+    if (!isCompleted) {
+        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        HUD.textLabel.text = @"有未完成的选项";
+        [HUD showInView:self.view];
+        [HUD dismissAfterDelay:1.0];
+    }else{
+        
+        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        HUD.textLabel.text = @"保存中...";
+        [HUD showInView:self.view];
+        HUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
+        
+        NSLog(@"sending: %@", self.dict);
+        
+        [self.dict setObject:self.appDelegate.generatedUserID forKey:@"userIdStr"];
+        
+        NSString * userInfoURL = [self.appDelegate.rootURL stringByAppendingString:@"serverside/user_info.php"];
+        NSString *urlString = [userInfoURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+        
+        AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
+        afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+        
+        
+        [afnmanager POST:urlString parameters:self.dict success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            NSLog(@"Sync successed: %@", responseObject);
+            
+            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"userHasLogged"];
+
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                
+                
+                HUD.textLabel.text = @"保存成功";
+                HUD.detailTextLabel.text = nil;
+                
+                HUD.layoutChangeAnimationDuration = 0.4;
+                HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
+            
+            });
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [HUD dismiss];
+                [self.navigationController popViewControllerAnimated:YES];
+                //加入plist
+                NSString *filePath = [self dataFilePath];
+                [self.dict writeToFile:filePath atomically:YES];
+                [self.delegate UpdateRecommendTitle];
+                
+            });
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Sync Error: %@", error);
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                HUD.textLabel.text = @"保存失败，请稍后重试";
+                HUD.detailTextLabel.text = nil;
+                
+                HUD.layoutChangeAnimationDuration = 0.4;
+                HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
+            });
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [HUD dismiss];
+                [self.navigationController popViewControllerAnimated:YES];
+            });
+            
+        }];
+        
+        
+    }
 }
 
 #pragma mark - Table view data source
@@ -59,7 +162,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
+    
     // Return the number of rows in the section.
     NSInteger numberOfRows = [super tableView:tableView numberOfRowsInSection:section] ;
     if (section == 0) {
@@ -75,7 +178,7 @@
     
     static NSString *ID = @"UserInfoSettingID";
     UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-
+    
     
     if (cell == nil) {
         cell = [tableView dequeueReusableCellWithIdentifier:ID];
@@ -86,7 +189,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
         
- 
+        
         if (indexPath.section == 0) {
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"背景图";
@@ -105,7 +208,7 @@
                 }
             } else if (indexPath.row == 1) {
                 cell.textLabel.text = @"头像";
-
+                
                 if (_userAvatarImageView == nil) {
                     CGFloat w = 40.0f; CGFloat h = w;
                     CGFloat x = self.view.frame.size.width - 40.0f - w;
@@ -120,9 +223,9 @@
                     _userAvatarImageView.layer.borderWidth = 1.0f;
                     [cell.contentView addSubview:_userAvatarImageView];
                 }
-  
+                
             }
-        
+            
         } else {
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"昵称";
@@ -130,27 +233,42 @@
                     _nickNameString = [self.dict objectForKey:@"nickName"];
                 }
                 cell.detailTextLabel.text = _nickNameString;
-            } else if (indexPath.row == 2) {
+            } else if (indexPath.row == 3) {
                 cell.textLabel.text = @"宝贝出生日期";
+                
             } else if (indexPath.row == 1) {
+                
                 cell.textLabel.text = @"宝贝性别";
                 if (_babyGenderString == nil) {
-                    _babyGenderString = [self.dict objectForKey:@"babyGender"];
+                    if([self.dict objectForKey:@"babyGender"] == [NSNumber numberWithInt:0]){
+                        _babyGenderString = @"女孩";
+                    }else if([self.dict objectForKey:@"babyGender"] == [NSNumber numberWithInt:1]){
+                        _babyGenderString = @"男孩";
+                    }
                 }
+                
                 cell.detailTextLabel.text = _babyGenderString;
-            } else if (indexPath.row == 3){
+            } else if (indexPath.row == 2){
                 cell.textLabel.text = @"您的性别";
                 if (_userGenderString == nil) {
-                    _userGenderString = [self.dict objectForKey:@"userGender"];
+                    if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:0]){
+                        _userGenderString = [NSString stringWithFormat:@"我是妈妈"];
+                    }else if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:1]){
+                        _userGenderString = [NSString stringWithFormat:@"我是爸爸"];
+                    }else if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:2]){
+                        _userGenderString = @"其他";
+                        
+                    }
                 }
                 cell.detailTextLabel.text = _userGenderString;
             }
+            
         }
         
     }
     
-    if (indexPath.row == 2 && indexPath.section == 1) {
-        self.birthdayDate = [self dateForIndexPath:self.firstDatePickerIndexPath];
+    if (indexPath.row == 3 && indexPath.section == 1) {
+        
         NSLocale *cnLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"];
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.timeStyle = NSDateFormatterNoStyle;
@@ -197,11 +315,13 @@
                 _userNameVC.orgNickName = [self.dict objectForKey:@"nickName"];
             }
             [self.navigationController pushViewController:_userNameVC animated:YES];
-        } else if (indexPath.row == 2) {
+        } else if (indexPath.row == 3) {
             //[self.delegate updateUserAgeDate:self.birthdayDate];
+            [self.tableView scrollToRowAtIndexPath:self.firstDatePickerIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            
         } else if (indexPath.row == 1) {
             [self editBabyGender];
-        } else if (indexPath.row == 3) {
+        } else if (indexPath.row == 2) {
             [self editUserGender];
         }
     }
@@ -210,7 +330,21 @@
 }
 
 
-
+-(IBAction)dateChanged:(UIDatePicker *)sender{
+    
+    [self.dict setObject:sender.date forKey:@"babyBirthday"];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.firstDatePickerIndexPath];
+    
+    self.birthdayDate = sender.date;
+    NSLocale *cnLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.timeStyle = NSDateFormatterNoStyle;
+    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+    [dateFormatter setLocale:cnLocale];
+    cell.detailTextLabel.text = [dateFormatter stringFromDate:self.birthdayDate];
+    
+    
+}
 
 
 
@@ -218,12 +352,16 @@
 
 #pragma mark VPImageCropperDelegate
 - (void)imageCropper:(VPImageCropperViewController *)cropperViewController didFinished:(UIImage *)editedImage {
+    
     if (self.bgOrAvatar) {
         self.bgImageView.image = editedImage;
         [self.delegate updateBackgroundImage:editedImage];
+        [self.dict setObject:UIImagePNGRepresentation(editedImage) forKey:@"bgImage"];
+        
     } else {
         self.userAvatarImageView.image = editedImage;
         [self.delegate updateAvatarImage:editedImage];
+        [self.dict setObject:UIImagePNGRepresentation(editedImage) forKey:@"avatarImage"];
     }
     [cropperViewController dismissViewControllerAnimated:YES completion:^{
         // TO DO
@@ -240,21 +378,31 @@
     if ([actionSheet.title  isEqual: @"请选择宝贝性别"]) {
         if (buttonIndex == 0) {
             self.babyGenderString = @"女孩";
+            [self.dict setValue:[NSNumber numberWithInt:0] forKey:@"babyGender"];
+            
         } else if (buttonIndex == 1){
             self.babyGenderString = @"男孩";
+            [self.dict setValue:[NSNumber numberWithInt:1] forKey:@"babyGender"];
+            
         }
         [self.delegate updateBabyGender:self.babyGenderString];
         [self.tableView reloadData];
     } else if ([actionSheet.title isEqual:@"请选择您的角色"]) {
         if (buttonIndex == 0) {
             self.userGenderString = @"我是妈妈";
+            [self.dict setValue:[NSNumber numberWithInt:0] forKey:@"userGender"];
             
         } else if (buttonIndex == 1) {
             self.userGenderString = @"我是爸爸";
+            [self.dict setValue:[NSNumber numberWithInt:1] forKey:@"userGender"];
+            
         } else if (buttonIndex == 2){
             self.userGenderString = @"其他";
+            [self.dict setValue:[NSNumber numberWithInt:2] forKey:@"userGender"];
+            
         }
         [self.delegate updateUserGender:self.userGenderString];
+        
         [self.tableView reloadData];
     } else {
         if (buttonIndex == 0) {
@@ -453,10 +601,10 @@
                                                destructiveButtonTitle:nil
                                                     otherButtonTitles:@"拍照", @"从相册中选取", nil];
     UIActionSheet *bgchoiceSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"取消"
-                                               destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"拍照", @"从相册中选取", @"默认背景", nil];
+                                                               delegate:self
+                                                      cancelButtonTitle:@"取消"
+                                                 destructiveButtonTitle:nil
+                                                      otherButtonTitles:@"拍照", @"从相册中选取", @"默认背景", nil];
     if (self.bgOrAvatar) {
         [bgchoiceSheet showInView:self.view];
     } else {
@@ -481,7 +629,7 @@
                                                destructiveButtonTitle:nil
                                                     otherButtonTitles:@"我是妈妈", @"我是爸爸", @"其他", nil];
     [choiceSheet showInView:self.view];
-
+    
 }
 
 
@@ -492,6 +640,13 @@
     [self.tableView reloadData];
 }
 
+- (NSString *)dataFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
+}
 
 
 
