@@ -309,6 +309,7 @@
 -(void)popViewController{
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 // setup right setting button
 - (void)setupRightBarButton {
     UIBarButtonItem * rightBarButton = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"setting.png"] style:UIBarButtonItemStylePlain target:self action:@selector(settingButtonPress:)];

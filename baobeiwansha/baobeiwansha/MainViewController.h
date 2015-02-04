@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "BubblesView.h"
 #import "UserInfoViewController.h"
-@interface MainViewController : UIViewController<BubblesViewDelegate,UserInfoViewDelegate>
+#import "EMHint.h"
+
+@interface MainViewController : UIViewController<BubblesViewDelegate,UserInfoViewDelegate,EMHintDelegate>
 
 @property (nonatomic,retain) NSArray *bubbleTitles;
 

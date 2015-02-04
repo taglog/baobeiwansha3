@@ -18,7 +18,11 @@
 #define HeadButtonSize 70
 
 @interface MainViewController ()
+{
+      EMHint *_hint;
+      id _hilightView;
 
+}
 @property (nonatomic,strong) RecommendViewController *recommendViewController;
 
 @property (nonatomic,strong) BubblesView *bubbleView;
@@ -32,6 +36,7 @@
 
 @property (nonatomic,retain) UIImageView *reachabilitySign;
 @property (nonatomic,assign) BOOL isReachabilitySignShow;
+
 
 
 @end
@@ -69,22 +74,31 @@
     }
     
 }
+#pragma mark -EMHint deleage
+
+-(NSArray*)hintStateViewsToHint:(id)hintState
+{
+    return [[NSArray alloc] initWithObjects:_hilightView, nil];
+}
+-(UIView*)hintStateViewForDialog:(id)hintState
+{
+    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 135, self.view.frame.size.width, 40)];
+    
+    l.backgroundColor = [UIColor clearColor];
+    l.textColor =[UIColor whiteColor];
+    l.text= @"点击进入个人信息页";
+    l.font = [UIFont systemFontOfSize:14.0f];
+    l.textAlignment = NSTextAlignmentCenter;
+    return l;
+}
+
 -(void)viewWillDisappear:(BOOL)animated{
     
     [super viewWillDisappear:animated];
     
 }
--(void)initUserInfo{
-    
-    UIButton *profileButton = [[UIButton alloc]initWithFrame:CGRectMake(20, 30, 24, 24)];
-    [profileButton setBackgroundImage:[UIImage imageNamed:@"profile"] forState:UIControlStateNormal];
-    [profileButton addTarget:self action:@selector(userProfile) forControlEvents:UIControlEventTouchUpInside];
-    profileButton.tintColor = [UIColor redColor];
-    
-    [self.view addSubview:profileButton];
-    
-}
--(void)userProfile{
+
+-(void)profilePage{
     
     UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
     UserInfoVC.delegate = self;
@@ -100,9 +114,17 @@
     self.bubbleView = [[BubblesView alloc]initWithFrame:self.view.frame bubbleTitle:bubbleTitles];
     
     self.bubbleView.delegate = self;
-   
+    
+    //第一次，显示遮罩层
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"isOverlayShowed"]){
+        _hint = [[EMHint alloc] init];
+        [_hint setHintDelegate:self];
+        _hilightView = self.bubbleView.girlButton;
+        [_hint presentModalMessage:@"提示" where:self.navigationController.view];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isOverlayShowed"];
+
+    }
     [self.view addSubview:self.bubbleView];
-    [self initUserInfo];
 
 }
 

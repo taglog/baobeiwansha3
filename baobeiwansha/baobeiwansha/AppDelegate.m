@@ -31,7 +31,7 @@
     
     //设置服务器跟目录
     
-    self.rootURL = @"http://blogtest.yhb360.com/baobaowansha/";
+    self.rootURL = @"http://blog.yhb360.com/baobaowansha/";
     
     // generate UserID using VenderID
     
@@ -187,11 +187,12 @@
 }
 -(void)popInitUserInfoSetting{
     
+    [self getBubbleFromServer];
+
     [UIView animateWithDuration:0.4 animations:^{
         self.initialNav.view.alpha = 0;
     } completion:^(BOOL finished) {
         [self.initialNav removeFromParentViewController];
-        [self getBubbleFromServer];
     }];
 
 }
@@ -238,11 +239,10 @@
 
 -(void)getBubbleFromServer{
     
+    
     //网络活动指示器
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-    
-    
     
     //请求的地址
     NSString *postRouter = @"tag/hotSix";
@@ -252,19 +252,32 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
+        
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        NSMutableArray *bubbleTitle = [[NSMutableArray alloc]initWithCapacity:6];
-        for(NSDictionary *bubbleName in responseArray){
-            [bubbleTitle addObject:[bubbleName objectForKey:@"name"]];
-        }
-        if(bubbleTitle != nil){
-            self.mainViewController.bubbleTitles = bubbleTitle;
+        
+        if(responseArray != (id)[NSNull null]){
+            
+            NSMutableArray *bubbleTitle = [[NSMutableArray alloc]initWithCapacity:6];
+            for(NSDictionary *bubbleName in responseArray){
+                [bubbleTitle addObject:[bubbleName objectForKey:@"name"]];
+            }
+
+            if(bubbleTitle != nil){
+                
+                self.mainViewController.bubbleTitles = bubbleTitle;
+                
+            }else{
+                
+                self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"春节",@"运动"];
+            }
+            
         }else{
+            
             self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"春节",@"运动"];
         }
-
         self.window.rootViewController = self.mainNavigation;
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         
         NSLog(@"%@",error);
@@ -273,6 +286,7 @@
         self.window.rootViewController = self.mainNavigation;
 
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        
     }];
     
     

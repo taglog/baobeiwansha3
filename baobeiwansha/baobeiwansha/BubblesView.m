@@ -7,7 +7,6 @@
 //
 
 #import "BubblesView.h"
-#import "OBShapedButton.h"
 
 
 #define DEGREES_TO_RADIANS(d) (d * M_PI / 180)
@@ -42,11 +41,13 @@
     
     self = [super initWithFrame:frame];
     self.bubbleTitles = bubbleTitles;
+    [self initGirl];
     [self initBubbles];
     [self initGesture];
     return  self;
     
 }
+
 -(void)initGesture{
     
     UIPanGestureRecognizer *recoginizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(pushTagViewController:)];
@@ -82,6 +83,19 @@
         
         return;
     }
+    
+}
+-(void)initGirl{
+    
+    self.girlButton = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 22, self.frame.size.height - 95, 36, 85)];
+    [self.girlButton setBackgroundImage:[UIImage imageNamed:@"girl"] forState:UIControlStateNormal];
+    [self.girlButton addTarget:self action:@selector(profilePage) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self addSubview:self.girlButton];
+    
+    
+    
+    
     
 }
 -(void)initBubbles{
@@ -540,6 +554,8 @@
     
     [self.mainButton.layer addAnimation:initAnimationOpacity forKey:@"opacity"];
     
+    [self.girlButton.layer addAnimation:initAnimationOpacity forKey:@"opacity"];
+    
 }
 
 -(void)pauseAnimation{
@@ -596,6 +612,10 @@
 
 -(void)getRecommended{
     [self.delegate getRecommendedContent];
+}
+-(void)profilePage{
+    [self.delegate profilePage];
+
 }
 
 -(UILabel *)generateBubbleLabel:(NSString *)bubbleTitle frame:(CGRect)frame{

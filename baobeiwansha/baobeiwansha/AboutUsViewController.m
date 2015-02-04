@@ -18,6 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self setupLeftBarButton];
     // Do any additional setup after loading the view from its nib.
     webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     NSURLRequest *request =[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://61.174.9.214/www/index.php/Home/othersetting/aboutus.html"]];
@@ -61,6 +62,16 @@
     self.HUD.textLabel.text = @"加载失败";
     self.HUD.layoutChangeAnimationDuration = 0.4;
     self.HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
+}
+-(void)setupLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
+-(void)popViewController{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

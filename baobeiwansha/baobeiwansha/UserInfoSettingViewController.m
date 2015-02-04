@@ -93,8 +93,6 @@
         [HUD showInView:self.view];
         HUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
         
-        NSLog(@"sending: %@", self.dict);
-        
         NSDictionary *postParam = [[NSDictionary alloc]initWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[self.dict valueForKey:@"nickName"],@"nickName",[self.dict valueForKey:@"babyGender"],@"babyGender",[self.dict valueForKey:@"userGender"],@"userGender",[self.dict valueForKey:@"babyBirthday"],@"babyBirthday",nil];
         
         
@@ -106,13 +104,12 @@
         AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
         afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         
-        
+        NSLog(@"sending:%@",postParam);
+        NSLog(@"sending:%@",urlString);
+
         [afnmanager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            
             NSLog(@"Sync successed: %@", responseObject);
             
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"userHasLogged"];
-
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
                 

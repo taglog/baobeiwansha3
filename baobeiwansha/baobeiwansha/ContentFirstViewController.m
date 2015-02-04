@@ -47,7 +47,17 @@
 
 @implementation ContentFirstViewController
 
-
+-(id)init{
+    self = [super init];
+    
+    if(self){
+        
+    //变量设置,如果不放在init里面，在view没有load的时候是不能执行刷新页面操作的，所以在同步完用户年龄进行读取的时候，会报错
+        self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    }
+    return self;
+    
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -61,8 +71,6 @@
             }
       };
 
-    //变量设置
-    self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     //初始化views
     [self initViews];
@@ -259,12 +267,14 @@
     
     NSDictionary *requestParam = [NSDictionary dictionaryWithObjectsAndKeys:[self.homeTableViewCell[indexPath.row] objectForKey:@"ID"],@"postID",self.appDelegate.generatedUserID,@"userIdStr",nil];
     
-    NSString *postRouter = @"/post/post";
+    NSString *postRouter = @"post/post";
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:requestParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+    
+    [manager POST:urlString parameters:requestParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         
         NSDictionary *responseDict = [responseObject valueForKey:@"data"];
         
@@ -321,7 +331,7 @@
     //请求的地址
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
-    
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
@@ -332,7 +342,8 @@
     //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
 
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         [self.homeTableViewCell removeAllObjects];
@@ -403,7 +414,8 @@
     //请求的地址
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
-
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
     }else{
@@ -414,7 +426,7 @@
     //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
 
         if(responseArray == (id)[NSNull null]){

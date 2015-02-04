@@ -23,6 +23,7 @@
     // Do any additional setup after loading the view.
     
     self.title = @"修改昵称";
+    [self setupLeftBarButton];
     self.manager = [[RETableViewManager alloc] initWithTableView:self.tableView];
     RETableViewSection *section1 = [RETableViewSection sectionWithHeaderTitle:@"请输入您的昵称:" footerTitle:@""];
     [self.manager addSection:section1];
@@ -38,6 +39,16 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+-(void)setupLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
+-(void)popViewController{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*
@@ -71,6 +82,5 @@
     
     return section;
 }
-
 
 @end

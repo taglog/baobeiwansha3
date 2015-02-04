@@ -39,8 +39,13 @@
 
 -(id)initWithURL:(NSDictionary *)dict type:(NSInteger)index{
     self = [super init];
+    if(self){
     self.requestURL = dict;
     self.type = index;
+    
+    //变量设置
+    self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    }
     return self;
 }
 
@@ -49,12 +54,9 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    if(self){
-        self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        //初始化数据
-        [self initViews];
-        
-    }
+    //初始化数据
+    [self initViews];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -193,10 +195,11 @@
     
     NSString *postRouter = @"/post/post";
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:requestParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+    [manager POST:urlString parameters:requestParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSLog(@"%@",responseObject);
         NSDictionary *responseDict = [responseObject valueForKey:@"data"];
         
@@ -251,7 +254,8 @@
     //请求的地址
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
-
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
@@ -263,7 +267,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         [self.homeTableViewCell removeAllObjects];
@@ -327,7 +331,8 @@
     
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
-
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
     }else{
@@ -338,7 +343,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-    [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         
         if(responseArray == (id)[NSNull null]){

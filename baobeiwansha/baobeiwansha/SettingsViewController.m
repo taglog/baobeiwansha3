@@ -26,7 +26,7 @@
     
     
     self.title = @"设置";
-    
+    [self setupLeftBarButton];
     self.manager = [[RETableViewManager alloc] initWithTableView:self.tableView];
     //RETableViewSection *section1 = [RETableViewSection sectionWithHeaderTitle:@"宝贝信息" footerTitle:@""];
     RETableViewSection *section2 = [RETableViewSection sectionWithHeaderTitle:@"系统设置" footerTitle:@""];
@@ -80,6 +80,17 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     
+}
+
+-(void)setupLeftBarButton{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
+-(void)popViewController{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*

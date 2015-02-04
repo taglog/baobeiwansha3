@@ -309,7 +309,7 @@
             
             if(!self.babyBirthday){
                 self.babyBirthday = [[UILabel alloc]initWithFrame:CGRectMake(0, 5, self.view.frame.size.width - 100, 45)];
-                self.babyBirthday.text = @"宝贝年龄";
+                self.babyBirthday.text = @"宝贝生日";
                 self.babyBirthday.textColor = [UIColor colorWithRed:201.0f/255.0f green:201.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
                 self.babyBirthday.font = [UIFont systemFontOfSize:13.0f];
             }
