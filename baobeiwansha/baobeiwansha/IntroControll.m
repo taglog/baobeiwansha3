@@ -71,7 +71,7 @@
             [startButton setTitleColor:fontNoSelectColor forState:UIControlStateNormal];
             [startButton setTitleColor:fontSelectColor forState:UIControlStateSelected];
             [startButton addTarget:self action:@selector(handleStartButtonClick) forControlEvents:UIControlEventTouchUpInside];
-            startButton.frame = CGRectMake((self.frame.size.width-160.0)/2, self.frame.size.height-70, 160.0, 30.0);
+            startButton.frame = CGRectMake((self.frame.size.width-160.0)/2, self.frame.size.height-60, 160.0, 30.0);
             [self addSubview:startButton];
         }
         
