@@ -14,7 +14,7 @@
 #import "HomeViewController.h"
 
 #define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
-#define DEFAULTAVATARIMGURL @"defaultBackGroundImage.png"
+#define DEFAULTAVATARIMGURL @"defaultHead.png"
 
 @interface UserInfoViewController ()
 
