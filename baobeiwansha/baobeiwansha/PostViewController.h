@@ -12,9 +12,14 @@
 #import "DTCoreText.h"
 #import "EGORefreshCustom.h"
 #import "CommentCreateViewController.h"
+@protocol PostViewDelegate
+//type = 1 收藏成功 type = 0 取消成功
+-(void)updateCollectionCount:(NSIndexPath *)indexPath type:(NSInteger)type;
 
+@end
 @interface PostViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,DTAttributedTextContentViewDelegate,DTLazyImageViewDelegate,EGORefreshDelegate,CommentCreateDelegate>
-
+@property (nonatomic,retain) NSIndexPath *indexPath;
+@property (nonatomic,retain) id<PostViewDelegate>delegate;
 -(void)initViewWithDict:(NSDictionary *)dict;
 -(void)noDataAlert;
 -(void)showHUD;

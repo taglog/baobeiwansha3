@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "EGORefreshCustom.h"
 #import "iCarousel.h"
+#import "PostViewController.h"
 
 @protocol ContentFirstViewDelegate
 
@@ -18,7 +19,7 @@
 @end
 
 
-@interface ContentFirstViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,EGORefreshDelegate,iCarouselDataSource, iCarouselDelegate>
+@interface ContentFirstViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,EGORefreshDelegate,iCarouselDataSource, iCarouselDelegate,PostViewDelegate>
 
 @property (nonatomic,strong) NSString *tag;
 @property (nonatomic,strong) NSDictionary *requestURL;

@@ -94,7 +94,7 @@
                           @{@"label":@"学会分享",@"image":@"share"},
                           @{@"label":@"不打人",@"image":@"fist"},
                           @{@"label":@"勇敢",@"image":@"brave"},
-                          @{@"label":@"道歉",@"image":@"head3.jpg"},
+                          @{@"label":@"道歉",@"image":@"sorry"},
                           @{@"label":@"遵守规则",@"image":@"law"},
                           @{@"label":@"学会洗澡",@"image":@"bath"},
                           @{@"label":@"学翻身",@"image":@"scroll"},

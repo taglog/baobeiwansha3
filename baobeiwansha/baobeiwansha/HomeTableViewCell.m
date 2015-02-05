@@ -35,6 +35,7 @@
 //传入的frame
 @property (nonatomic,assign)CGRect aFrame;
 
+@property (nonatomic,retain)NSDictionary *dict;
 @end
 
 @implementation HomeTableViewCell
@@ -82,6 +83,8 @@
 
 //给Cell中的key赋值
 -(void)setDataWithDict:(NSDictionary *)dict frame:(CGRect)frame{
+    
+    self.dict = dict;
     
     self.ID = [[dict valueForKey:@"ID"] integerValue];
     
@@ -145,6 +148,13 @@
     
 }
 
+-(void)updateCollectionCount:(NSInteger)collectionNumber{
+    
+    self.collectionNumber.text = [NSString stringWithFormat:@"收藏 %ld", (long)collectionNumber];
+    
+    [self setNeedsLayout];
+    
+}
 //设置Cell子控件的frame
 - (void)layoutSubviews {
     [super layoutSubviews];

@@ -44,6 +44,8 @@
 @property (nonatomic,retain) UIImageView *reachabilitySign;
 @property (nonatomic,assign) BOOL isReachabilitySignShow;
 
+@property (nonatomic,retain) UIImageView *waitingSign;
+
 
 
 @end

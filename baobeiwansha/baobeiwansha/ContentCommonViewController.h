@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "EGORefreshCustom.h"
+#import "PostViewController.h"
 
 @protocol ContentCommonViewDelegate
 
@@ -15,7 +16,7 @@
 -(void)dismissHUD;
 
 @end
-@interface ContentCommonViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,EGORefreshDelegate>
+@interface ContentCommonViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,EGORefreshDelegate,PostViewDelegate>
 
 @property(nonatomic,assign) NSInteger type;
 @property (nonatomic,strong)NSDictionary *requestURL;

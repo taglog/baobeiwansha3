@@ -167,7 +167,7 @@
         manager.requestSerializer.timeoutInterval = 20;
         [manager POST:collectRequestUrl  parameters:collectParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
             NSInteger status = [[responseObject valueForKey:@"status"]integerValue];
-            NSLog(@"%@",responseObject);
+
             if(status == 1){
                 
                 if(collectButtonSender.tag == 0){
@@ -179,6 +179,7 @@
                     });
                     
                     self.HUD.textLabel.text = @"收藏成功";
+                    [self.delegate updateCollectionCount:self.indexPath type:1];
                 }else{
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         
@@ -187,6 +188,7 @@
                         
                     });
                     self.HUD.textLabel.text = @"取消成功";
+                    [self.delegate updateCollectionCount:self.indexPath type:0];
                 }
                 self.HUD.layoutChangeAnimationDuration = 0.4;
                 self.HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];

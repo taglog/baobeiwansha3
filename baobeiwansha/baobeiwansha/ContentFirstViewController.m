@@ -12,7 +12,6 @@
 #import "JGProgressHUDSuccessIndicatorView.h"
 #import "AppDelegate.h"
 #import "HomeTableViewCell.h"
-#import "PostViewController.h"
 
 
 @interface ContentFirstViewController ()
@@ -279,11 +278,16 @@
         NSDictionary *responseDict = [responseObject valueForKey:@"data"];
         
         if(responseDict != (id)[NSNull null]){
+            
             [post initViewWithDict:responseDict];
+            post.indexPath = indexPath;
+            post.delegate = self;
+            
         }else{
             [post noDataAlert];
         }
         [post dismissHUD];
+        
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
@@ -292,6 +296,27 @@
     }];
     [post showHUD];
     [self.navigationController pushViewController:post animated:YES];
+    
+}
+
+
+-(void)updateCollectionCount:(NSIndexPath *)indexPath type:(NSInteger)type{
+    
+    HomeTableViewCell *cell = (HomeTableViewCell *)[self.homeTableView cellForRowAtIndexPath:indexPath];
+    
+    NSInteger collectionNumber;
+    //收藏成功，需+1
+    if(type == 1){
+        collectionNumber = [[self.homeTableViewCell[indexPath.row] objectForKey:@"collection_count"]integerValue] + 1;
+    }else{
+        collectionNumber = [[self.homeTableViewCell[indexPath.row] objectForKey:@"collection_count"]integerValue] - 1;
+    }
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]initWithDictionary:
+    self.homeTableViewCell[indexPath.row]];
+    [dict setObject:[NSNumber numberWithInteger:collectionNumber] forKey:@"collection_count"];
+    [self.homeTableViewCell replaceObjectAtIndex:indexPath.row withObject:dict];
+
+    [cell updateCollectionCount:collectionNumber];
     
 }
 

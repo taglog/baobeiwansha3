@@ -8,7 +8,6 @@
 
 #import "TagPostTableViewController.h"
 #import "HomeTableViewCell.h"
-#import "PostViewController.h"
 #import "AFNetworking.h"
 #import "AppDelegate.h"
 #import "JGProgressHUD.h"
@@ -232,6 +231,8 @@
         
         if(responseDict != (id)[NSNull null]){
             [post initViewWithDict:responseDict];
+            post.indexPath = indexPath;
+            post.delegate = self;
         }else{
             [post noDataAlert];
         }
@@ -247,6 +248,25 @@
     
 }
 
+-(void)updateCollectionCount:(NSIndexPath *)indexPath type:(NSInteger)type{
+    
+    HomeTableViewCell *cell = (HomeTableViewCell *)[self.homeTableView cellForRowAtIndexPath:indexPath];
+    
+    NSInteger collectionNumber;
+    //收藏成功，需+1
+    if(type == 1){
+        collectionNumber = [[self.homeTableViewCell[indexPath.row] objectForKey:@"collection_count"]integerValue] + 1;
+    }else{
+        collectionNumber = [[self.homeTableViewCell[indexPath.row] objectForKey:@"collection_count"]integerValue] - 1;
+    }
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc]initWithDictionary:
+                                 self.homeTableViewCell[indexPath.row]];
+    [dict setObject:[NSNumber numberWithInteger:collectionNumber] forKey:@"collection_count"];
+    [self.homeTableViewCell replaceObjectAtIndex:indexPath.row withObject:dict];
+    
+    [cell updateCollectionCount:collectionNumber];
+    
+}
 
 #pragma mark EGORefreshReloadData
 - (void)reloadTableViewDataSource{

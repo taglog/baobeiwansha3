@@ -247,13 +247,14 @@
     //请求的地址
     NSString *postRouter = @"tag/hotSix";
     NSString *postRequestUrl = [self.rootURL stringByAppendingString:postRouter];
-    
+
     //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        NSArray *responseArray = [responseObject valueForKey:@"data"];
         NSLog(@"%@",responseObject);
+        NSArray *responseArray = [responseObject valueForKey:@"data"];
+        
         //返回不为空
         if(responseArray != (id)[NSNull null]){
             
@@ -301,6 +302,7 @@
                 self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
             }
         }
+        
         self.window.rootViewController = self.mainNavigation;
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         
