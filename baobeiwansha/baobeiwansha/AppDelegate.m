@@ -35,6 +35,10 @@
     
     // generate UserID using VenderID
     
+    
+    
+    
+    
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"generatedUserID"] == nil) {
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
             self.generatedUserID = [UIDevice currentDevice].identifierForVendor.UUIDString;
@@ -161,6 +165,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    // 暂时清楚推送的badge TODO:需要增加关于对推送的处理，例如程序运行中时收到推送，或者用户点击推送消息时的逻辑
+    application.applicationIconBadgeNumber = 0;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -205,10 +211,10 @@
 //}
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     // 去掉了avos的代码
-    //AVInstallation *currentInstallation = [AVInstallation currentInstallation];
+    AVInstallation *currentInstallation = [AVInstallation currentInstallation];
     NSLog(@"applicate device token is called with tocken:%@", deviceToken);
-    //[currentInstallation setDeviceTokenFromData:deviceToken];
-    //[currentInstallation saveInBackground];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
     
     // send token to our own user db
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
