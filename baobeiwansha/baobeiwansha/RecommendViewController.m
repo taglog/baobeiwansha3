@@ -28,7 +28,7 @@
 
 @property (nonatomic,retain) UIButton *mask;
 @property (nonatomic,assign) BOOL isAgeTableViewShow;
-
+@property (nonatomic,assign) BOOL isFirstLoad;
 @property (nonatomic,assign) NSUInteger activeTabIndex;
 
 @property (nonatomic,assign) NSInteger beforeMonth;
@@ -83,7 +83,7 @@
 -(id)init{
     
     self = [super init];
-    
+    self.isFirstLoad = YES;
     self.view.backgroundColor = [UIColor whiteColor];
 
     return self;
@@ -220,7 +220,6 @@
         self.ageTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         self.ageTableView.layer.cornerRadius = 5.0;
-        
         self.ageTableView.delegate = self;
         self.ageTableView.dataSource = self;
         self.ageTableView.alpha = 0;
@@ -489,6 +488,13 @@
 #pragma mark - 修改日期
 -(void)showAgeTableView{
     
+    if(self.isFirstLoad == YES){
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.babyBirthdayMonth inSection:0];
+        [self.ageTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+        self.isFirstLoad = NO;
+        
+    }
     if(self.isAgeTableViewShow == NO){
         [UIView animateWithDuration:0.2
                               delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -550,7 +556,7 @@
     //如果是用户当前月份，显示两个点
     if(indexPath.row == self.babyBirthdayMonth){
         
-        if(indexPath.row <= 24){
+        if(indexPath.row < 24){
             cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld个月 · · ·",(long)indexPath.row];
             
         }else{
@@ -562,7 +568,7 @@
         
     }else{
         //不是用户当前的月份
-        if(indexPath.row <= 24){
+        if(indexPath.row < 24){
             cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
             
         }else{

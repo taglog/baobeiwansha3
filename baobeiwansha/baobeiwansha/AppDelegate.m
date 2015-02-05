@@ -253,26 +253,53 @@
     manager.requestSerializer.timeoutInterval = 20;
     [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        
+        NSLog(@"%@",responseObject);
+        //返回不为空
         if(responseArray != (id)[NSNull null]){
             
             NSMutableArray *bubbleTitle = [[NSMutableArray alloc]initWithCapacity:6];
+            
             for(NSDictionary *bubbleName in responseArray){
                 [bubbleTitle addObject:[bubbleName objectForKey:@"name"]];
             }
-
+            //返回不为空
             if(bubbleTitle != nil){
                 
                 self.mainViewController.bubbleTitles = bubbleTitle;
+                //存入本地
+                NSString *filePath = [self dataFilePath];
+                [bubbleTitle writeToFile:filePath atomically:YES];
                 
+            //返回为空
             }else{
                 
-                self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"春节",@"运动"];
+                NSString *filePath = [self dataFilePath];
+                //文件存在
+                if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                    
+                    NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
+                    self.mainViewController.bubbleTitles = bubbles;
+                    
+                }else{
+                    
+                    self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
+                }
+                
             }
             
         }else{
             
-            self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"春节",@"运动"];
+            NSString *filePath = [self dataFilePath];
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                
+                NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
+                self.mainViewController.bubbleTitles = bubbles;
+                
+            }else{
+                
+                self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
+            }
         }
         self.window.rootViewController = self.mainNavigation;
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
@@ -281,7 +308,17 @@
         
         NSLog(@"%@",error);
         
-        self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"寒假",@"运动"];
+        NSString *filePath = [self dataFilePath];
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+            
+            NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
+            self.mainViewController.bubbleTitles = bubbles;
+            
+        }else{
+            
+            self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
+        }
         self.window.rootViewController = self.mainNavigation;
 
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
@@ -290,5 +327,11 @@
     
     
 }
-
+- (NSString *)dataFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"initTag.plist"];
+}
 @end

@@ -140,7 +140,6 @@
     
     self.collectionNumber.text = [NSString stringWithFormat:@"收藏 %@",[dict objectForKey:@"collection_count"]];
     
-//    self.commentNumber.text = [NSString stringWithFormat:@"评论 %@",[dict objectForKey:@"comment_count"]];
     
     [self setNeedsLayout];
     
