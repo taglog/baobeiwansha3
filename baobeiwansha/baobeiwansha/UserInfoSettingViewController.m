@@ -73,7 +73,7 @@
 -(void)initSubmitButton{
     UIButton *submitButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width - 30, 40)];
     [submitButton setBackgroundColor:[UIColor colorWithRed:0.0f/255.0f green:209.0f/255.0f blue:77.0f/255.0f alpha:1.0]];
-    [submitButton setTitle:@"完成" forState:UIControlStateNormal];
+    [submitButton setTitle:@"保存" forState:UIControlStateNormal];
     [submitButton addTarget:self action:@selector(syncBabyInfoSetting) forControlEvents:UIControlEventTouchUpInside];
     self.tableView.tableFooterView = submitButton;
 }
@@ -124,8 +124,12 @@
                 [self.navigationController popViewControllerAnimated:YES];
                 //加入plist
                 NSString *filePath = [self dataFilePath];
+                NSString *filePathImg = [self dataFilePathForImage];
                 [self.dict writeToFile:filePath atomically:YES];
+                NSLog(@"save to file: %@", self.dict);
+                [self.dictImg writeToFile:filePathImg atomically:YES];
                 [self.delegate UpdateRecommendTitle];
+                [self.delegate updateUserAgeDate:self.birthdayDate];
                 
             });
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -194,7 +198,7 @@
                     CGFloat y = 10.0f;
                     _bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
                     //_bgImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
-                    self.bgImageView.image = [UIImage imageWithData:[self.dict objectForKey:@"bgImage"]];
+                    self.bgImageView.image = [UIImage imageWithData:[self.dictImg objectForKey:@"bgImage"]];
                     [_bgImageView.layer setMasksToBounds:YES];
                     [_bgImageView setClipsToBounds:YES];
                     _bgImageView.layer.borderColor = [[UIColor whiteColor] CGColor];
@@ -210,7 +214,7 @@
                     CGFloat y = 10.0f;
                     _userAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(x, y, w, h)];
                     //_userAvatarImageView.image = [UIImage imageNamed:@"defaultBackGroundImage.png"];
-                    self.userAvatarImageView.image = [UIImage imageWithData:[self.dict objectForKey:@"avatarImage"]];
+                    self.userAvatarImageView.image = [UIImage imageWithData:[self.dictImg objectForKey:@"avatarImage"]];
                     [_userAvatarImageView.layer setCornerRadius:(_userAvatarImageView.frame.size.height/2)];
                     [_userAvatarImageView.layer setMasksToBounds:YES];
                     [_userAvatarImageView setClipsToBounds:YES];
@@ -235,9 +239,9 @@
                 
                 cell.textLabel.text = @"宝贝性别";
                 if (_babyGenderString == nil) {
-                    if([self.dict objectForKey:@"babyGender"] == [NSNumber numberWithInt:0]){
+                    if([[self.dict objectForKey:@"babyGender"] intValue] == 0){
                         _babyGenderString = @"女孩";
-                    }else if([self.dict objectForKey:@"babyGender"] == [NSNumber numberWithInt:1]){
+                    }else if([[self.dict objectForKey:@"babyGender"] intValue] == 1){
                         _babyGenderString = @"男孩";
                     }
                 }
@@ -246,11 +250,12 @@
             } else if (indexPath.row == 2){
                 cell.textLabel.text = @"您的性别";
                 if (_userGenderString == nil) {
-                    if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:0]){
+                    //NSLog(@"is nil, %@", [self.dict objectForKey:@"userGender"]);
+                    if([[self.dict objectForKey:@"userGender"] intValue] == 0){
                         _userGenderString = [NSString stringWithFormat:@"我是妈妈"];
-                    }else if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:1]){
+                    }else if([[self.dict objectForKey:@"userGender"] intValue] == 1){
                         _userGenderString = [NSString stringWithFormat:@"我是爸爸"];
-                    }else if([self.dict objectForKey:@"userGender"] == [NSNumber numberWithInt:2]){
+                    }else if([[self.dict objectForKey:@"userGender"] intValue]== 2){
                         _userGenderString = @"其他";
                         
                     }
@@ -286,6 +291,11 @@
         }
     }
     return rowHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 15.0f;
 }
 
 
@@ -327,7 +337,8 @@
 
 -(IBAction)dateChanged:(UIDatePicker *)sender{
     
-    [self.dict setObject:sender.date forKey:@"babyBirthday"];
+    [super dateChanged:sender];
+    
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:self.firstDatePickerIndexPath];
     
     self.birthdayDate = sender.date;
@@ -337,7 +348,8 @@
     dateFormatter.dateStyle = NSDateFormatterMediumStyle;
     [dateFormatter setLocale:cnLocale];
     cell.detailTextLabel.text = [dateFormatter stringFromDate:self.birthdayDate];
-    
+    [self.dict setObject:sender.date forKey:@"babyBirthday"];
+    //NSLog(@"current data is %@", [dateFormatter stringFromDate:self.birthdayDate]);
     
 }
 
@@ -351,12 +363,12 @@
     if (self.bgOrAvatar) {
         self.bgImageView.image = editedImage;
         [self.delegate updateBackgroundImage:editedImage];
-        [self.dict setObject:UIImagePNGRepresentation(editedImage) forKey:@"bgImage"];
+        [self.dictImg setObject:UIImagePNGRepresentation(editedImage) forKey:@"bgImage"];
         
     } else {
         self.userAvatarImageView.image = editedImage;
         [self.delegate updateAvatarImage:editedImage];
-        [self.dict setObject:UIImagePNGRepresentation(editedImage) forKey:@"avatarImage"];
+        [self.dictImg setObject:UIImagePNGRepresentation(editedImage) forKey:@"avatarImage"];
     }
     [cropperViewController dismissViewControllerAnimated:YES completion:^{
         // TO DO
@@ -641,6 +653,15 @@
                                                          NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
+}
+
+// get plist path
+- (NSString *)dataFilePathForImage
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(
+                                                         NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"userinfoimg.plist"];
 }
 
 

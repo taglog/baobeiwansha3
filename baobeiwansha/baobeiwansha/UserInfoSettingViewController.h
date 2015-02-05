@@ -28,5 +28,6 @@
 @property (nonatomic,retain) id <UserInfoSettingDelegate>delegate;
 // self.dict 在这里是只读的，写入全部放在UserInfoViewC里面，通过protocol的调用同时进行写入
 @property (nonatomic, retain) NSMutableDictionary *dict;
+@property (nonatomic, retain) NSMutableDictionary *dictImg;
 
 @end

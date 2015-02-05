@@ -22,11 +22,11 @@
         [backgroundImage2 setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
         [self addSubview:backgroundImage2];
         
-        //Initial shadow
-        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shadow.png"]];
-        shadowImageView.contentMode = UIViewContentModeScaleToFill;
-        shadowImageView.frame = CGRectMake(0, frame.size.height-300, frame.size.width, 300);
-        [self addSubview:shadowImageView];
+//        //Initial shadow
+//        UIImageView *shadowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shadow.png"]];
+//        shadowImageView.contentMode = UIViewContentModeScaleToFill;
+//        shadowImageView.frame = CGRectMake(0, frame.size.height-300, frame.size.width, 300);
+//        [self addSubview:shadowImageView];
         
         //Initial ScrollView
         scrollView = [[UIScrollView alloc] initWithFrame:self.frame];
@@ -64,20 +64,21 @@
         if (YES) {
             UIButton *startButton = [UIButton buttonWithType:UIButtonTypeSystem];
             [startButton setTitle:@"立即开始" forState:UIControlStateNormal];
-            UIColor *fontSelectColor = [UIColor colorWithRed:20.0 green:20.0 blue:120.0 alpha:0.8];
-            UIColor *fontNoSelectColor = [UIColor colorWithRed:20.0 green:120.0 blue:20.0 alpha:0.8];
-            UIColor *bgColor = [UIColor colorWithRed:190.0 green:20.0 blue:20.0 alpha:0.3];
+            UIColor *fontSelectColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8];
+            UIColor *fontNoSelectColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.9];
+            UIColor *bgColor = [UIColor colorWithRed:190.0 green:20.0 blue:20.0 alpha:0.5];
             [startButton setBackgroundColor:bgColor];
             [startButton setTitleColor:fontNoSelectColor forState:UIControlStateNormal];
             [startButton setTitleColor:fontSelectColor forState:UIControlStateSelected];
             [startButton addTarget:self action:@selector(handleStartButtonClick) forControlEvents:UIControlEventTouchUpInside];
-            startButton.frame = CGRectMake((self.frame.size.width-160.0)/2, self.frame.size.height-70, 160.0, 30.0);
+            startButton.frame = CGRectMake((self.frame.size.width-160.0)/2, self.frame.size.height-60, 160.0, 30.0);
             [self addSubview:startButton];
         }
         
             
         //start timer
-        timer =  [NSTimer scheduledTimerWithTimeInterval:5.0
+
+        timer =  [NSTimer scheduledTimerWithTimeInterval:4.0
                         target:self
                         selector:@selector(tick)
                         userInfo:nil
@@ -90,7 +91,12 @@
 }
 
 - (void) tick {
-    [scrollView setContentOffset:CGPointMake((currentPhotoNum+1 == pages.count ? 0 : currentPhotoNum+1)*self.frame.size.width, 0) animated:YES];
+    if (currentPhotoNum+1 == pages.count) {
+        [timer invalidate];
+        timer = nil;
+    } else {
+        [scrollView setContentOffset:CGPointMake((currentPhotoNum+1)*self.frame.size.width, 0) animated:YES];
+    }
 }
 
 - (void) initShow {

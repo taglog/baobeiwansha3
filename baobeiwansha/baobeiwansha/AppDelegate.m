@@ -85,11 +85,11 @@
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"firstStart"]) {
     
         
-        IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro1.jpg"];
+        IntroModel *model1 = [[IntroModel alloc] initWithTitle:@"寓教于乐" description:@"真正把教育渗透到每一次玩耍中" image:@"intro1.jpg"];
         
-        IntroModel *model2 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro2.jpg"];
+        IntroModel *model2 = [[IntroModel alloc] initWithTitle:@"个性推荐" description:@"针对性地对孩子的各项特点进行匹配" image:@"intro2.jpg"];
         
-        IntroModel *model3 = [[IntroModel alloc] initWithTitle:@"" description:@"" image:@"intro3.jpg"];
+        IntroModel *model3 = [[IntroModel alloc] initWithTitle:@"结合场景" description:@"为每一个场景寻找最合适的创意玩法" image:@"intro3.jpg"];
         
         CGRect bounds = [[UIScreen mainScreen] bounds];
         self.introcontroller = [[IntroControll alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, bounds.size.height) pages:@[model1, model2, model3]];
