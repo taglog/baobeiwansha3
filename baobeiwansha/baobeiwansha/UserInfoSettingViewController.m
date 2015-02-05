@@ -104,8 +104,6 @@
         AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
         afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         
-        NSLog(@"sending:%@",postParam);
-        NSLog(@"sending:%@",urlString);
 
         [afnmanager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation, id responseObject) {
             NSLog(@"Sync successed: %@", responseObject);

@@ -80,7 +80,7 @@
 }
 -(void)viewWillDisappear:(BOOL)animated{
     [PostViewTimeAnalytics endLogPageView:self.postID];
-
+    
 }
 //初始化Controlller的View
 -(void)initViewWithDict:(NSDictionary *)dict{
@@ -193,6 +193,7 @@
                 self.HUD.detailTextLabel.text = nil;
                 [self.HUD dismissAfterDelay:1.0];
                 self.collectButtonEnabled = YES;
+                
             }else{
                 //否则的话，弹出一个指示层
                 self.HUD.textLabel.text = @"没有用户信息";
@@ -214,7 +215,7 @@
             self.HUD.detailTextLabel.text = nil;
             [self.HUD dismissAfterDelay:1.0];
             self.collectButtonEnabled = YES;
-
+            
             app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         }];
         
@@ -316,14 +317,14 @@
             self.collectionButtonSelected.hidden = YES;
         }
         
-
         
-
+        
+        
         
         [self.view addSubview:self.bottomBar];
         
     }
-
+    
 }
 
 //初始化textView
@@ -642,7 +643,7 @@
             oneAttachment.displaySize = CGSizeMake(_frame.size.width - 100, imageHeight);
         }else{
             oneAttachment.displaySize = CGSizeMake(_frame.size.width - 30, imageHeight);
-
+            
         }
         
         
@@ -876,9 +877,35 @@
 }
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
-    if(self.lastContentOffset > (int)scrollView.contentOffset.y){
+    //没滚到底部之前
+    if((scrollView.contentOffset.y +self.view.frame.size.height - 64) <= (_postScrollView.contentSize.height - 50)){
         
-        [self.view bringSubviewToFront:self.bottomBar];
+        if(self.lastContentOffset > (int)scrollView.contentOffset.y){
+            
+            [self.view bringSubviewToFront:self.bottomBar];
+            [UIView animateWithDuration:0.3 animations:^{
+                self.bottomBar.frame = CGRectMake(0,self.view.frame.size.height - 40, self.view.frame.size.width, 40.0f);
+                //如果更改scrollView的frame，那么就会发生底部的抖动，这该怎么办
+                //            scrollView.frame = CGRectMake(0, 64.0f, self.view.frame.size.width, self.view.frame.size.height - 124.0f);
+            }  completion:^(BOOL finished){
+                
+            }];
+            
+        }else{
+            
+            
+            [UIView animateWithDuration:0.3 animations:^{
+                
+                self.bottomBar.frame = CGRectMake(0, self.view.frame.size.height , self.view.frame.size.width, 40.0f);
+                
+            }  completion:^(BOOL finished){
+                
+                
+            }];
+            
+        }
+    }else{
+        //如果到了底部，就始终显示
         [UIView animateWithDuration:0.3 animations:^{
             self.bottomBar.frame = CGRectMake(0,self.view.frame.size.height - 40, self.view.frame.size.width, 40.0f);
             //如果更改scrollView的frame，那么就会发生底部的抖动，这该怎么办
@@ -886,18 +913,8 @@
         }  completion:^(BOOL finished){
             
         }];
-        
-    }else{
-        
-        [UIView animateWithDuration:0.3 animations:^{
-            
-            self.bottomBar.frame = CGRectMake(0, self.view.frame.size.height , self.view.frame.size.width, 40.0f);
-            
-        }  completion:^(BOOL finished){
-            
-        }];
-        
     }
+    
     [_refreshFooterView egoRefreshScrollViewDidScroll:scrollView];
     
     

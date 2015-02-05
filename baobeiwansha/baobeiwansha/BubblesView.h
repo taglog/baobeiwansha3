@@ -13,14 +13,19 @@
 -(void)bubbleClicked:(NSString *)tag;
 -(void)moreBubbleClicked;
 -(void)getRecommendedContent;
--(void)pushTagViewController;
 -(void)profilePage;
+
 @end
 
 @interface BubblesView : UIView
 
 @property (nonatomic,retain) id<BubblesViewDelegate> delegate;
+
+@property (nonatomic,retain) OBShapedButton *mainButton;
 @property (nonatomic,retain) OBShapedButton *girlButton;
+@property (nonatomic,retain) OBShapedButton *bubbleButton1;
+@property (nonatomic,retain) OBShapedButton *bubbleButton7;
+
 
 -(id)initWithFrame:(CGRect)frame bubbleTitle:(NSArray *)bubbleTitles;
 -(void)performShakeAnimation;

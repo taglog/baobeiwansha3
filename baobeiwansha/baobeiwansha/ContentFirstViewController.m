@@ -593,7 +593,7 @@
 
 - (void)carousel:(__unused iCarousel *)carousel didSelectItemAtIndex:(NSInteger)index
 {
-    NSNumber *item = (self.carouselItems)[(NSUInteger)index];
+    //NSNumber *item = (self.carouselItems)[(NSUInteger)index];
     //NSLog(@"Tapped view number: %@", item);
 }
 

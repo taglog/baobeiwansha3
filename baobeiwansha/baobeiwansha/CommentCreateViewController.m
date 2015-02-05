@@ -67,7 +67,6 @@
         
         _commentTextField.keyboardType = UIKeyboardTypeDefault;
         _commentTextField.font = [UIFont systemFontOfSize:14.0f];
-        _commentTextField.contentInset = UIEdgeInsetsMake(10.0f, 15.0f, 4.0f, 10.0f);
         //_commentTextField.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _commentTextField.layer.borderWidth = 0.5f;
         _commentTextField.layer.borderColor = [[UIColor colorWithRed:204.0f/255.0f green:204.0f/255.0f blue:204.0f/255.0f alpha:1.0f]CGColor];
@@ -91,7 +90,6 @@
         
         _commentTextView.scrollEnabled = YES;
         
-        _commentTextView.contentInset = UIEdgeInsetsMake(10.0f, 15.0f, 10.0f, 10.0f);
         _commentTextView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         
         _commentTextView.layer.borderWidth = 0.5f;

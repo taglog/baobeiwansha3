@@ -16,7 +16,6 @@
 @property (nonatomic,retain) TagCollectionViewController *tagCollectionView0;
 @property (nonatomic,retain) TagCollectionViewController *tagCollectionView1;
 @property (nonatomic,retain) TagCollectionViewController *tagCollectionView2;
-@property (nonatomic,retain) TagCollectionViewController *tagCollectionView3;
 
 
 @property (nonatomic,assign) NSUInteger activeTabIndex;
@@ -25,7 +24,6 @@
 @property (nonatomic,retain) UILabel *tabLabel0;
 @property (nonatomic,retain) UILabel *tabLabel1;
 @property (nonatomic,retain) UILabel *tabLabel2;
-@property (nonatomic,retain) UILabel *tabLabel3;
 
 @end
 
@@ -94,11 +92,6 @@
         self.tagCollectionView2.index = 2;
 
     }
-    if(!self.tagCollectionView3){
-        self.tagCollectionView3 = [[TagCollectionViewController alloc]init];
-        self.tagCollectionView3.index = 3;
-
-    }
    
 }
 
@@ -128,7 +121,7 @@
 #pragma mark - ViewPagerDataSource
 //设置tab页的按钮数为4个
 - (NSUInteger)numberOfTabsForViewPager:(ViewPagerController *)viewPager {
-    return 4;
+    return 3;
 }
 
 //设置4个按钮的label为：（全部，绘本，玩具，亲子）
@@ -138,23 +131,18 @@
     switch(index){
         case 0 :
             self.tabLabel0 = [[UILabel alloc]init];
-            self.tabLabel0.text = @"热门";
+            self.tabLabel0.text = @"潜能";
             label = self.tabLabel0;
             break;
         case 1 :
             self.tabLabel1 = [[UILabel alloc]init];
-            self.tabLabel1.text = @"潜能";
+            self.tabLabel1.text = @"场景";
             label = self.tabLabel1;
             break;
         case 2 :
             self.tabLabel2 = [[UILabel alloc]init];
-            self.tabLabel2.text = @"场景";
+            self.tabLabel2.text = @"主题";
             label = self.tabLabel2;
-            break;
-        case 3 :
-            self.tabLabel3 = [[UILabel alloc]init];
-            self.tabLabel3.text = @"主题";
-            label = self.tabLabel3;
             break;
     }
     
@@ -183,9 +171,6 @@
         case 2:
             viewController = self.tagCollectionView2;
             break;
-        case 3:
-            viewController = self.tagCollectionView3;
-            break;
         default:
             break;
     }
@@ -210,7 +195,7 @@
         case ViewPagerOptionTabOffset:
             return 0.0;
         case ViewPagerOptionTabWidth:
-            return self.view.frame.size.width/4.0;
+            return self.view.frame.size.width/3.0;
         case ViewPagerOptionFixFormerTabsPositions:
             return 0.0;
         case ViewPagerOptionFixLatterTabsPositions:
@@ -251,9 +236,6 @@
         case 2:
             self.tabLabel2.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];            break;
             
-        case 3:
-            self.tabLabel3.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-            break;
         default:
             break;
     }
@@ -266,7 +248,6 @@
     self.tabLabel0.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
     self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
     self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel3.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
     
 }
 

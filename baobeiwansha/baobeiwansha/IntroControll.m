@@ -77,7 +77,7 @@
         
             
         //start timer
-        timer =  [NSTimer scheduledTimerWithTimeInterval:3.0
+        timer =  [NSTimer scheduledTimerWithTimeInterval:5.0
                         target:self
                         selector:@selector(tick)
                         userInfo:nil

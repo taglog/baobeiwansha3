@@ -20,14 +20,11 @@
 @property (nonatomic,retain) NSArray *bubbleTitles;
 
 
-@property (nonatomic,retain) OBShapedButton *mainButton;
-@property (nonatomic,retain) OBShapedButton *bubbleButton1;
 @property (nonatomic,retain) OBShapedButton *bubbleButton2;
 @property (nonatomic,retain) OBShapedButton *bubbleButton3;
 @property (nonatomic,retain) OBShapedButton *bubbleButton4;
 @property (nonatomic,retain) OBShapedButton *bubbleButton5;
 @property (nonatomic,retain) OBShapedButton *bubbleButton6;
-@property (nonatomic,retain) OBShapedButton *bubbleButton7;
 
 @property (nonatomic,retain)UIImageView *bikeView;
 
@@ -43,48 +40,11 @@
     self.bubbleTitles = bubbleTitles;
     [self initGirl];
     [self initBubbles];
-    [self initGesture];
     return  self;
     
 }
 
--(void)initGesture{
-    
-    UIPanGestureRecognizer *recoginizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(pushTagViewController:)];
-    [self addGestureRecognizer:recoginizer];
-    
-}
--(void)pushTagViewController:(UIPanGestureRecognizer *)recoginizer{
-    
-    
-    CGPoint touchPoint = [recoginizer locationInView:self];
-    
-    if (recoginizer.state == UIGestureRecognizerStateBegan) {
-        
-        startTouchPoint = touchPoint;
-        
-        
-        //End paning, always check that if it should move right or move left automatically
-    }else if (recoginizer.state == UIGestureRecognizerStateEnded){
-        
-        if (touchPoint.x - startTouchPoint.x < 0 )
-        {
-            [self.delegate pushTagViewController];
-        }
-        else
-        {
-            
-        }
-        return;
-        
-        // cancal panning, alway move to left side automatically
-    }else if (recoginizer.state == UIGestureRecognizerStateCancelled){
-        
-        
-        return;
-    }
-    
-}
+
 -(void)initGirl{
     
     self.girlButton = [[OBShapedButton alloc]initWithFrame:CGRectMake(self.frame.size.width/2 - 22, self.frame.size.height - 95, 36, 85)];

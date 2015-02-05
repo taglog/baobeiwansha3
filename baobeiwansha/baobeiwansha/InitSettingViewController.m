@@ -83,32 +83,49 @@
 -(void)initBabyGenderButton{
     
     if(!self.girlButton){
+        
         self.girlButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 144, 70, 70)];
         
-        [self.girlButton setBackgroundImage:[UIImage imageNamed:@"girl.jpg"] forState:UIControlStateNormal];
+        [self.girlButton setBackgroundImage:[UIImage imageNamed:@"girlhead"] forState:UIControlStateNormal];
         self.girlButton.layer.cornerRadius = 35;
         self.girlButton.layer.masksToBounds = YES;
         [self.girlButton addTarget:self action:@selector(editBabyGender:) forControlEvents:UIControlEventTouchUpInside];
         self.girlButton.tag = 0;
         [self.view addSubview:self.girlButton];
+        
+        UILabel *girl = [[UILabel alloc]initWithFrame:CGRectMake(50, 220, 70, 20)];
+        girl.text = @"女孩";
+        girl.textColor = [UIColor colorWithRed:201.0f/255.0f green:201.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
+        girl.font = [UIFont systemFontOfSize:13.0f];
+        girl.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:girl];
+
     }
     
     if(!self.boyButton){
+        
         self.boyButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 144, 70, 70)];
         
-        [self.boyButton setBackgroundImage:[UIImage imageNamed:@"boy.jpg"] forState:UIControlStateNormal];
+        [self.boyButton setBackgroundImage:[UIImage imageNamed:@"boyhead"] forState:UIControlStateNormal];
         self.boyButton.layer.cornerRadius = 35;
         self.boyButton.layer.masksToBounds = YES;
         [self.boyButton addTarget:self action:@selector(editBabyGender:) forControlEvents:UIControlEventTouchUpInside];
         self.boyButton.tag = 1;
         [self.view addSubview:self.boyButton];
+        
+        UILabel *boy = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 220, 70, 20)];
+        boy.text = @"男孩";
+        boy.textColor = [UIColor colorWithRed:201.0f/255.0f green:201.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
+        boy.font = [UIFont systemFontOfSize:13.0f];
+        boy.textAlignment = NSTextAlignmentCenter;
+        [self.view addSubview:boy];
     }
 }
 
 -(void)initForm{
     
     if(!self.tableView){
-        self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(50, 234, self.view.frame.size.width - 100, 200)];
+        self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(50, 250, self.view.frame.size.width - 100, 200)];
         self.tableView.scrollEnabled = NO;
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
@@ -126,7 +143,7 @@
 -(void)initSubmitButton{
     
     if(!self.submitButton){
-        self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 404, self.view.frame.size.width - 100, 60)];
+        self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 420, self.view.frame.size.width - 100, 50)];
         self.submitButton.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:209.0f/255.0f blue:77.0f/255.0f alpha:1.0];
         [self.submitButton setTitle:@"我的宝贝玩啥?" forState:UIControlStateNormal];
         self.submitButton.titleLabel.font = [UIFont systemFontOfSize:14.0f];
@@ -141,18 +158,38 @@
 #pragma  mark - 同步信息
 -(void)syncUserInfo{
     
-    //判断是否填完
-    BOOL isCompleted = (![self.userInfoDict objectForKey:@"nickName"] == nil)&&![[self.userInfoDict objectForKey:@"nickName"] isEqual:@""]&&(![self.userInfoDict objectForKey:@"babyGender"] == nil)&&(![self.userInfoDict objectForKey:@"userGender"] == nil)&&(![self.userInfoDict objectForKey:@"babyBirthday"] == nil);
-    
-    if (!isCompleted) {
-        
+    if(![self.userInfoDict objectForKey:@"babyGender"]){
         JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
-        HUD.textLabel.text = @"有未完成的选项";
+        HUD.textLabel.text = @"请选择宝贝性别";
         [HUD showInView:self.view];
         [HUD dismissAfterDelay:1.0];
+        return;
+    }
+    //没有填nickname
+    if(![self.userInfoDict objectForKey:@"nickName"]&&![[self.userInfoDict objectForKey:@"nickName"] isEqual:@""]){
+            JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+            HUD.textLabel.text = @"请填写宝贝昵称";
+            [HUD showInView:self.view];
+            [HUD dismissAfterDelay:1.0];
+        return;
+    }
+    if(![self.userInfoDict objectForKey:@"userGender"]){
+        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        HUD.textLabel.text = @"请选择您的身份";
+        [HUD showInView:self.view];
+        [HUD dismissAfterDelay:1.0];
+        return;
         
-    }else{
-        
+    }
+    if(![self.userInfoDict objectForKey:@"babyBirthday"]){
+        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        HUD.textLabel.text = @"请选择宝贝生日";
+        [HUD showInView:self.view];
+        [HUD dismissAfterDelay:1.0];
+        return;
+    }
+    
+    
         JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
         HUD.textLabel.text = @"保存中...";
         [HUD showInView:self.view];
@@ -203,8 +240,7 @@
 
         }];
         
-        
-    }
+    
     
     
 }

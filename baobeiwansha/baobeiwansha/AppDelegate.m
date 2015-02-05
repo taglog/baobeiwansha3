@@ -81,7 +81,7 @@
     UIImage *backgroundImage = [UIImage imageNamed:@"mainbg"];
     self.window.layer.contents = (id) backgroundImage.CGImage;
     self.window.layer.backgroundColor = [UIColor clearColor].CGColor;
-    
+    //第一次启动
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"firstStart"]) {
     
         
@@ -252,7 +252,6 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         
         if(responseArray != (id)[NSNull null]){

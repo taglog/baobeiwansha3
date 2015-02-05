@@ -19,10 +19,17 @@
 
 @interface MainViewController ()
 {
-      EMHint *_hint;
-      id _hilightView;
-
+    EMHint *_hint1;
+    id _hilightView1;
+    EMHint *_hint2;
+    id _hilightView2;
+    EMHint *_hint3;
+    id _hilightView3;
+    EMHint *_hint4;
+    id _hilightView4;
+    
 }
+@property (nonatomic,retain) UIView *center;
 @property (nonatomic,strong) RecommendViewController *recommendViewController;
 
 @property (nonatomic,strong) BubblesView *bubbleView;
@@ -74,23 +81,7 @@
     }
     
 }
-#pragma mark -EMHint deleage
 
--(NSArray*)hintStateViewsToHint:(id)hintState
-{
-    return [[NSArray alloc] initWithObjects:_hilightView, nil];
-}
--(UIView*)hintStateViewForDialog:(id)hintState
-{
-    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 135, self.view.frame.size.width, 40)];
-    
-    l.backgroundColor = [UIColor clearColor];
-    l.textColor =[UIColor whiteColor];
-    l.text= @"点击进入个人信息页";
-    l.font = [UIFont systemFontOfSize:14.0f];
-    l.textAlignment = NSTextAlignmentCenter;
-    return l;
-}
 
 -(void)viewWillDisappear:(BOOL)animated{
     
@@ -103,7 +94,7 @@
     UserInfoViewController* UserInfoVC = [[UserInfoViewController alloc] init];
     UserInfoVC.delegate = self;
     [self customPushViewController:UserInfoVC];
-
+    
 }
 -(void)updateRecommendViewControllerTitle{
     [self.recommendViewController updateUserInfo];
@@ -115,19 +106,104 @@
     
     self.bubbleView.delegate = self;
     
+    [self showHint];
+    
+    [self.view addSubview:self.bubbleView];
+    
+}
+-(void)showHint{
+    
     //第一次，显示遮罩层
     if(![[NSUserDefaults standardUserDefaults] boolForKey:@"isOverlayShowed"]){
-        _hint = [[EMHint alloc] init];
-        [_hint setHintDelegate:self];
-        _hilightView = self.bubbleView.girlButton;
-        [_hint presentModalMessage:@"提示" where:self.navigationController.view];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isOverlayShowed"];
-
+        
+        _hint1 = [[EMHint alloc] init];
+        [_hint1 setHintDelegate:self];
+        _hilightView1 = self.bubbleView.girlButton;
+        [_hint1 presentModalMessage:@"" where:self.navigationController.view];
+        
+        
     }
-    [self.view addSubview:self.bubbleView];
+    
+    
+}
+#pragma mark -EMHint deleage
 
+-(NSArray*)hintStateViewsToHint:(id)hintState
+{
+    UIButton *hilightView;
+    if(hintState == _hint1){
+        hilightView = _hilightView1;
+    }else if(hintState == _hint2){
+        hilightView = _hilightView2;
+    }else if(hintState == _hint3){
+        hilightView = _hilightView3;
+    }else if(hintState == _hint4){
+        hilightView = _hilightView4;
+    }
+    return [[NSArray alloc] initWithObjects:hilightView, nil];
+    
 }
 
+-(UIView*)hintStateViewForDialog:(id)hintState
+{
+    
+    UILabel *l = [[UILabel alloc]init];
+    l.backgroundColor = [UIColor clearColor];
+    l.textColor =[UIColor whiteColor];
+    l.font = [UIFont systemFontOfSize:14.0f];
+    l.textAlignment = NSTextAlignmentCenter;
+    
+    if(hintState == _hint1){
+        l.frame = CGRectMake(0, self.view.frame.size.height - 135, self.view.frame.size.width, 40);
+        l.text= @"点击进入个人信息页";
+    }else if(hintState == _hint2){
+        l.frame = CGRectMake(0, 120, self.view.frame.size.width, 40);
+        l.text= @"获取您宝宝的个性推荐";
+    }else if(hintState == _hint3){
+        l.frame = CGRectMake(0, 150, self.view.frame.size.width, 40);
+        l.text= @"热门标签";
+    }else if(hintState == _hint4){
+        l.frame = CGRectMake(0, self.view.frame.size.height - 300, self.view.frame.size.width, 40);
+        l.text= @"查看所有标签";
+    }
+    
+    return l;
+}
+-(void)hintStateDidClose:(id)hintState{
+    
+    if(hintState == _hint1){
+        self.center = [[UIView alloc]initWithFrame:CGRectMake(self.view.frame.size.width/2 - 40, self.view.frame.size.height/2 - 100,100,100)];
+        [self.view addSubview:self.center];
+        _hint2 = [[EMHint alloc] init];
+        [_hint2 setHintDelegate:self];
+        _hilightView2 = self.center;
+        [_hint2 presentModalMessage:@"" where:self.navigationController.view];
+        
+    }else if(hintState == _hint2){
+        [self.center removeFromSuperview];
+        _hint3 = [[EMHint alloc] init];
+        [_hint3 setHintDelegate:self];
+        _hilightView3 = self.bubbleView.bubbleButton1;
+        [_hint3 presentModalMessage:@"" where:self.navigationController.view];
+        
+    }else if(hintState == _hint3){
+        
+        _hint4 = [[EMHint alloc] init];
+        [_hint4 setHintDelegate:self];
+        _hilightView4 = self.bubbleView.bubbleButton7;
+        [_hint4 presentModalMessage:@"" where:self.navigationController.view];
+        
+    }else if(hintState == _hint4){
+        
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isOverlayShowed"];
+        
+    }
+    
+    
+    
+    
+    
+}
 -(void)initView{
     
     //设置背景图片3
@@ -163,11 +239,6 @@
     
 }
 
-- (void)pushTagViewController{
-    TagViewController *tagViewController = [[TagViewController alloc]init];
-    [self customPushViewController:tagViewController];
-}
-
 //自定义push动画，否则会有导航栏的问题
 //window的背景需要设置成与mainViewController背景一样，否则会出现闪一下的效果
 -(void)customPushViewController:(UIViewController *)viewController{
@@ -199,7 +270,7 @@
                                                object:nil];
     
     __weak __block typeof(self) weakself = self;
-
+    
     self.internetReachability = [Reachability reachabilityForInternetConnection];
     
     self.internetReachability.reachableBlock = ^(Reachability * reachability)
@@ -224,7 +295,7 @@
     
     self.wifiReachability.reachableBlock = ^(Reachability * reachability)
     {
-
+        
         
         dispatch_async(dispatch_get_main_queue(), ^{
         });
@@ -283,7 +354,7 @@
         }
     }
     
-
+    
     
 }
 

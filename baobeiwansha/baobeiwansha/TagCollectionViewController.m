@@ -37,27 +37,6 @@
     
     if(self.index == 0){
         self.responseData =
-        @{@"sectionTitle":@"热门",
-          @"sectionItems":@[
-                  @{@"label":@"爱上吃饭",@"image":@"food"},
-                  @{@"label":@"春节",@"image":@"chun"},
-                  @{@"label":@"下雪了",@"image":@"snowflake"},
-                  @{@"label":@"好奇心",@"image":@"curios"},
-                  @{@"label":@"秩序与规则",@"image":@"law"},
-                  @{@"label":@"沟通能力",@"image":@"talk"},
-                  @{@"label":@"饭后半小时",@"image":@"aftermeal"},
-                  @{@"label":@"语言能力",@"image":@"language"},
-                  @{@"label":@"记忆力",@"image":@"book2"},
-                  @{@"label":@"认知",@"image":@"acknowledge"},
-                  @{@"label":@"道歉",@"image":@"head3.jpg"},
-                  @{@"label":@"逻辑思维",@"image":@"logic"},
-                  @{@"label":@"情感与爱",@"image":@"heart"},
-                  @{@"label":@"安全与防护",@"image":@"lock"},
-                  @{@"label":@"模仿能力",@"image":@"simulate"},
-                  ]
-          };
-    }else if(self.index == 1){
-        self.responseData =
         @{@"sectionTitle":@"潜能",
           @"sectionItems":@[
                   @{@"label":@"运动",@"image":@"football"},
@@ -77,49 +56,52 @@
                   @{@"label":@"模仿能力",@"image":@"simulate"},
                   ]
           };
-    }else if (self.index == 2){
-        self.responseData =
-        @{@"sectionTitle":@"场景",
-          @"sectionItems":@[
-                  @{@"label":@"春节",@"image":@"chun"},
-                  @{@"label":@"下雪了",@"image":@"snowflake"},
-                  @{@"label":@"起床",@"image":@"getup"},
-                  @{@"label":@"周末",@"image":@"weekend"},
-                  @{@"label":@"饭后半小时",@"image":@"aftermeal"},
-                  @{@"label":@"春天",@"image":@"flower"},
-                  @{@"label":@"落叶",@"image":@"leaf"},
-                  @{@"label":@"公园里",@"image":@"park"},
-                  @{@"label":@"小区里",@"image":@"community"},
-                  @{@"label":@"和小朋友玩",@"image":@"playwithkids"},
-                  @{@"label":@"月亮",@"image":@"night"},
-                  @{@"label":@"下雨了",@"image":@"rainny"},
-                  @{@"label":@"吃饭时",@"image":@"food"},
-                  @{@"label":@"家里",@"image":@"home"},
-                  @{@"label":@"宝宝生日",@"image":@"birthday"},
-                  ]
-          };
-    }else if(self.index == 3){
-        self.responseData =
-        @{@"sectionTitle":@"主题",
-          @"sectionItems":@[
-                  @{@"label":@"爱上吃饭",@"image":@"food"},
-                  @{@"label":@"学会排便",@"image":@"toilet"},
-                  @{@"label":@"准时睡觉",@"image":@"getup"},
-                  @{@"label":@"起床气",@"image":@"qichuangqi"},
-                  @{@"label":@"学会整理",@"image":@"quilt"},
-                  @{@"label":@"控制情绪",@"image":@"emotion"},
-                  @{@"label":@"逆反期",@"image":@"sad"},
-                  @{@"label":@"学会合作",@"image":@"cooperation"},
-                  @{@"label":@"学会分享",@"image":@"share"},
-                  @{@"label":@"不打人",@"image":@"fist"},
-                  @{@"label":@"勇敢",@"image":@"brave"},
-                  @{@"label":@"道歉",@"image":@"head3.jpg"},
-                  @{@"label":@"遵守规则",@"image":@"law"},
-                  @{@"label":@"学会洗澡",@"image":@"bath"},
-                  @{@"label":@"学翻身",@"image":@"scroll"},
-                  ]
-          };
-    }
+
+            }else if(self.index == 1){
+                self.responseData =
+                @{@"sectionTitle":@"场景",
+                  @"sectionItems":@[
+                          @{@"label":@"春节",@"image":@"chun"},
+                          @{@"label":@"下雪了",@"image":@"snowflake"},
+                          @{@"label":@"起床",@"image":@"getup"},
+                          @{@"label":@"周末",@"image":@"weekend"},
+                          @{@"label":@"饭后半小时",@"image":@"aftermeal"},
+                          @{@"label":@"春天",@"image":@"flower"},
+                          @{@"label":@"落叶",@"image":@"leaf"},
+                          @{@"label":@"公园里",@"image":@"park"},
+                          @{@"label":@"小区里",@"image":@"community"},
+                          @{@"label":@"和小朋友玩",@"image":@"playwithkids"},
+                          @{@"label":@"月亮",@"image":@"night"},
+                          @{@"label":@"下雨了",@"image":@"rainny"},
+                          @{@"label":@"吃饭时",@"image":@"food"},
+                          @{@"label":@"家里",@"image":@"home"},
+                          @{@"label":@"宝宝生日",@"image":@"birthday"},
+                          ]
+                  };
+
+            }else if (self.index == 2){
+                self.responseData =
+                @{@"sectionTitle":@"主题",
+                  @"sectionItems":@[
+                          @{@"label":@"爱上吃饭",@"image":@"food"},
+                          @{@"label":@"学会排便",@"image":@"toilet"},
+                          @{@"label":@"准时睡觉",@"image":@"getup"},
+                          @{@"label":@"起床气",@"image":@"qichuangqi"},
+                          @{@"label":@"学会整理",@"image":@"quilt"},
+                          @{@"label":@"控制情绪",@"image":@"emotion"},
+                          @{@"label":@"逆反期",@"image":@"sad"},
+                          @{@"label":@"学会合作",@"image":@"cooperation"},
+                          @{@"label":@"学会分享",@"image":@"share"},
+                          @{@"label":@"不打人",@"image":@"fist"},
+                          @{@"label":@"勇敢",@"image":@"brave"},
+                          @{@"label":@"道歉",@"image":@"head3.jpg"},
+                          @{@"label":@"遵守规则",@"image":@"law"},
+                          @{@"label":@"学会洗澡",@"image":@"bath"},
+                          @{@"label":@"学翻身",@"image":@"scroll"},
+                          ]
+                  };
+
+            }
     
     
     

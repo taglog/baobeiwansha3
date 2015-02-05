@@ -287,7 +287,7 @@
             [self.navigationController pushViewController:collectionViewController animated:YES];
         }else if(indexPath.row == 1){
             HomeViewController *commentViewController = [[HomeViewController alloc]init];
-            commentViewController.requestURL = @{@"requestRouter":@"post/mycollection"};
+            commentViewController.requestURL = @{@"requestRouter":@"post/mycomment"};
             commentViewController.controllerTitle = @"我的评论";
             [self.navigationController pushViewController:commentViewController animated:YES];
 
