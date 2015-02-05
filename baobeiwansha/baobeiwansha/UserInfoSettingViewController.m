@@ -20,6 +20,7 @@
 
 #define ORIGINAL_MAX_WIDTH 640.0f
 #define DEFAULTBGIMGURL @"defaultBackGroundImage.png"
+#define DEFAULTAVATARIMGURL @"defaultHead.png"
 
 @interface UserInfoSettingViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, VPImageCropperDelegate, UserNameSettingDelegate>
 
