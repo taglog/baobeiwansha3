@@ -87,7 +87,7 @@
                 tabTitle = @"玩具";
             break;
             case 3 :
-                tabTitle = @"亲子";
+                tabTitle = @"游戏";
             break;
     }
     

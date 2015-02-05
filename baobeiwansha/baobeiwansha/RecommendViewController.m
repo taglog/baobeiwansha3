@@ -320,7 +320,7 @@
             break;
         case 3 :
             self.tabLabel3 = [[UILabel alloc]init];
-            self.tabLabel3.text = @"亲子";
+            self.tabLabel3.text = @"游戏";
             label = self.tabLabel3;
             break;
     }
