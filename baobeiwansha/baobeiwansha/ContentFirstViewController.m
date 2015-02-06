@@ -87,6 +87,7 @@
     [self initTableView];
     [self initRefreshHeaderView];
     [self simulatePullDownRefresh];
+    
 }
 
 -(void)initScrollView{
@@ -257,7 +258,6 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     HomeTableViewCell *cell = (HomeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-    cell.isViewed = YES;
     
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
@@ -357,6 +357,7 @@
     postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
     NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
     //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];

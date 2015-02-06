@@ -76,7 +76,6 @@
         [self.contentView addSubview:commentNumber];
         self.commentNumber = commentNumber;
         
-        self.isViewed = NO;
     }
     return self;
 }
@@ -172,11 +171,9 @@
     //标题的frame
     self.title.frame = CGRectMake(107.0f, paddingVer, self.aFrame.size.width - 100.0, 20.0);
     
-    if(self.isViewed){
-        self.title.textColor = [UIColor colorWithRed:153.0f/255.0f green:153.0f/255.0f blue:153.0f/255.0f alpha:1.0f];
-    }else{
+    
         self.title.textColor = [UIColor colorWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
-    }
+    
         self.title.font = [UIFont systemFontOfSize:17.0f];
     
     

@@ -182,7 +182,6 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     HomeTableViewCell *cell = (HomeTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-    cell.isViewed = YES;
     
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;

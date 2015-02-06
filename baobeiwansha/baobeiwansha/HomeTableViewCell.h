@@ -10,8 +10,6 @@
 
 @interface HomeTableViewCell : UITableViewCell
 
-@property (nonatomic,assign) BOOL isViewed;
-
 -(void)setDataWithDict:(NSDictionary *)dict frame:(CGRect)frame;
 -(void)updateCollectionCount:(NSInteger)collectionNumber;
 
