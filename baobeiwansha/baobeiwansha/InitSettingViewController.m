@@ -14,22 +14,31 @@
 
 @interface InitSettingViewController ()
 
+@property (nonatomic,retain)UIScrollView *scrollView;
+
 @property (nonatomic,retain) UIButton *boyButton;
 @property (nonatomic,retain) UIButton *girlButton;
+@property (nonatomic,retain) UIView *checkMark;
+@property (nonatomic,assign) BOOL isGirlSelected;
+
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,retain) UITextField *babyNickName;
 @property (nonatomic,retain) UILabel *userGender;
 @property (nonatomic,retain) UILabel *babyBirthday;
-@property (nonatomic,retain) UIDatePicker *datePicker;
-@property (nonatomic,retain) UIButton *submitButton;
+@property (nonatomic,assign) BOOL isKeyboardShow;
+
 @property (nonatomic,retain) UIView *toolBar;
+@property (nonatomic,retain) UIDatePicker *datePicker;
+@property (nonatomic,assign) BOOL isDatePickerShow;
+
+@property (nonatomic,retain) UIButton *submitButton;
+
 @property (nonatomic,retain) AppDelegate *appDelegate;
-@property (nonatomic,retain) UIView *checkMark;
+
+
 @property (nonatomic,retain) UIView *mask;
 @property (nonatomic,assign) BOOL isMaskShow;
-@property (nonatomic,assign) BOOL isKeyboardShow;
-@property (nonatomic,assign) BOOL isDatePickerShow;
-@property (nonatomic,assign) BOOL isGirlSelected;
+
 @property (nonatomic, strong) NSMutableDictionary *userInfoDict;
 
 @end
@@ -45,6 +54,7 @@
 }
 -(void)viewDidLoad{
     [super viewDidLoad];
+    
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"完善宝宝信息";
     self.userInfoDict = [[NSMutableDictionary alloc]initWithCapacity:4];
@@ -56,6 +66,8 @@
 #pragma  mark - 初始化views
 -(void)initViews{
     
+    [self initScrollView];
+    
     [self initTitleLabel];
     
     [self initBabyGenderButton];
@@ -65,15 +77,21 @@
     [self initSubmitButton];
     
 }
-
+-(void)initScrollView{
+    
+    self.scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height + 100);
+    [self.view addSubview:self.scrollView];
+    
+}
 -(void)initTitleLabel{
     
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 94, self.view.frame.size.width, 20)];
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 30, self.view.frame.size.width, 20)];
     label.text = @"属于您宝宝的个性推荐";
     label.textColor = [UIColor colorWithRed:53.0/255.0f green:53.0/255.0f blue:53.0/255.0f alpha:1.0f];
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont systemFontOfSize:14.0f];
-    [self.view addSubview:label];
+    [self.scrollView addSubview:label];
     
     
     
@@ -84,48 +102,48 @@
     
     if(!self.girlButton){
         
-        self.girlButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 144, 70, 70)];
+        self.girlButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 80, 70, 70)];
         
         [self.girlButton setBackgroundImage:[UIImage imageNamed:@"girlhead"] forState:UIControlStateNormal];
         self.girlButton.layer.cornerRadius = 35;
         self.girlButton.layer.masksToBounds = YES;
         [self.girlButton addTarget:self action:@selector(editBabyGender:) forControlEvents:UIControlEventTouchUpInside];
         self.girlButton.tag = 0;
-        [self.view addSubview:self.girlButton];
+        [self.scrollView addSubview:self.girlButton];
         
-        UILabel *girl = [[UILabel alloc]initWithFrame:CGRectMake(50, 220, 70, 20)];
+        UILabel *girl = [[UILabel alloc]initWithFrame:CGRectMake(50, 156, 70, 20)];
         girl.text = @"女孩";
         girl.textColor = [UIColor colorWithRed:201.0f/255.0f green:201.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
         girl.font = [UIFont systemFontOfSize:13.0f];
         girl.textAlignment = NSTextAlignmentCenter;
-        [self.view addSubview:girl];
+        [self.scrollView addSubview:girl];
 
     }
     
     if(!self.boyButton){
         
-        self.boyButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 144, 70, 70)];
+        self.boyButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 80, 70, 70)];
         
         [self.boyButton setBackgroundImage:[UIImage imageNamed:@"boyhead"] forState:UIControlStateNormal];
         self.boyButton.layer.cornerRadius = 35;
         self.boyButton.layer.masksToBounds = YES;
         [self.boyButton addTarget:self action:@selector(editBabyGender:) forControlEvents:UIControlEventTouchUpInside];
         self.boyButton.tag = 1;
-        [self.view addSubview:self.boyButton];
+        [self.scrollView addSubview:self.boyButton];
         
-        UILabel *boy = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 220, 70, 20)];
+        UILabel *boy = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 120, 156, 70, 20)];
         boy.text = @"男孩";
         boy.textColor = [UIColor colorWithRed:201.0f/255.0f green:201.0f/255.0f blue:201.0f/255.0f alpha:1.0f];
         boy.font = [UIFont systemFontOfSize:13.0f];
         boy.textAlignment = NSTextAlignmentCenter;
-        [self.view addSubview:boy];
+        [self.scrollView addSubview:boy];
     }
 }
 
 -(void)initForm{
     
     if(!self.tableView){
-        self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(50, 250, self.view.frame.size.width - 100, 200)];
+        self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(50, 186, self.view.frame.size.width - 100, 200)];
         self.tableView.scrollEnabled = NO;
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
@@ -136,21 +154,21 @@
         tableViewMask.backgroundColor =[UIColor clearColor];
         self.tableView.tableFooterView = tableViewMask;
         
-        [self.view addSubview:self.tableView];
+        [self.scrollView addSubview:self.tableView];
     }
 }
 
 -(void)initSubmitButton{
     
     if(!self.submitButton){
-        self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 420, self.view.frame.size.width - 100, 50)];
+        self.submitButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 356, self.view.frame.size.width - 100, 50)];
         self.submitButton.backgroundColor = [UIColor colorWithRed:0.0f/255.0f green:209.0f/255.0f blue:77.0f/255.0f alpha:1.0];
         [self.submitButton setTitle:@"我的宝贝玩啥?" forState:UIControlStateNormal];
         self.submitButton.titleLabel.font = [UIFont systemFontOfSize:14.0f];
         self.submitButton.tintColor = [UIColor whiteColor];
         self.submitButton.layer.cornerRadius = 3;
         [self.submitButton addTarget:self action:@selector(syncUserInfo) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:self.submitButton];
+        [self.scrollView addSubview:self.submitButton];
     }
     
 }
@@ -371,8 +389,7 @@
     
     if (indexPath.row == 0) {
         
-        [self.babyNickName becomeFirstResponder];
-        self.isKeyboardShow = YES;
+        [self showKeyboard];
         [self showMaskView];
         
     }else if(indexPath.row == 1){
@@ -402,11 +419,19 @@
 
 -(void)showKeyboard{
     [self.babyNickName becomeFirstResponder];
+    [UIView animateWithDuration:0.2 animations:^{
+        self.scrollView.contentOffset = CGPointMake(0, 80);
+    } completion:^(BOOL finished) {
+    }];
     self.isKeyboardShow = YES;
 }
 
 -(void)hideKeyboard{
     [self.babyNickName resignFirstResponder];
+    [UIView animateWithDuration:0.2 animations:^{
+        self.scrollView.contentOffset = CGPointMake(0, 0);
+    } completion:^(BOOL finished) {
+    }];
     self.isKeyboardShow = NO;
     [self.userInfoDict setValue:self.babyNickName.text forKey:@"nickName"];
 }

@@ -124,6 +124,7 @@
     self.contentViewControllerFourth.ageChoosen = self.babyBirthdayMonth;
     self.contentViewControllerFourth.isAgeSet = YES;
     
+    [self.ageTableView reloadData];
     [self resetRefreshStatus];
     [self refreshActiveViewController];
 
@@ -556,15 +557,7 @@
     //如果是用户当前月份，显示两个点
     if(indexPath.row == self.babyBirthdayMonth){
         
-        if(indexPath.row < 24){
-            cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld个月 · · ·",(long)indexPath.row];
-            
-        }else{
-            cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld岁%ld个月 · · ·",indexPath.row/12,indexPath.row%12];
-            if(indexPath.row%12 == 0){
-                cell.textLabel.text = [NSString stringWithFormat:@"· · · %ld岁 · · ·",indexPath.row/12];
-            }
-        }
+        cell.backgroundColor = [UIColor colorWithRed:19.0/255.0 green:19.0/255.0 blue:19.0/255.0 alpha:0.8];
         
     }else{
         //不是用户当前的月份
@@ -572,9 +565,9 @@
             cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
             
         }else{
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row%12];
+            cell.textLabel.text = [NSString stringWithFormat:@"%d岁%d个月",indexPath.row/12,indexPath.row%12];
             if(indexPath.row%12 == 0){
-                cell.textLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
+                cell.textLabel.text = [NSString stringWithFormat:@"%d岁",indexPath.row/12];
             }
             
         }
@@ -601,12 +594,12 @@
         
         //更改title上的年龄
         if(indexPath.row <= 23){
-            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld个月",indexPath.row];
+            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
             
         }else{
-            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row % 12];
+            self.ageTitleLabel.text = [NSString stringWithFormat:@"%d岁%d个月",indexPath.row/12,indexPath.row % 12];
             if(indexPath.row % 12 == 0){
-                self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
+                self.ageTitleLabel.text = [NSString stringWithFormat:@"%d岁",indexPath.row/12];
             }
             
             ;

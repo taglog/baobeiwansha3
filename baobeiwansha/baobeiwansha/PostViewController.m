@@ -819,8 +819,10 @@
 
 #pragma mark 下拉数据刷新
 - (void)reloadTableViewDataSource{
+    
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    
     //上拉刷新的数据处理
     if(_refreshFooterView.pullUp){
         static int p = 2;
@@ -843,6 +845,7 @@
             }else{
                 
                 self.HUD.textLabel.text = @"没有评论了";
+                self.HUD.indicatorView = nil;
                 [self.HUD showInView:self.view];
                 [self.HUD dismissAfterDelay:1.0f];
                 
