@@ -287,7 +287,7 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        
+
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         [self.homeTableViewCell removeAllObjects];
         
@@ -365,18 +365,20 @@
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         
-        if(responseArray == (id)[NSNull null]){
-            //如果是最后一页
-            [self.delegate showHUD:@"已经是最后一页了"];
-            [self.delegate dismissHUD];
-            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-        }else{
+        if(responseArray != (id)[NSNull null]){
             for(NSDictionary *responseDict in responseArray){
                 [self.homeTableViewCell addObject:responseDict];
                 [_homeTableView reloadData];
                 [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
             }
+        }else{
+            //如果是最后一页
+            [self.delegate showHUD:@"已经是最后一页了"];
+            [self.delegate dismissHUD];
+            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
+            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+
+            
         }
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
