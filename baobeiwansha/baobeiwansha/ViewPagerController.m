@@ -331,15 +331,16 @@
     __weak ViewPagerController *weakSelf = self;
     
     if (activeContentIndex == self.activeContentIndex) {
-        
-        [self.pageViewController setViewControllers:@[viewController]
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.pageViewController setViewControllers:@[viewController]
                                           direction:UIPageViewControllerNavigationDirectionForward
                                            animated:NO
                                          completion:nil];
+        });
         
     } else if (!(activeContentIndex + 1 == self.activeContentIndex || activeContentIndex - 1 == self.activeContentIndex)) {
-        
-        [self.pageViewController setViewControllers:@[viewController]
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.pageViewController setViewControllers:@[viewController]
                                           direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
                                            animated:YES
                                          completion:^(BOOL completed) {
@@ -354,6 +355,7 @@
                                                                                  completion:nil];
                                              });
                                          }];
+            });
         
     } else {
         
@@ -535,6 +537,7 @@
     self.activeTabIndex = index;
     
     // Set activeContentIndex
+    
     self.activeContentIndex = index;
     
     // Inform delegate about the change
@@ -827,8 +830,22 @@
     return [self.contents objectAtIndex:index];
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
-    
-    return [self.contents indexOfObject:viewController];
+    NSInteger rc = [self.contents indexOfObject:viewController];
+    if (rc == NSNotFound) {
+        NSLog(@"view controller is %@",viewController);
+        NSLog(@"contents length is %d",self.contents.count);
+        NSLog(@"contents controller are %@",self.contents);
+        for (NSInteger i=0; i<self.contents.count; i++) {
+            if ([[self.contents objectAtIndex:i] isEqual:[NSNull null]]) {
+                continue;
+            } else {
+                NSLog(@"Return %d", i);
+                return i;
+            }
+        }
+        
+    }
+    return rc;
 }
 
 #pragma mark - UIPageViewControllerDataSource
@@ -847,9 +864,11 @@
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed {
     
     UIViewController *viewController = self.pageViewController.viewControllers[0];
+
     
     // Select tab
     NSUInteger index = [self indexForViewController:viewController];
+    
     [self selectTabAtIndex:index];
 }
 
