@@ -65,7 +65,7 @@
     
     
     [self initTitleView];
-
+    
     [self initUserInfo];
     
     
@@ -73,8 +73,8 @@
     
     [self initBarButtonItem];
     
-    [self initContentViewController];
-    
+    self.requestURL = @{@"requestRouter":@"post/category"};
+
     self.dataSource = self;
     self.delegate = self;
     
@@ -85,7 +85,7 @@
     self = [super init];
     self.isFirstLoad = YES;
     self.view.backgroundColor = [UIColor whiteColor];
-
+    
     return self;
 }
 
@@ -93,7 +93,7 @@
 -(void)initUserInfo{
     [self getUserInfo];
     
-     if(self.babyBirthday){
+    if(self.babyBirthday){
         
         if(self.ageTitleLabel){
             self.ageTitleLabel.text = self.babyBirthday;
@@ -111,7 +111,7 @@
     if(self.ageTitleLabel){
         self.ageTitleLabel.text = self.babyBirthday;
     }
-
+    
     self.activeMonth = self.babyBirthdayMonth;
     
     //更改目录页刷新的age
@@ -127,7 +127,7 @@
     [self.ageTableView reloadData];
     [self resetRefreshStatus];
     [self refreshActiveViewController];
-
+    
     
 }
 -(void)getUserInfo{
@@ -231,40 +231,6 @@
     
 }
 
--(void)initContentViewController{
-    
-    self.requestURL = @{@"requestRouter":@"post/category"};
-    
-    //4个标签，需要4个实例
-    if (self.contentViewControllerFirst == nil) {
-        
-        self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
-        self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
-        self.contentViewControllerFirst.delegate = self;
-        
-    }
-    if(self.contentViewControllerSecond == nil){
-        
-        self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
-        self.contentViewControllerSecond.delegate = self;
-        
-    }
-    if (self.contentViewControllerThird == nil) {
-        
-        self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
-        self.contentViewControllerThird.delegate = self;
-        
-    }
-    if (self.contentViewControllerFourth == nil) {
-        
-        self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
-        self.contentViewControllerFourth.delegate = self;
-        
-    }
-    
-    
-    
-}
 
 -(void)popViewController{
     
@@ -340,17 +306,47 @@
 - (UIViewController *)viewPager:(ViewPagerController *)viewPager contentViewControllerForTabAtIndex:(NSUInteger)index {
     //初始化contentViewController
     UIViewController *viewController;
+    
+    //4个标签，需要4个实例
     switch (index) {
         case 0:
+            if (self.contentViewControllerFirst == nil) {
+                NSLog(@"wrong1");
+                self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
+                self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
+                self.contentViewControllerFirst.delegate = self;
+                
+            }
             viewController = self.contentViewControllerFirst;
             break;
         case 1:
+            if(self.contentViewControllerSecond == nil){
+                NSLog(@"wrong2");
+
+                self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
+                self.contentViewControllerSecond.delegate = self;
+                
+            }
             viewController = self.contentViewControllerSecond;
             break;
         case 2:
+            if (self.contentViewControllerThird == nil) {
+                NSLog(@"wrong3");
+
+                self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
+                self.contentViewControllerThird.delegate = self;
+                
+            }
             viewController = self.contentViewControllerThird;
             break;
         case 3:
+            if (self.contentViewControllerFourth == nil) {
+                NSLog(@"wrong4");
+
+                self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
+                self.contentViewControllerFourth.delegate = self;
+                
+            }
             viewController = self.contentViewControllerFourth;
             break;
         default:
@@ -424,7 +420,7 @@
         default:
             break;
     }
-
+    
     if(self.beforeMonth != self.activeMonth){
         
         [self refreshActiveViewController];
@@ -448,8 +444,8 @@
     self.isRefreshed1 = NO;
     self.isRefreshed2 = NO;
     self.isRefreshed3 = NO;
-
-
+    
+    
 }
 -(void)refreshActiveViewController{
     
@@ -466,7 +462,7 @@
                 [self.contentViewControllerSecond simulatePullDownRefresh];
                 self.isRefreshed1 = YES;
             }
-
+            
             break;
             
         case 2:
@@ -559,20 +555,20 @@
         
         cell.backgroundColor = [UIColor colorWithRed:19.0/255.0 green:19.0/255.0 blue:19.0/255.0 alpha:0.8];
         
+    }        //不是用户当前的月份
+    if(indexPath.row < 24){
+        cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
+        
     }else{
-        //不是用户当前的月份
-        if(indexPath.row < 24){
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
-            
-        }else{
-            cell.textLabel.text = [NSString stringWithFormat:@"%d岁%d个月",indexPath.row/12,indexPath.row%12];
-            if(indexPath.row%12 == 0){
-                cell.textLabel.text = [NSString stringWithFormat:@"%d岁",indexPath.row/12];
-            }
-            
+        
+        cell.textLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row%12];
+        if(indexPath.row%12 == 0){
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
         }
         
     }
+    
+    
     cell.textLabel.font = [UIFont systemFontOfSize:16.0f];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
     
@@ -597,9 +593,9 @@
             self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
             
         }else{
-            self.ageTitleLabel.text = [NSString stringWithFormat:@"%d岁%d个月",indexPath.row/12,indexPath.row % 12];
+            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row % 12];
             if(indexPath.row % 12 == 0){
-                self.ageTitleLabel.text = [NSString stringWithFormat:@"%d岁",indexPath.row/12];
+                self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
             }
             
             ;

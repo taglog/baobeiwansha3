@@ -39,18 +39,21 @@
 @property (nonatomic,retain) AppDelegate *appDelegate;
 
 
-@property (nonatomic,strong)JGProgressHUD *HUD;
-@property (nonatomic,assign)BOOL isHudShow;
+@property (nonatomic,strong) JGProgressHUD *HUD;
+@property (nonatomic,assign) BOOL isHudShow;
+
+@property (nonatomic,assign)NSInteger p;
 
 @end
 
 @implementation ContentFirstViewController
 
 -(id)init{
+    
     self = [super init];
     
     if(self){
-        
+        self.p = 2;
     //变量设置,如果不放在init里面，在view没有load的时候是不能执行刷新页面操作的，所以在同步完用户年龄进行读取的时候，会报错
         self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
@@ -396,7 +399,8 @@
                 _scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
             }
             
-            
+            [_homeTableView reloadData];
+
             
         }else{
             
@@ -406,7 +410,6 @@
             [self showNoDataAlert];
             
         }
-        [_homeTableView reloadData];
         
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
         
@@ -429,8 +432,6 @@
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     
-    static int p = 2;
-    
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
     
@@ -441,9 +442,9 @@
     NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     if(self.isAgeSet){
-        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.p],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
     }else{
-        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",nil];
+        postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.p],@"p",nil];
         
     }
     
@@ -452,32 +453,41 @@
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-
+        NSLog(@"%@",responseObject);
+        
         if(responseArray == (id)[NSNull null]){
+            
             //如果是最后一页
             [self showHUD:@"已经是最后一页了"];
             [self  dismissHUD];
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
             app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            
         }else{
+            
             for(NSDictionary *responseDict in responseArray){
                 [self.homeTableViewCell addObject:responseDict];
+            }  
                 _homeTableView.frame = CGRectMake(0, self.carousel.frame.size.height, self.view.frame.size.width,[self.homeTableViewCell count]*100);
                 _scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.carousel.frame.size.height + [self.homeTableViewCell count]*100 );
                 _refreshFooterView.frame = CGRectMake(0, _scrollView.contentSize.height, self.view.frame.size.width, 100.0f);
+                
                 [_homeTableView reloadData];
+                self.p++;
                 [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
-            }
+            
         }
+        
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
+        
         [self  showHUD:@"网络请求失败~"];
         [self  dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
         
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     }];
-    ++p;
+    
     
 }
 - (void)doneLoadingTableViewData{

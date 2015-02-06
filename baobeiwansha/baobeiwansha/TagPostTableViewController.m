@@ -33,11 +33,13 @@
 
 @property (nonatomic,strong) UIView *tableViewMask;
 
+@property (nonatomic,assign) NSInteger p;
 @end
 
 @implementation TagPostTableViewController
 
 -(id)initWithURL:(NSDictionary *)dict tag:(NSString *)tag{
+    self.p = 2;
     self = [super init];
     self.requestURL = dict;
     self.tag = tag;
@@ -329,7 +331,8 @@
                 
             }
             
-            
+            [_homeTableView reloadData];
+
         }else{
             [self showHUD:@"没有内容~"];
             [self dismissHUD];
@@ -337,16 +340,17 @@
            
         }
         
-        [_homeTableView reloadData];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
         
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
+        
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
         [self showHUD:@"网络请求失败~"];
         [self dismissHUD];
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        
     }];
     
     
@@ -358,7 +362,6 @@
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     
-    static int p = 2;
     
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
@@ -366,7 +369,7 @@
     
     postRouter = @"post/getTableByTag";
     
-    postParam = [NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:p],@"p",self.tag,@"tag",nil];
+    postParam = [NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.p],@"p",self.tag,@"tag",nil];
     
     
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
@@ -382,12 +385,16 @@
             app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
             [self showHUD:@"已经是最后一页了~"];
             [self dismissHUD];
+            
         }else{
+            
             for(NSDictionary *responseDict in responseArray){
                 [self.homeTableViewCell addObject:responseDict];
-                [_homeTableView reloadData];
-                [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
             }
+            [_homeTableView reloadData];
+            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+            self.p++;
+            
         }
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
@@ -396,7 +403,6 @@
         [self dismissHUD];
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
     }];
-    ++p;
     
 }
 - (void)doneLoadingTableViewData{
