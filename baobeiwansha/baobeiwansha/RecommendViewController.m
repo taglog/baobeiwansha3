@@ -73,8 +73,8 @@
     
     [self initBarButtonItem];
     
-    [self initContentViewController];
-    
+    self.requestURL = @{@"requestRouter":@"post/category"};
+
     self.dataSource = self;
     self.delegate = self;
     
@@ -231,40 +231,6 @@
     
 }
 
--(void)initContentViewController{
-    
-    self.requestURL = @{@"requestRouter":@"post/category"};
-    
-    //4个标签，需要4个实例
-    if (self.contentViewControllerFirst == nil) {
-        
-        self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
-        self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
-        self.contentViewControllerFirst.delegate = self;
-        
-    }
-    if(self.contentViewControllerSecond == nil){
-        
-        self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
-        self.contentViewControllerSecond.delegate = self;
-        
-    }
-    if (self.contentViewControllerThird == nil) {
-        
-        self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
-        self.contentViewControllerThird.delegate = self;
-        
-    }
-    if (self.contentViewControllerFourth == nil) {
-        
-        self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
-        self.contentViewControllerFourth.delegate = self;
-        
-    }
-    
-    
-    
-}
 
 -(void)popViewController{
     
@@ -340,17 +306,47 @@
 - (UIViewController *)viewPager:(ViewPagerController *)viewPager contentViewControllerForTabAtIndex:(NSUInteger)index {
     //初始化contentViewController
     UIViewController *viewController;
+    
+    //4个标签，需要4个实例
     switch (index) {
         case 0:
+            if (self.contentViewControllerFirst == nil) {
+                NSLog(@"wrong1");
+                self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
+                self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
+                self.contentViewControllerFirst.delegate = self;
+                
+            }
             viewController = self.contentViewControllerFirst;
             break;
         case 1:
+            if(self.contentViewControllerSecond == nil){
+                NSLog(@"wrong2");
+
+                self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
+                self.contentViewControllerSecond.delegate = self;
+                
+            }
             viewController = self.contentViewControllerSecond;
             break;
         case 2:
+            if (self.contentViewControllerThird == nil) {
+                NSLog(@"wrong3");
+
+                self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
+                self.contentViewControllerThird.delegate = self;
+                
+            }
             viewController = self.contentViewControllerThird;
             break;
         case 3:
+            if (self.contentViewControllerFourth == nil) {
+                NSLog(@"wrong4");
+
+                self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
+                self.contentViewControllerFourth.delegate = self;
+                
+            }
             viewController = self.contentViewControllerFourth;
             break;
         default:
