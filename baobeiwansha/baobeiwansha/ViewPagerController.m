@@ -114,6 +114,7 @@
 @property (nonatomic) UIColor *indicatorColor;
 @property (nonatomic) UIColor *tabsViewBackgroundColor;
 @property (nonatomic) UIColor *contentViewBackgroundColor;
+@property BOOL isScrolling;
 
 @end
 
@@ -202,8 +203,15 @@
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
     
-    // Select the tab
-    [self selectTabAtIndex:index];
+    // If user is not scrolling tabview
+    NSLog(@"handling gesture, current index is %d", index);
+    if (!self.isScrolling) {
+        // If tap is not selected tab (new tab)
+        if (self.activeTabIndex != index) {
+            // Select the tab
+            [self selectTabAtIndex:index];
+        }
+    }
 }
 
 #pragma mark - Interface rotation
@@ -331,16 +339,15 @@
     __weak ViewPagerController *weakSelf = self;
     
     if (activeContentIndex == self.activeContentIndex) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.pageViewController setViewControllers:@[viewController]
+        
+        [self.pageViewController setViewControllers:@[viewController]
                                           direction:UIPageViewControllerNavigationDirectionForward
                                            animated:NO
                                          completion:nil];
-        });
         
     } else if (!(activeContentIndex + 1 == self.activeContentIndex || activeContentIndex - 1 == self.activeContentIndex)) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.pageViewController setViewControllers:@[viewController]
+        
+        [self.pageViewController setViewControllers:@[viewController]
                                           direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
                                            animated:YES
                                          completion:^(BOOL completed) {
@@ -355,7 +362,6 @@
                                                                                  completion:nil];
                                              });
                                          }];
-            });
         
     } else {
         
@@ -658,6 +664,7 @@
     
     self.animatingToTab = NO;
     self.defaultSetupDone = NO;
+    self.isScrolling = NO;
 }
 - (void)defaultSetup {
     
@@ -831,15 +838,17 @@
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
     NSInteger rc = [self.contents indexOfObject:viewController];
+    
     if (rc == NSNotFound) {
         NSLog(@"view controller is %@",viewController);
         NSLog(@"contents length is %d",self.contents.count);
         NSLog(@"contents controller are %@",self.contents);
         for (NSInteger i=0; i<self.contents.count; i++) {
             if ([[self.contents objectAtIndex:i] isEqual:[NSNull null]]) {
+                //[self.contents replaceObjectAtIndex:i withObject:viewController];
                 continue;
             } else {
-                NSLog(@"Return %d", i);
+                viewController = self.contents[i];
                 return i;
             }
         }
@@ -911,9 +920,12 @@
     }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+    
+    
+    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)] && !self.isScrolling) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
     }
+    self.isScrolling = YES;
 }
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
@@ -942,6 +954,8 @@
     }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    self.isScrolling = NO;
+    NSLog(@"end scroll");
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [self.actualDelegate scrollViewDidEndDecelerating:scrollView];
     }
