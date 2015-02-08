@@ -649,6 +649,7 @@
     
     // pageViewController
     self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+    //self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStylePageCurl
                                                               navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                             options:nil];
     [self addChildViewController:self.pageViewController];
@@ -861,24 +862,27 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     NSUInteger index = [self indexForViewController:viewController];
     index++;
+    //NSLog(@"high index is %d", index);
     return [self viewControllerAtIndex:index];
 }
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     NSUInteger index = [self indexForViewController:viewController];
     index--;
+    //NSLog(@"low index is %d", index);
     return [self viewControllerAtIndex:index];
 }
 
 #pragma mark - UIPageViewControllerDelegate
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed {
     
-    UIViewController *viewController = self.pageViewController.viewControllers[0];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *viewController = self.pageViewController.viewControllers[0];
 
+        // Select tab
+        NSUInteger index = [self indexForViewController:viewController];
     
-    // Select tab
-    NSUInteger index = [self indexForViewController:viewController];
-    
-    [self selectTabAtIndex:index];
+        [self selectTabAtIndex:index];
+    });
 }
 
 #pragma mark - UIScrollViewDelegate, Responding to Scrolling and Dragging
@@ -924,8 +928,11 @@
     
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)] && !self.isScrolling) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
+    } else {
+        NSLog(@"begin scroll");
+        self.isScrolling = YES;
     }
-    self.isScrolling = YES;
+    
 }
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
