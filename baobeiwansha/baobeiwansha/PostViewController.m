@@ -373,6 +373,7 @@
     
 }
 
+
 //获取_textView的高度
 -(CGSize)getTextViewHeight:(NSAttributedString *)string{
     
@@ -383,6 +384,7 @@
     DTCoreTextLayoutFrame *layoutFrame = [layouter layoutFrameWithRect:maxRect range:entireString];
     
     CGSize sizeNeeded = [layoutFrame frame].size;
+
     
     return sizeNeeded;
 }
