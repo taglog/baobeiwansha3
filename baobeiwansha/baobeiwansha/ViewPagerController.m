@@ -114,6 +114,7 @@
 @property (nonatomic) UIColor *indicatorColor;
 @property (nonatomic) UIColor *tabsViewBackgroundColor;
 @property (nonatomic) UIColor *contentViewBackgroundColor;
+@property BOOL isScrolling;
 
 @end
 
@@ -202,8 +203,15 @@
     UIView *tabView = tapGestureRecognizer.view;
     __block NSUInteger index = [self.tabs indexOfObject:tabView];
     
-    // Select the tab
-    [self selectTabAtIndex:index];
+    // If user is not scrolling tabview
+    NSLog(@"handling gesture, current index is %d", index);
+    if (!self.isScrolling) {
+        // If tap is not selected tab (new tab)
+        if (self.activeTabIndex != index) {
+            // Select the tab
+            [self selectTabAtIndex:index];
+        }
+    }
 }
 
 #pragma mark - Interface rotation
@@ -533,6 +541,7 @@
     self.activeTabIndex = index;
     
     // Set activeContentIndex
+    
     self.activeContentIndex = index;
     
     // Inform delegate about the change
@@ -638,6 +647,7 @@
     
     // pageViewController
     self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+    //self.pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStylePageCurl
                                                               navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                                                                             options:nil];
     [self addChildViewController:self.pageViewController];
@@ -653,6 +663,7 @@
     
     self.animatingToTab = NO;
     self.defaultSetupDone = NO;
+    self.isScrolling = NO;
 }
 - (void)defaultSetup {
     
@@ -825,30 +836,51 @@
     return [self.contents objectAtIndex:index];
 }
 - (NSUInteger)indexForViewController:(UIViewController *)viewController {
+    NSInteger rc = [self.contents indexOfObject:viewController];
     
-    return [self.contents indexOfObject:viewController];
+    if (rc == NSNotFound) {
+        NSLog(@"view controller is %@",viewController);
+        NSLog(@"contents length is %d",self.contents.count);
+        NSLog(@"contents controller are %@",self.contents);
+        for (NSInteger i=0; i<self.contents.count; i++) {
+            if ([[self.contents objectAtIndex:i] isEqual:[NSNull null]]) {
+                //[self.contents replaceObjectAtIndex:i withObject:viewController];
+                continue;
+            } else {
+                viewController = self.contents[i];
+                return i;
+            }
+        }
+        
+    }
+    return rc;
 }
 
 #pragma mark - UIPageViewControllerDataSource
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     NSUInteger index = [self indexForViewController:viewController];
     index++;
+    //NSLog(@"high index is %d", index);
     return [self viewControllerAtIndex:index];
 }
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     NSUInteger index = [self indexForViewController:viewController];
     index--;
+    //NSLog(@"low index is %d", index);
     return [self viewControllerAtIndex:index];
 }
 
 #pragma mark - UIPageViewControllerDelegate
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed {
     
-    UIViewController *viewController = self.pageViewController.viewControllers[0];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *viewController = self.pageViewController.viewControllers[0];
+
+        // Select tab
+        NSUInteger index = [self indexForViewController:viewController];
     
-    // Select tab
-    NSUInteger index = [self indexForViewController:viewController];
-    [self selectTabAtIndex:index];
+        [self selectTabAtIndex:index];
+    });
 }
 
 #pragma mark - UIScrollViewDelegate, Responding to Scrolling and Dragging
@@ -890,9 +922,15 @@
     }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+    
+    
+    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)] && !self.isScrolling) {
         [self.actualDelegate scrollViewWillBeginDragging:scrollView];
+    } else {
+        NSLog(@"begin scroll");
+        self.isScrolling = YES;
     }
+    
 }
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
@@ -921,6 +959,8 @@
     }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    self.isScrolling = NO;
+    NSLog(@"end scroll");
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [self.actualDelegate scrollViewDidEndDecelerating:scrollView];
     }

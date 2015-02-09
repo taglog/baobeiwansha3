@@ -452,6 +452,7 @@
             UIImage *tImg = [UIImage imageNamed:DEFAULTBGIMGURL];
             self.bgImageView.image = tImg;
             [self.delegate updateBackgroundImage:tImg];
+            [self.dictImg setObject:UIImagePNGRepresentation(tImg) forKey:@"bgImage"];
         }
     }
 }
