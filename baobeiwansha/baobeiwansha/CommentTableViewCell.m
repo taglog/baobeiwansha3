@@ -59,13 +59,18 @@
     
     _dict = dict;
     _frame = frame;
+    if([dict objectForKey:@"comment_author"] != (id)[NSNull null]){
+        self.userName.text = [dict objectForKey:@"comment_author"];
+    }
+    if([dict objectForKey:@"comment_date"] != (id)[NSNull null]){
+        
+        self.commentTime.text = [[dict objectForKey:@"comment_date"]substringToIndex:10];
+    }
+    if([dict objectForKey:@"comment_content"] != (id)[NSNull null]){
+        
+        self.userComment.text = [dict objectForKey:@"comment_content"];
+    }
     
-    self.userName.text = [dict objectForKey:@"comment_author"];
-    
-    self.commentTime.text = [[dict objectForKey:@"comment_date"]substringToIndex:10];
-
-    self.userComment.text = [dict objectForKey:@"comment_content"];
-
     
     [self setNeedsLayout];
     
@@ -74,9 +79,9 @@
 +(CGFloat)heightForCellWithDict:dict frame:(CGRect)frame{
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:15.0f]};
     CGRect textRect = [[dict objectForKey:@"comment_content"]boundingRectWithSize:CGSizeMake(frame.size.width - 30.0f, CGFLOAT_MAX)
-                                                          options:NSStringDrawingUsesLineFragmentOrigin
-                                                       attributes:attributes
-                                                          context:nil];
+                                                                          options:NSStringDrawingUsesLineFragmentOrigin
+                                                                       attributes:attributes
+                                                                          context:nil];
     CGFloat heightForCell = 90 + textRect.size.height ;
     
     return heightForCell;

@@ -171,7 +171,13 @@
         cell = [[HomeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     
-    [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+    @try {
+        [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+        
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@",exception);
+    }
     
     return cell;
 }
