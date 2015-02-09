@@ -54,7 +54,7 @@
     
     if(self){
         self.p = 2;
-    //变量设置,如果不放在init里面，在view没有load的时候是不能执行刷新页面操作的，所以在同步完用户年龄进行读取的时候，会报错
+        //变量设置,如果不放在init里面，在view没有load的时候是不能执行刷新页面操作的，所以在同步完用户年龄进行读取的时候，会报错
         self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
@@ -72,7 +72,7 @@
             @"imgurl":@"halloween.jpeg", @"title":@"万圣节"
             }
       };
-
+    
     
     //初始化views
     [self initViews];
@@ -248,7 +248,13 @@
         cell = [[HomeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     
+    
     [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+
+   
+    
+    
+    
     
     return cell;
 }
@@ -313,10 +319,10 @@
         collectionNumber = [[self.homeTableViewCell[indexPath.row] objectForKey:@"collection_count"]integerValue] - 1;
     }
     NSMutableDictionary *dict = [[NSMutableDictionary alloc]initWithDictionary:
-    self.homeTableViewCell[indexPath.row]];
+                                 self.homeTableViewCell[indexPath.row]];
     [dict setObject:[NSNumber numberWithInteger:collectionNumber] forKey:@"collection_count"];
     [self.homeTableViewCell replaceObjectAtIndex:indexPath.row withObject:dict];
-
+    
     [cell updateCollectionCount:collectionNumber];
     
 }
@@ -369,11 +375,10 @@
     //发送请求
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
-
+    
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-
+        
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        [self.homeTableViewCell removeAllObjects];
         
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
@@ -381,6 +386,8 @@
                 self.noDataAlert.hidden = YES;
             }
             
+            [self.homeTableViewCell removeAllObjects];
+
             for(NSDictionary *responseDict in responseArray){
                 [self.homeTableViewCell addObject:responseDict];
                 
@@ -400,7 +407,7 @@
             }
             
             [_homeTableView reloadData];
-
+            
             
         }else{
             
@@ -467,14 +474,14 @@
             
             for(NSDictionary *responseDict in responseArray){
                 [self.homeTableViewCell addObject:responseDict];
-            }  
-                _homeTableView.frame = CGRectMake(0, self.carousel.frame.size.height, self.view.frame.size.width,[self.homeTableViewCell count]*100);
-                _scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.carousel.frame.size.height + [self.homeTableViewCell count]*100 );
-                _refreshFooterView.frame = CGRectMake(0, _scrollView.contentSize.height, self.view.frame.size.width, 100.0f);
-                
-                [_homeTableView reloadData];
-                self.p++;
-                [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+            }
+            _homeTableView.frame = CGRectMake(0, self.carousel.frame.size.height, self.view.frame.size.width,[self.homeTableViewCell count]*100);
+            _scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.carousel.frame.size.height + [self.homeTableViewCell count]*100 );
+            _refreshFooterView.frame = CGRectMake(0, _scrollView.contentSize.height, self.view.frame.size.width, 100.0f);
+            
+            [_homeTableView reloadData];
+            self.p++;
+            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
             
         }
         

@@ -245,6 +245,9 @@
 
 -(void)getBubbleFromServer{
     
+    //显示等待
+    self.window.rootViewController = self.mainNavigation;
+    [self.mainViewController showWaitingSign];
     
     //网络活动指示器
     UIApplication *app=[UIApplication sharedApplication];
@@ -258,7 +261,7 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
-        NSLog(@"%@",responseObject);
+
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         
         //返回不为空
@@ -309,7 +312,7 @@
             }
         }
         
-        self.window.rootViewController = self.mainNavigation;
+        [self.mainViewController hideWaitingSign];
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -142,7 +142,23 @@
     NSString *userNickName = _commentTextField.text;
     
     //如果用户输入不为空
-    if(![text isEqualToString:@""] && ![text isEqualToString:@"请在此输入您的评论"]&&![userNickName isEqualToString:@""]&&![text isEqualToString:@"请输入您评论的昵称"]){
+    if([userNickName isEqualToString:@""] || [userNickName isEqualToString:@"请输入您评论的昵称"]){
+        //用户没有输入的时候，该做些什么
+        self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        self.HUD.textLabel.text = @"请输入您评论的昵称";
+        [self.HUD showInView:self.view];
+        [self.HUD dismissAfterDelay:1.0];
+        return;
+    }
+    if([text isEqualToString:@""] || [text isEqualToString:@"请在此输入您的评论"]){
+            //用户没有输入的时候，该做些什么
+            self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+            self.HUD.textLabel.text = @"请输入您的评论";
+            [self.HUD showInView:self.view];
+            [self.HUD dismissAfterDelay:1.0];
+        return;
+    }
+    
         
         //初始化HUD
         self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
@@ -192,29 +208,18 @@
             app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         }];
         
-    }else{
-        //用户没有输入的时候，该做些什么
-        self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
-        self.HUD.textLabel.text = @"内容不能为空";
-        [self.HUD showInView:self.view];
-        [self.HUD dismissAfterDelay:1.0];
-    }
+    
     
 }
 
 -(void)addUserName:(NSArray *)userName{
     
     if([_commentTextField.text isEqualToString:@""] || [_commentTextField.text isEqualToString:@"请输入您评论的昵称"]){
-        NSString *userSex;
-        if ([userName valueForKey:@"userSex"] == 0) {
-            userSex = @"妈";
-        }else{
-            userSex = @"爸";
-        }
-        if([userName valueForKey:@"userBabyName"] !=(id)[NSNull null]){
-            NSString *userNickName = [[userName valueForKey:@"userBabyName"] stringByAppendingString:userSex];
+        
+        if([userName valueForKey:@"userNickName"] !=(id)[NSNull null]){
+            NSString *userNickName = [userName valueForKey:@"userNickName"];
             //如果用户存得宝宝昵称不为空字符，就读出来显示
-            if(![[userName valueForKey:@"userBabyName"]isEqualToString:@""]&&![[userName valueForKey:@"userBabyName"]isEqualToString:@" "]){
+            if(![[userName valueForKey:@"userNickName"]isEqualToString:@""]&&![[userName valueForKey:@"userNickName"]isEqualToString:@" "]){
                 _commentTextField.text = userNickName;
                 _commentTextField.textColor = [UIColor blackColor];
             }

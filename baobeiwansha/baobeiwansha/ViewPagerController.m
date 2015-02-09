@@ -322,7 +322,6 @@
     [self.tabsView scrollRectToVisible:frame animated:YES];
 }
 - (void)setActiveContentIndex:(NSUInteger)activeContentIndex {
-    
     // Get the desired viewController
     UIViewController *viewController = [self viewControllerAtIndex:activeContentIndex];
     
@@ -338,7 +337,6 @@
                                          completion:nil];
         
     } else if (!(activeContentIndex + 1 == self.activeContentIndex || activeContentIndex - 1 == self.activeContentIndex)) {
-        
         [self.pageViewController setViewControllers:@[viewController]
                                           direction:(activeContentIndex < self.activeContentIndex) ? UIPageViewControllerNavigationDirectionReverse : UIPageViewControllerNavigationDirectionForward
                                            animated:YES

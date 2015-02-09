@@ -221,6 +221,7 @@
         
         
         AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
+        afnmanager.requestSerializer.timeoutInterval = 20;
         afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
         
         

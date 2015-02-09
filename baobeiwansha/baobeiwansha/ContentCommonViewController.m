@@ -291,10 +291,12 @@
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
 
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        [self.homeTableViewCell removeAllObjects];
         
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
+            
+            [self.homeTableViewCell removeAllObjects];
+
             if(self.noDataAlert){
                 self.noDataAlert.hidden = YES;
                 [self.noDataAlert removeFromSuperview];

@@ -69,6 +69,7 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
     self.navigationController.navigationBarHidden = YES;
     
     if(!self.isFirstLoad){
@@ -76,7 +77,6 @@
         [self.bubbleView resumeAnimation];
         
     }else{
-        [self.bubbleView performInitializationAnimation];
         [self.bubbleView performSelector:@selector(performShakeAnimation) withObject:nil afterDelay:2.0];
         
         self.isFirstLoad = NO;
@@ -111,7 +111,8 @@
     [self showHint];
     
     [self.view addSubview:self.bubbleView];
-    
+    [self.bubbleView performInitializationAnimation];
+
 }
 -(void)showHint{
     
@@ -122,7 +123,6 @@
         [_hint1 setHintDelegate:self];
         _hilightView1 = self.bubbleView.girlButton;
         [_hint1 presentModalMessage:@"" where:self.navigationController.view];
-        
         
     }
     
@@ -200,9 +200,6 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isOverlayShowed"];
         
     }
-    
-    
-    
     
     
 }
@@ -381,6 +378,29 @@
     
 }
 
+-(void)showWaitingSign{
+    
+    if(!self.waitingSign){
+        self.waitingSign = [[UIImageView alloc]initWithFrame:CGRectMake(self.view.frame.size.width - 200, 20, 180, 80)];
+        self.waitingSign.image = [UIImage imageNamed:@"reachability"];
+        
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 27, 180, 20)];
+        label.text = @"正在加载...";
+        label.textColor = [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:1.0];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.font = [UIFont systemFontOfSize:14.0];
+        [self.waitingSign addSubview:label];
+        [self.view addSubview:self.waitingSign];
+    }
+    
+}
+-(void)hideWaitingSign{
+    
+    [UIView animateWithDuration:1.0 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.waitingSign.frame = CGRectMake(self.view.frame.size.width, 20, 180, 80);
+    } completion:nil];
+    
+}
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:nil];

@@ -62,7 +62,7 @@
     
     self.userName.text = [dict objectForKey:@"comment_author"];
     
-    self.commentTime.text = [dict objectForKey:@"comment_date"];
+    self.commentTime.text = [[dict objectForKey:@"comment_date"]substringToIndex:10];
 
     self.userComment.text = [dict objectForKey:@"comment_content"];
 

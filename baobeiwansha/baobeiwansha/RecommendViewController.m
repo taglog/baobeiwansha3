@@ -311,7 +311,6 @@
     switch (index) {
         case 0:
             if (self.contentViewControllerFirst == nil) {
-                NSLog(@"wrong1");
                 self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
                 self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
                 self.contentViewControllerFirst.delegate = self;
@@ -321,7 +320,6 @@
             break;
         case 1:
             if(self.contentViewControllerSecond == nil){
-                NSLog(@"wrong2");
 
                 self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
                 self.contentViewControllerSecond.delegate = self;
@@ -331,7 +329,6 @@
             break;
         case 2:
             if (self.contentViewControllerThird == nil) {
-                NSLog(@"wrong3");
 
                 self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
                 self.contentViewControllerThird.delegate = self;
@@ -341,7 +338,6 @@
             break;
         case 3:
             if (self.contentViewControllerFourth == nil) {
-                NSLog(@"wrong4");
 
                 self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
                 self.contentViewControllerFourth.delegate = self;

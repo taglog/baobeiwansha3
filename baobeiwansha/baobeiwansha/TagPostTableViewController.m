@@ -199,8 +199,9 @@
     if(cell == nil){
         cell = [[HomeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
-    
-    [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+    if(self.homeTableViewCell[indexPath.row]){
+        [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+    }
     
     return cell;
 }
@@ -307,9 +308,12 @@
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        [self.homeTableViewCell removeAllObjects];
+        
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
+            
+            [self.homeTableViewCell removeAllObjects];
+
             if(self.noDataAlert){
                 self.noDataAlert.hidden = YES;
                 [self.noDataAlert removeFromSuperview];

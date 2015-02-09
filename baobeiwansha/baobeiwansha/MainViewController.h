@@ -16,5 +16,7 @@
 @property (nonatomic,retain) NSArray *bubbleTitles;
 
 -(void)resumeAnimation;
+-(void)showWaitingSign;
+-(void)hideWaitingSign;
 
 @end

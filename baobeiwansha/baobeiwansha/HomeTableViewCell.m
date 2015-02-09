@@ -85,9 +85,10 @@
     
     self.dict = dict;
     
+    self.aFrame = frame;
+
     self.ID = [[dict valueForKey:@"ID"] integerValue];
     
-    self.aFrame = frame;
     
     NSString *imagePathOnServer = @"http://blog.yhb360.com/wp-content/uploads/";
     
