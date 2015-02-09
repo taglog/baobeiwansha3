@@ -165,9 +165,9 @@
         self.HUD.textLabel.text = @"保存中...";
         [self.HUD showInView:self.view];
         
-        UIApplication *app=[UIApplication sharedApplication];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
+    
         self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         self.commentPostParams = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:_postID],@"comment_post_ID", text,@"comment_content",userNickName,@"comment_author",self.appDelegate.generatedUserID,@"userIdStr",nil];
@@ -197,7 +197,7 @@
                 
                 
             }
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             self.HUD.textLabel.text = @"网络请求失败";
             [self.HUD showInView:self.view];
@@ -205,7 +205,7 @@
                 [self.HUD dismiss];
             });
             NSLog(@"%@",error);
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         }];
         
     

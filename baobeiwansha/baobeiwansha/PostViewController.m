@@ -68,6 +68,8 @@
 
 @property(nonatomic,retain)JGProgressHUD *HUD;
 
+@property (nonatomic,assign)NSInteger p;
+
 
 @end
 
@@ -167,7 +169,7 @@
         manager.requestSerializer.timeoutInterval = 20;
         [manager POST:collectRequestUrl  parameters:collectParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
             NSInteger status = [[responseObject valueForKey:@"status"]integerValue];
-
+            
             if(status == 1){
                 
                 if(collectButtonSender.tag == 0){
@@ -207,8 +209,10 @@
                     [self.HUD dismiss];
                 });
             }
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+                
+            });
         }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             
             NSLog(@"%@",error);
@@ -218,8 +222,10 @@
             [self.HUD dismissAfterDelay:1.0];
             self.collectButtonEnabled = YES;
             
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-        }];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+                
+            });        }];
         
     }
     
@@ -361,7 +367,8 @@
         _textView.attributedString = [self _attributedStringForSnippetUsingiOS6Attributes:NO];
         
         _textViewSize = [self getTextViewHeight:_textView.attributedString];
-        _textView.frame = CGRectMake(0, 0, _frame.size.width, _textViewSize.height + 100);
+        _textView.frame = CGRectMake(0, 0, _frame.size.width, _textViewSize.height +_textViewSize.height* 0.052);
+        NSLog(@"%f",_textViewSize.height);
     }
     
 }
@@ -662,9 +669,10 @@
 -(void)relayoutView:(CGSize)textViewSize{
     
     //重新设置_textView的frame
-    _textView.frame = CGRectMake(0, 0, _frame.size.width, textViewSize.height +120);
+    _textView.frame = CGRectMake(0, 0, _frame.size.width, textViewSize.height + _textViewSize.height* 0.052 + 20);
+    
     //用户评论分隔栏
-    _commentTableHeader.frame = CGRectMake(0, textViewSize.height + 120, self.view.frame.size.width, 40.0f);
+    _commentTableHeader.frame = CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 20, self.view.frame.size.width, 40.0f);
     
     
     //根据改变的textViewSize，调整commentTableView的位置和scrollView的contentSize
@@ -672,8 +680,8 @@
         [self relayoutCommentTableView:textViewSize];
     }
     if(_noCommentLabel){
-        _noCommentLabel.frame = CGRectMake(0, textViewSize.height + 120 + 80, self.view.frame.size.width, 20.0f);
-        [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, _textViewSize.height  + 300)];
+        _noCommentLabel.frame = CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 200, self.view.frame.size.width, 20.0f);
+        [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height  + 200 + _textViewSize.height* 0.052)];
     }
     
     
@@ -682,9 +690,10 @@
     
     CGFloat height = [self getCommentTableViewHeight:self.commentTableViewCell];
     
-    [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height + height + 160)];
+    [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height + height + _textViewSize.height* 0.052 + 60)];
     
-    [_commentTableView setFrame:CGRectMake(0, textViewSize.height + 160, self.view.frame.size.width, height)];
+    [_commentTableView setFrame:CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 60, self.view.frame.size.width, height)];
+    
     [_refreshFooterView setFrame:CGRectMake(0, _postScrollView.contentSize.height, self.view.frame.size.width, 100.0f)];
 }
 -(CGFloat)getCommentTableViewHeight:(NSMutableArray *)commentTableViewCell{
@@ -701,8 +710,9 @@
 #pragma  mark 评论 tableView delegate
 -(void)initCommentTableView{
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
+    
     //初始化homeTableViewCell
     self.commentTableViewCell = [[NSMutableArray alloc]init];
     self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -728,22 +738,22 @@
             //没有评论的时候,显示一个label，说没有评论
             
             _commentTableView.hidden = YES;
-            _noCommentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, _textViewSize.height + 130 + 80, self.view.frame.size.width, 20.0f)];
+            _noCommentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 30 + 80, self.view.frame.size.width, 20.0f)];
             _noCommentLabel.text = @"还没有人评论哦，快来第一个评论吧~";
             _noCommentLabel.textColor = [UIColor colorWithRed:102.0f/255.0f green:102.0f/255.0f blue:102.0f/255.0f alpha:1.0f];
             _noCommentLabel.textAlignment = NSTextAlignmentCenter;
             _noCommentLabel.font = [UIFont systemFontOfSize:14.0f];
             
             [_postScrollView addSubview:_noCommentLabel];
-            [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, _textViewSize.height  + 330)];
+            [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, _textViewSize.height  + _textViewSize.height* 0.052 + 230)];
             
             
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         }
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     
 }
@@ -823,13 +833,14 @@
 #pragma mark 下拉数据刷新
 - (void)reloadTableViewDataSource{
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     //上拉刷新的数据处理
     if(_refreshFooterView.pullUp){
-        static int p = 2;
-        NSString *commentRouter = [NSString stringWithFormat:@"/comment/get?id=%ld&p=%d",(long)_postID,p];
+        self.p = 2;
+        
+        NSString *commentRouter = [NSString stringWithFormat:@"/comment/get?id=%ld&p=%@",(long)_postID,[NSNumber numberWithInteger:self.p]];
         NSString *commentRequestUrl = [self.appDelegate.rootURL stringByAppendingString:commentRouter];
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         manager.requestSerializer.timeoutInterval = 20;
@@ -853,9 +864,12 @@
                 [self.HUD dismissAfterDelay:1.0f];
                 
             }
-            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            self.p++;
             
+            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+            
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
         }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"%@",error);
             
@@ -864,9 +878,10 @@
             [self.HUD dismissAfterDelay:1.0];
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
             
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
         }];
-        ++p;
+        
         
     }
 }

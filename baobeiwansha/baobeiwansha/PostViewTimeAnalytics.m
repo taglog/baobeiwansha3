@@ -75,8 +75,8 @@
             
             
             //网络活动指示器
-            UIApplication *app=[UIApplication sharedApplication];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
             
             AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
@@ -93,11 +93,11 @@
                 NSLog(@"%@",responseObject);
                 
                 
-                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 NSLog(@"%@",error);
                 
-                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             }];
             
             

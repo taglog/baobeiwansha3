@@ -232,8 +232,8 @@
     [self.mainViewController showWaitingSign];
     
     //网络活动指示器
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     //请求的地址
     NSString *postRouter = @"tag/hotSix";
@@ -294,7 +294,7 @@
             }
         }
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         
@@ -313,7 +313,7 @@
         }
         self.window.rootViewController = self.mainNavigation;
 
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         
     }];
     

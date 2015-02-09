@@ -21,6 +21,7 @@
 
 @interface ContentFirstViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,EGORefreshDelegate,iCarouselDataSource, iCarouselDelegate,PostViewDelegate>
 
+@property (nonatomic,assign)NSInteger p;
 @property (nonatomic,strong) NSString *tag;
 @property (nonatomic,strong) NSDictionary *requestURL;
 @property (nonatomic,assign) NSInteger ageChoosen;

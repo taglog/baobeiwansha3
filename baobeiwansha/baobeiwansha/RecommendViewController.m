@@ -437,12 +437,16 @@
     
 }
 -(void)resetRefreshStatus{
-    
+    //重新设置controller为未刷新状态，这样切换到这个页面的时候就会自动刷新
     self.isRefreshed0 = NO;
     self.isRefreshed1 = NO;
     self.isRefreshed2 = NO;
     self.isRefreshed3 = NO;
-    
+    //更改日期之后，每个controller实例的刷新参数都要恢复为2
+    self.contentViewControllerFirst.p = 2;
+    self.contentViewControllerSecond.p = 2;
+    self.contentViewControllerThird.p = 2;
+    self.contentViewControllerFourth.p = 2;
     
 }
 -(void)refreshActiveViewController{
