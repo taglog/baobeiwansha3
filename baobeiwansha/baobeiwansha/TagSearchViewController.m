@@ -8,10 +8,13 @@
 
 #import "TagSearchViewController.h"
 #import "TagPostTableViewController.h"
+#import "JGProgressHUD.h"
+#import "JGProgressHUDSuccessIndicatorView.h"
 
 @interface TagSearchViewController ()
 
 @property (nonatomic,retain) UISearchBar *searchBar;
+@property (nonatomic,strong)JGProgressHUD *HUD;
 
 @end
 
@@ -66,13 +69,22 @@
     
 }
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    
+    if([self.searchBar.text isEqualToString:@""]){
+        //初始化HUD
+        self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        self.HUD.textLabel.text = @"请输入搜索内容";
+        [self.HUD showInView:self.view];
+        [self.HUD dismissAfterDelay:1.0];
+        return;
+    }
     [self.searchBar resignFirstResponder];
-    TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]init];
-    tagPostViewController.tag = self.searchBar.text;
+    
+    TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]initWithURL:@{@"requestRouter":@"post/tagsearch"} tag:self.searchBar.text];
     [self.navigationController pushViewController: tagPostViewController animated:YES];
     
+    
 }
+
 -(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
     [self.searchBar resignFirstResponder];
     [self.navigationController popViewControllerAnimated:YES];

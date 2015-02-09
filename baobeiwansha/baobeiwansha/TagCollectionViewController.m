@@ -243,8 +243,7 @@
     // TODO: add a selected mark
     NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
     NSString *tag = [[items objectAtIndex:indexPath.row] valueForKey:@"label"];
-    TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]init];
-    tagPostViewController.tag = tag;
+    TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]initWithURL:@{@"requestRouter":@"post/tag"} tag:tag];
     [self.navigationController pushViewController: tagPostViewController animated:YES];
     
 }

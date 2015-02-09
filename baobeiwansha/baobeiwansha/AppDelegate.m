@@ -313,7 +313,6 @@
             }
         }
         
-        [self.mainViewController hideWaitingSign];
         app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
         
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
