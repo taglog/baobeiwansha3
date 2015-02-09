@@ -367,8 +367,12 @@
         _textView.attributedString = [self _attributedStringForSnippetUsingiOS6Attributes:NO];
         
         _textViewSize = [self getTextViewHeight:_textView.attributedString];
-        _textView.frame = CGRectMake(0, 0, _frame.size.width, _textViewSize.height +_textViewSize.height* 0.052);
-        NSLog(@"%f",_textViewSize.height);
+        if(_textViewSize.height* 0.052 < 100){
+            _textView.frame = CGRectMake(0, 0, _frame.size.width, _textViewSize.height +100);
+        }else{
+            _textView.frame = CGRectMake(0, 0, _frame.size.width, _textViewSize.height +_textViewSize.height* 0.052);
+        }
+        
     }
     
 }
@@ -668,11 +672,18 @@
 }
 -(void)relayoutView:(CGSize)textViewSize{
     
+    CGFloat d;
+    if(_textViewSize.height* 0.052 < 100){
+        d = 100;
+    }else{
+        d = _textViewSize.height* 0.052;
+    }
+    
     //重新设置_textView的frame
-    _textView.frame = CGRectMake(0, 0, _frame.size.width, textViewSize.height + _textViewSize.height* 0.052 + 20);
+    _textView.frame = CGRectMake(0, 0, _frame.size.width, textViewSize.height + d + 20);
     
     //用户评论分隔栏
-    _commentTableHeader.frame = CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 20, self.view.frame.size.width, 40.0f);
+    _commentTableHeader.frame = CGRectMake(0, textViewSize.height + d + 20, self.view.frame.size.width, 40.0f);
     
     
     //根据改变的textViewSize，调整commentTableView的位置和scrollView的contentSize
@@ -680,8 +691,8 @@
         [self relayoutCommentTableView:textViewSize];
     }
     if(_noCommentLabel){
-        _noCommentLabel.frame = CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 200, self.view.frame.size.width, 20.0f);
-        [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height  + 200 + _textViewSize.height* 0.052)];
+        _noCommentLabel.frame = CGRectMake(0, textViewSize.height + d + 100, self.view.frame.size.width, 20.0f);
+        [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height  + 200 + d)];
     }
     
     
@@ -690,9 +701,15 @@
     
     CGFloat height = [self getCommentTableViewHeight:self.commentTableViewCell];
     
-    [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height + height + _textViewSize.height* 0.052 + 60)];
+    CGFloat d;
+    if(_textViewSize.height* 0.052 < 100){
+        d = 100;
+    }else{
+        d = _textViewSize.height* 0.052;
+    }
+    [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, textViewSize.height + height + d + 60)];
     
-    [_commentTableView setFrame:CGRectMake(0, textViewSize.height + _textViewSize.height* 0.052 + 60, self.view.frame.size.width, height)];
+    [_commentTableView setFrame:CGRectMake(0, textViewSize.height + d + 60, self.view.frame.size.width, height)];
     
     [_refreshFooterView setFrame:CGRectMake(0, _postScrollView.contentSize.height, self.view.frame.size.width, 100.0f)];
 }
@@ -737,15 +754,21 @@
         }else{
             //没有评论的时候,显示一个label，说没有评论
             
+            CGFloat d;
+            if(_textViewSize.height* 0.052 < 100){
+                d = 100;
+            }else{
+                d = _textViewSize.height* 0.052;
+            }
             _commentTableView.hidden = YES;
-            _noCommentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 30 + 80, self.view.frame.size.width, 20.0f)];
+            _noCommentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, _textViewSize.height + d + 100, self.view.frame.size.width, 20.0f)];
             _noCommentLabel.text = @"还没有人评论哦，快来第一个评论吧~";
             _noCommentLabel.textColor = [UIColor colorWithRed:102.0f/255.0f green:102.0f/255.0f blue:102.0f/255.0f alpha:1.0f];
             _noCommentLabel.textAlignment = NSTextAlignmentCenter;
             _noCommentLabel.font = [UIFont systemFontOfSize:14.0f];
             
             [_postScrollView addSubview:_noCommentLabel];
-            [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, _textViewSize.height  + _textViewSize.height* 0.052 + 230)];
+            [_postScrollView setContentSize:CGSizeMake(self.view.frame.size.width, _textViewSize.height  + d + 230)];
             
             
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
@@ -761,10 +784,15 @@
 //初始化tableView
 -(void)initTableView{
     
-    
+    CGFloat d;
+    if(_textViewSize.height* 0.052 < 100){
+        d = 100;
+    }else{
+        d = _textViewSize.height* 0.052;
+    }
     //初始化tableView
     if(_commentTableView == nil){
-        _commentTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 60, self.view.frame.size.width, 100.0)];
+        _commentTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + d + 60, self.view.frame.size.width, 100.0)];
         
         _commentTableView.scrollEnabled = NO;
         
@@ -777,7 +805,7 @@
     
     //初始化用户评论分隔栏
     if(_commentTableHeader == nil){
-        _commentTableHeader = [[UIView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 20, self.view.frame.size.width, 40.0f)];
+        _commentTableHeader = [[UIView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + d + 20, self.view.frame.size.width, 40.0f)];
         _commentTableHeader.backgroundColor = [UIColor colorWithRed:236.0f/255.0f green:236.0f/255.0f blue:236.0f/255.0 alpha:1.0];
         UILabel *commentTableHeaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0f, 10.0f, 100.0f, 20.0f)];
         commentTableHeaderLabel.text = @"用户评论";
