@@ -12,7 +12,7 @@
         self.datePicker = [[UIDatePicker alloc]init];
         self.datePicker.translatesAutoresizingMaskIntoConstraints = NO;
         self.datePicker.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"];
-        self.datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:0]; // 设置最大时间
+        self.datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:2* 365 * 24 * 60 * 60]; // 设置最大时间
         self.datePicker.minimumDate = [NSDate dateWithTimeIntervalSinceNow:6* 365 * 24 * 60 * 60 * -1]; // 设置最小时间
         [self addSubview:self.datePicker];
         
