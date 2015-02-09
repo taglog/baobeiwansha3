@@ -466,7 +466,6 @@
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
         NSArray *responseArray = [responseObject valueForKey:@"data"];
-        NSLog(@"%@",responseObject);
         
         if(responseArray == (id)[NSNull null]){
             

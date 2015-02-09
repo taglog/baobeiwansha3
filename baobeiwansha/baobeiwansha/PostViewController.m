@@ -711,10 +711,10 @@
     [manager GET:commentRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
         
         NSArray *responseArray = [responseObject valueForKey:@"data"];
+        
         if(responseArray != (id)[NSNull null]){
             for(NSString *responseDict in responseArray){
-                NSDictionary *dict = [responseArray valueForKey:responseDict];
-                [self.commentTableViewCell addObject:dict];
+                [self.commentTableViewCell addObject:responseDict];
             }
             [_commentTableView reloadData];
             [self relayoutCommentTableView:_textViewSize];

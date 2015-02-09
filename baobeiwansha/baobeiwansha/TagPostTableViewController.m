@@ -39,8 +39,9 @@
 @implementation TagPostTableViewController
 
 -(id)initWithURL:(NSDictionary *)dict tag:(NSString *)tag{
-    self.p = 2;
     self = [super init];
+    NSLog(@"11111");
+    self.p = 2;
     self.requestURL = dict;
     self.tag = tag;
     self.view.backgroundColor = [UIColor whiteColor];
@@ -65,7 +66,6 @@
     
     if(self){
         self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        //初始化数据
         [self initViews];
         
     }
@@ -295,14 +295,13 @@
     
     UIApplication *app=[UIApplication sharedApplication];
     app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-    NSString *postRouter = nil;
-    NSDictionary *postParam = nil;
     
-    postRouter = @"post/tag";
-    
-    postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",self.tag,@"tag",nil];
+    NSString *postRouter = [self.requestURL valueForKey:@"requestRouter"];
+    NSDictionary *postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",self.tag,@"tag",nil];
     
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+    NSLog(@"%@",postRequestUrl);
+
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
@@ -371,7 +370,7 @@
     NSDictionary *postParam = nil;
     
     
-    postRouter = @"post/getTableByTag";
+    postRouter = [self.requestURL valueForKey:@"requestRouter"];
     
     postParam = [NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.p],@"p",self.tag,@"tag",nil];
     

@@ -38,7 +38,6 @@
 
 -(id)initWithURL:(NSDictionary *)dict type:(NSInteger)index{
     self = [super init];
-    
     if(self){
     self.p = 2;
     self.requestURL = dict;

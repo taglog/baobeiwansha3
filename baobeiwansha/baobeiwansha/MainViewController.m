@@ -111,6 +111,7 @@
     [self showHint];
     
     [self.view addSubview:self.bubbleView];
+    [self hideWaitingSign];
     [self.bubbleView performInitializationAnimation];
 
 }
@@ -222,8 +223,7 @@
 //点击小bubble
 -(void)bubbleClicked:(NSString *)tag{
     
-    TagPostTableViewController *tagPostTableViewController = [[TagPostTableViewController alloc]init];
-    tagPostTableViewController.tag = tag;
+    TagPostTableViewController *tagPostTableViewController = [[TagPostTableViewController alloc]initWithURL:@{@"requestRouter":@"post/tag"} tag:tag];
     [self customPushViewController:tagPostTableViewController];
     
     

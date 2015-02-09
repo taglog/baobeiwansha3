@@ -129,7 +129,7 @@
         if([[dict valueForKey:@"fit_month_begin_1"]integerValue]>24){
             beginAge = [NSString stringWithFormat:@"%ld岁%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12,[[dict valueForKey:@"fit_month_begin_1"]integerValue]%12];
             if([[dict valueForKey:@"fit_month_begin_1"]integerValue]%12 == 0){
-                beginAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12];
+                beginAge = [NSString stringWithFormat:@"%ld岁-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12];
             }
         }else{
             beginAge = [NSString stringWithFormat:@"%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]];
