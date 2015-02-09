@@ -220,6 +220,8 @@
         self.ageTableView.backgroundColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0];
         self.ageTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
+        self.ageTableView.tag = 1;
+        
         self.ageTableView.layer.cornerRadius = 5.0;
         self.ageTableView.delegate = self;
         self.ageTableView.dataSource = self;

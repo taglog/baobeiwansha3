@@ -923,12 +923,14 @@
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     
-    
-    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)] && !self.isScrolling) {
-        [self.actualDelegate scrollViewWillBeginDragging:scrollView];
-    } else {
+    // 判断是否是age scroll 标签，如果是不设置flag(tag 在RecommendViewController里面设置了)
+    if (scrollView.tag != 1) {
         NSLog(@"begin scroll");
         self.isScrolling = YES;
+    }
+    
+    if ([self.actualDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [self.actualDelegate scrollViewWillBeginDragging:scrollView];
     }
     
 }
@@ -959,8 +961,11 @@
     }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    self.isScrolling = NO;
-    NSLog(@"end scroll");
+    if (scrollView.tag != 1) {
+        self.isScrolling = NO;
+        NSLog(@"end scroll");
+    }
+    
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [self.actualDelegate scrollViewDidEndDecelerating:scrollView];
     }

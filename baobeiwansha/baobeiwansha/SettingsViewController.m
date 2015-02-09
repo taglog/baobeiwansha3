@@ -59,7 +59,7 @@
     
     [section3 addItem:[RETableViewItem itemWithTitle:@"去APP Store评价" accessoryType:UITableViewCellAccessoryDisclosureIndicator selectionHandler:^(RETableViewItem *item) {
         [item deselectRowAnimated:YES];
-        NSURL * urlStr = [NSURL URLWithString:@"http://blog.yhb360.com"];//后面为参数
+        NSURL * urlStr = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id961562218"];//后面为参数
         if ([[UIApplication sharedApplication] canOpenURL:urlStr]) {
             NSLog(@"going to url");
             [[UIApplication sharedApplication] openURL:urlStr];
