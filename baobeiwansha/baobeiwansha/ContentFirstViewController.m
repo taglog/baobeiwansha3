@@ -42,7 +42,6 @@
 @property (nonatomic,strong) JGProgressHUD *HUD;
 @property (nonatomic,assign) BOOL isHudShow;
 
-@property (nonatomic,assign)NSInteger p;
 
 @end
 
@@ -272,8 +271,8 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     PostViewController *post = [[PostViewController alloc] init];
     
@@ -301,11 +300,15 @@
         }
         [post dismissHUD];
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+ 
+       
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         [post dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }];
     [post showHUD];
     [self.navigationController pushViewController:post animated:YES];
@@ -360,8 +363,8 @@
     _reloading = YES;
     
     //网络活动指示器
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
@@ -425,15 +428,16 @@
         }
         
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
-        
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         
         [self showHUD:@"网络请求失败~"];
         [self dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }];
     
     
@@ -442,8 +446,8 @@
     
     _reloading = YES;
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
@@ -473,7 +477,6 @@
             [self showHUD:@"已经是最后一页了"];
             [self  dismissHUD];
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
             
         }else{
             
@@ -489,6 +492,8 @@
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
             
         }
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
         
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
@@ -497,7 +502,8 @@
         [self  dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.5f];
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }];
     
     

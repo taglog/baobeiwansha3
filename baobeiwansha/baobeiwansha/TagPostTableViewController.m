@@ -40,7 +40,6 @@
 
 -(id)initWithURL:(NSDictionary *)dict tag:(NSString *)tag{
     self = [super init];
-    NSLog(@"11111");
     self.p = 2;
     self.requestURL = dict;
     self.tag = tag;
@@ -87,7 +86,7 @@
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
     [self.navigationController popViewControllerAnimated:NO];
-
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -166,12 +165,12 @@
     _homeTableView.tableFooterView = self.tableViewMask;
     
     if(self.noDataAlert == nil){
-    self.noDataAlert = [[UILabel alloc]initWithFrame:CGRectMake(0, 164, self.view.frame.size.width, 40.0f)];
-    self.noDataAlert.text = @"暂时没有内容哦~";
-    self.noDataAlert.textAlignment = NSTextAlignmentCenter;
-    self.noDataAlert.textColor = [UIColor colorWithRed:102.0f/255.0f green:102.0f/255.0f blue:102.0f/255.0f alpha:1.0f];
-    self.noDataAlert.textAlignment = NSTextAlignmentCenter;
-    self.noDataAlert.font = [UIFont systemFontOfSize:14.0f];
+        self.noDataAlert = [[UILabel alloc]initWithFrame:CGRectMake(0, 164, self.view.frame.size.width, 40.0f)];
+        self.noDataAlert.text = @"暂时没有内容哦~";
+        self.noDataAlert.textAlignment = NSTextAlignmentCenter;
+        self.noDataAlert.textColor = [UIColor colorWithRed:102.0f/255.0f green:102.0f/255.0f blue:102.0f/255.0f alpha:1.0f];
+        self.noDataAlert.textAlignment = NSTextAlignmentCenter;
+        self.noDataAlert.font = [UIFont systemFontOfSize:14.0f];
         [_homeTableView addSubview:self.noDataAlert];
     }
     
@@ -214,8 +213,8 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     PostViewController *post = [[PostViewController alloc] init];
     
@@ -227,7 +226,7 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:requestParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-
+        
         NSDictionary *responseDict = [responseObject valueForKey:@"data"];
         
         if(responseDict != (id)[NSNull null]){
@@ -238,11 +237,13 @@
             [post noDataAlert];
         }
         [post dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         [post dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }];
     [post showHUD];
     [self.navigationController pushViewController:post animated:YES];
@@ -293,15 +294,14 @@
     
     _reloading = YES;
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     NSString *postRouter = [self.requestURL valueForKey:@"requestRouter"];
     NSDictionary *postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInt:1],@"p",self.tag,@"tag",nil];
     
     NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
-    NSLog(@"%@",postRequestUrl);
-
+    
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:postRequestUrl parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
@@ -312,7 +312,7 @@
         if(responseArray != (id)[NSNull null] ){
             
             [self.homeTableViewCell removeAllObjects];
-
+            
             if(self.noDataAlert){
                 self.noDataAlert.hidden = YES;
                 [self.noDataAlert removeFromSuperview];
@@ -335,26 +335,26 @@
             }
             
             [_homeTableView reloadData];
-
+            
         }else{
             [self showHUD:@"没有内容~"];
             [self dismissHUD];
             [self showNoDataAlert];
-           
+            
         }
         
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"%@",error);
-        
-        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
-        [self showHUD:@"网络请求失败~"];
-        [self dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-        
-    }];
+            NSLog(@"%@",error);
+            
+            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+            [self showHUD:@"网络请求失败~"];
+            [self dismissHUD];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
+        }];
     
     
 }
@@ -362,8 +362,8 @@
     
     _reloading = YES;
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     
     NSString *postRouter = nil;
@@ -385,7 +385,6 @@
         if(responseArray == (id)[NSNull null]){
             //如果是最后一页
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
             [self showHUD:@"已经是最后一页了~"];
             [self dismissHUD];
             
@@ -399,12 +398,15 @@
             self.p++;
             
         }
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
         [self showHUD:@"网络请求失败~"];
         [self dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }];
     
 }

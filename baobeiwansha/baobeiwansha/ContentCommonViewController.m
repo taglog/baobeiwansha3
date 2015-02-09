@@ -30,7 +30,6 @@
 
 @property (nonatomic,strong)UIView *tableViewMask;
 
-@property (nonatomic,assign)NSInteger p;
 
 @end
 
@@ -39,12 +38,12 @@
 -(id)initWithURL:(NSDictionary *)dict type:(NSInteger)index{
     self = [super init];
     if(self){
-    self.p = 2;
-    self.requestURL = dict;
-    self.type = index;
-    
-    //变量设置
-    self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.p = 2;
+        self.requestURL = dict;
+        self.type = index;
+        
+        //变量设置
+        self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -189,12 +188,12 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     PostViewController *post = [[PostViewController alloc] init];
     
-
+    
     NSDictionary *requestParam = [NSDictionary dictionaryWithObjectsAndKeys:[self.homeTableViewCell[indexPath.row] objectForKey:@"ID"],@"postID",self.appDelegate.generatedUserID,@"userIdStr",nil];
     
     NSString *postRouter = @"/post/post";
@@ -215,12 +214,14 @@
             [post noDataAlert];
         }
         [post dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-    }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"%@",error);
-        [post dismissHUD];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-    }];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
+    }
+          failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+              NSLog(@"%@",error);
+              [post dismissHUD];
+              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+   }];
     [post showHUD];
     [self.navigationController pushViewController:post animated:YES];
     
@@ -271,8 +272,8 @@
     
     _reloading = YES;
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     NSString *postRouter = nil;
     NSDictionary *postParam = nil;
@@ -285,7 +286,7 @@
     //是否选择了年龄，如果没有选择，就默认读取用户在数据库的年龄
     if(self.isAgeSet){
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",[NSNumber numberWithInteger:self.ageChoosen],@"age",nil];
-
+        
     }else{
         postParam =[NSDictionary dictionaryWithObjectsAndKeys:self.appDelegate.generatedUserID,@"userIdStr",[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",nil];
     }
@@ -294,14 +295,14 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.requestSerializer.timeoutInterval = 20;
     [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
-
+        
         NSArray *responseArray = [responseObject valueForKey:@"data"];
         
         //如果存在数据，那么就初始化tableView
         if(responseArray != (id)[NSNull null] ){
             
             [self.homeTableViewCell removeAllObjects];
-
+            
             if(self.noDataAlert){
                 self.noDataAlert.hidden = YES;
                 [self.noDataAlert removeFromSuperview];
@@ -324,7 +325,7 @@
             }
             
             [_homeTableView reloadData];
-
+            
         }else{
             [self.delegate showHUD:@"没有内容~"];
             [self.delegate dismissHUD];
@@ -334,14 +335,15 @@
         
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
         
         [self.delegate showHUD:@"网络请求失败~"];
         [self.delegate dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     
     
@@ -350,8 +352,8 @@
     
     _reloading = YES;
     
-    UIApplication *app=[UIApplication sharedApplication];
-    app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     
     
     NSString *postRouter = nil;
@@ -379,7 +381,7 @@
         if(responseArray != (id)[NSNull null]){
             
             for(NSDictionary *responseDict in responseArray){
-
+                
                 [self.homeTableViewCell addObject:responseDict];
                 
             }
@@ -393,7 +395,7 @@
             [self.delegate showHUD:@"已经是最后一页了"];
             [self.delegate dismissHUD];
             [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
-            app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
             
         }
@@ -403,7 +405,7 @@
         [self.delegate dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
         
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     }];
     
     

@@ -117,7 +117,7 @@
         girl.font = [UIFont systemFontOfSize:13.0f];
         girl.textAlignment = NSTextAlignmentCenter;
         [self.scrollView addSubview:girl];
-
+        
     }
     
     if(!self.boyButton){
@@ -185,10 +185,10 @@
     }
     //没有填nickname
     if(![self.userInfoDict objectForKey:@"nickName"]&&![[self.userInfoDict objectForKey:@"nickName"] isEqual:@""]){
-            JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
-            HUD.textLabel.text = @"请填写宝贝昵称";
-            [HUD showInView:self.view];
-            [HUD dismissAfterDelay:1.0];
+        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+        HUD.textLabel.text = @"请填写宝贝昵称";
+        [HUD showInView:self.view];
+        [HUD dismissAfterDelay:1.0];
         return;
     }
     if(![self.userInfoDict objectForKey:@"userGender"]){
@@ -207,59 +207,62 @@
         return;
     }
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-        JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
-        HUD.textLabel.text = @"保存中...";
-        [HUD showInView:self.view];
-        HUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
+    JGProgressHUD *HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+    HUD.textLabel.text = @"保存中...";
+    [HUD showInView:self.view];
+    HUD.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
+    
+    NSLog(@"sending: %@", self.userInfoDict);
+    
+    [self.userInfoDict setObject:self.appDelegate.generatedUserID forKey:@"userIdStr"];
+    
+    NSString * userInfoURL = [self.appDelegate.rootURL stringByAppendingString:@"/serverside/user_info.php"];
+    
+    
+    AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
+    afnmanager.requestSerializer.timeoutInterval = 20;
+    afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+    
+    
+    [afnmanager POST:userInfoURL parameters:self.userInfoDict success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
-        NSLog(@"sending: %@", self.userInfoDict);
+        NSLog(@"Sync successed: %@", responseObject);
         
-        [self.userInfoDict setObject:self.appDelegate.generatedUserID forKey:@"userIdStr"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"firstStart"];
+        //加入
+        NSString *filePath = [self dataFilePath];
+        [self.userInfoDict writeToFile:filePath atomically:YES];
         
-        NSString * userInfoURL = [self.appDelegate.rootURL stringByAppendingString:@"/serverside/user_info.php"];
-        
-        
-        AFHTTPRequestOperationManager *afnmanager = [AFHTTPRequestOperationManager manager];
-        afnmanager.requestSerializer.timeoutInterval = 20;
-        afnmanager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-        
-        
-        [afnmanager POST:userInfoURL parameters:self.userInfoDict success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             
-            NSLog(@"Sync successed: %@", responseObject);
-            
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"firstStart"];
-            //加入
-            NSString *filePath = [self dataFilePath];
-            [self.userInfoDict writeToFile:filePath atomically:YES];
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
-                HUD.textLabel.text = @"保存成功";
-                HUD.detailTextLabel.text = nil;
-                HUD.layoutChangeAnimationDuration = 0.4;
-                HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
-            });
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [HUD dismiss];
-                [self.delegate popInitUserInfoSetting];
-                
-            });
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            
-            NSLog(@"Sync Error: %@", error);
-            
-            HUD.textLabel.text = @"网络失败，请重试";
+            HUD.textLabel.text = @"保存成功";
             HUD.detailTextLabel.text = nil;
             HUD.layoutChangeAnimationDuration = 0.4;
             HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
-            [HUD dismissAfterDelay:1];
-
-        }];
+        });
         
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [HUD dismiss];
+            [self.delegate popInitUserInfoSetting];
+            
+        });
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"Sync Error: %@", error);
+        
+        HUD.textLabel.text = @"网络失败，请重试";
+        HUD.detailTextLabel.text = nil;
+        HUD.layoutChangeAnimationDuration = 0.4;
+        HUD.indicatorView = [[JGProgressHUDSuccessIndicatorView alloc] init];
+        [HUD dismissAfterDelay:1];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        
+    }];
+    
     
     
     
@@ -277,7 +280,7 @@
         [self addCheckMark:self.girlButton];
         self.isGirlSelected = YES;
         [self.userInfoDict setValue:[NSNumber numberWithInt:0] forKey:@"babyGender"];
-
+        
     }
     
     //选择了男孩
@@ -305,8 +308,8 @@
     }
     
     [button addSubview:self.checkMark];
-
-
+    
+    
 }
 
 -(void)removeCheckMark{
