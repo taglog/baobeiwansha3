@@ -283,7 +283,7 @@
             [_commentCreateButton addTarget:self action:@selector(showCommentCreateViewController) forControlEvents:UIControlEventTouchUpInside];
             _commentCreateButton.adjustsImageWhenHighlighted = NO;
             
-            UILabel *commentCreateLabel = [[UILabel alloc]initWithFrame:CGRectMake(47.0f, 12.0f, 60.0f, 20.0f)];
+            UILabel *commentCreateLabel = [[UILabel alloc]initWithFrame:CGRectMake(47.0f, 10.0f, 60.0f, 20.0f)];
             commentCreateLabel.text = @"写跟帖";
             commentCreateLabel.textColor = [UIColor colorWithRed:80.0f/255.0f green:80.0f/255.0f blue:80.0f/255.0f alpha:1.0f];
             commentCreateLabel.font = [UIFont systemFontOfSize:14.0f];
@@ -650,10 +650,11 @@
         
         
     }
-    _textViewSize = [self getTextViewHeight:_textView.attributedString];
-    [self relayoutView:_textViewSize];
+    
     // layout might have changed due to image sizes
     [_textView relayoutText];
+    _textViewSize = [self getTextViewHeight:_textView.attributedString];
+    [self relayoutView:_textViewSize];
     
 }
 -(void)relayoutView:(CGSize)textViewSize{
