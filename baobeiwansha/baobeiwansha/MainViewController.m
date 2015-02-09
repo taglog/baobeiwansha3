@@ -396,7 +396,7 @@
 }
 -(void)hideWaitingSign{
     
-    [UIView animateWithDuration:1.0 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:1.0 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.waitingSign.frame = CGRectMake(self.view.frame.size.width, 20, 180, 80);
     } completion:nil];
     

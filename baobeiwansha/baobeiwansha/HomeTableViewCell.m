@@ -86,62 +86,72 @@
     self.dict = dict;
     
     self.aFrame = frame;
-
-    self.ID = [[dict valueForKey:@"ID"] integerValue];
     
+    if([dict valueForKey:@"ID"] != (id)[NSNull null]){
+        self.ID = [[dict valueForKey:@"ID"] integerValue];
+    }
+
     
     NSString *imagePathOnServer = @"http://blog.yhb360.com/wp-content/uploads/";
-    
     NSString *imageGetFromServer = [dict valueForKey:@"post_cover"];
+    
     //没有设置特色图像的话会报错，所以需要检测是否为空
     if(imageGetFromServer != (id)[NSNull null]){
         NSString *imageString = [imagePathOnServer stringByAppendingString:imageGetFromServer];
         NSURL *imageUrl = [NSURL URLWithString:[imageString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         [self.image setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"loadingbackground.png"]];
-    
+        
     }else{
         //没有特色图像的时候，怎么办
         [self.image setImageWithURL:[NSURL URLWithString:@""] placeholderImage:[UIImage imageNamed:@"loadingbackground.png"]];
-
+        
+    }
+    if([dict objectForKey:@"post_title"] != (id)[NSNull null]){
+        self.title.text = [dict objectForKey:@"post_title"];
+    }
+    if([dict objectForKey:@"post_excerpt"] != (id)[NSNull null]){
+        self.introduction.text = [dict objectForKey:@"post_excerpt"];
+        
+        NSMutableAttributedString * attributedString1 = [[NSMutableAttributedString alloc] initWithString:self.introduction.text];
+        NSMutableParagraphStyle * paragraphStyle1 = [[NSMutableParagraphStyle alloc] init];
+        [paragraphStyle1 setLineSpacing:3];
+        [attributedString1 addAttribute:NSParagraphStyleAttributeName value:paragraphStyle1 range:NSMakeRange(0, [self.introduction.text length])];
+        [self.introduction setAttributedText:attributedString1];
     }
     
-    self.title.text = [dict objectForKey:@"post_title"];
     
-    self.introduction.text = [dict objectForKey:@"post_excerpt"];
     
-    NSMutableAttributedString * attributedString1 = [[NSMutableAttributedString alloc] initWithString:self.introduction.text];
-    NSMutableParagraphStyle * paragraphStyle1 = [[NSMutableParagraphStyle alloc] init];
-    [paragraphStyle1 setLineSpacing:3];
-    [attributedString1 addAttribute:NSParagraphStyleAttributeName value:paragraphStyle1 range:NSMakeRange(0, [self.introduction.text length])];
-    [self.introduction setAttributedText:attributedString1];
-   
     //把月份装换成x岁x月的形式
     NSString *beginAge;
     NSString *endAge;
     NSString *showAge;
-    
-    if([[dict valueForKey:@"fit_month_begin_1"]integerValue]>24){
-        beginAge = [NSString stringWithFormat:@"%ld岁%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12,[[dict valueForKey:@"fit_month_begin_1"]integerValue]%12];
-        if([[dict valueForKey:@"fit_month_begin_1"]integerValue]%12 == 0){
-            beginAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12];
+    if([dict valueForKey:@"fit_month_begin_1"] != (id)[NSNull null]){
+        if([[dict valueForKey:@"fit_month_begin_1"]integerValue]>24){
+            beginAge = [NSString stringWithFormat:@"%ld岁%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12,[[dict valueForKey:@"fit_month_begin_1"]integerValue]%12];
+            if([[dict valueForKey:@"fit_month_begin_1"]integerValue]%12 == 0){
+                beginAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_begin_1"]integerValue]/12];
+            }
+        }else{
+            beginAge = [NSString stringWithFormat:@"%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]];
         }
-    }else{
-        beginAge = [NSString stringWithFormat:@"%ld个月-",[[dict valueForKey:@"fit_month_begin_1"]integerValue]];
     }
-    
-    if([[dict valueForKey:@"fit_month_end_1"]integerValue]>24){
-        endAge = [NSString stringWithFormat:@"%ld岁%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12,[[dict valueForKey:@"fit_month_end_1"]integerValue]%12];
-        if([[dict valueForKey:@"fit_month_end_1"]integerValue]%12 == 0){
-            endAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12];
+    if([dict valueForKey:@"fit_month_end_1"] != (id)[NSNull null]){
+        
+        if([[dict valueForKey:@"fit_month_end_1"]integerValue]>24){
+            endAge = [NSString stringWithFormat:@"%ld岁%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12,[[dict valueForKey:@"fit_month_end_1"]integerValue]%12];
+            if([[dict valueForKey:@"fit_month_end_1"]integerValue]%12 == 0){
+                endAge = [NSString stringWithFormat:@"%ld岁",[[dict valueForKey:@"fit_month_end_1"]integerValue]/12];
+            }
+        }else{
+            endAge = [NSString stringWithFormat:@"%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]];
         }
-    }else{
-        endAge = [NSString stringWithFormat:@"%ld个月",[[dict valueForKey:@"fit_month_end_1"]integerValue]];
     }
     showAge = [beginAge stringByAppendingString:endAge];
     
     self.age.text = [@"适合:" stringByAppendingString:showAge];
-    
-    self.collectionNumber.text = [NSString stringWithFormat:@"收藏 %@",[dict objectForKey:@"collection_count"]];
+    if([dict objectForKey:@"collection_count"]){
+        self.collectionNumber.text = [NSString stringWithFormat:@"收藏 %@",[dict objectForKey:@"collection_count"]];
+    }
     
     
     [self setNeedsLayout];
@@ -173,9 +183,9 @@
     self.title.frame = CGRectMake(107.0f, paddingVer, self.aFrame.size.width - 100.0, 20.0);
     
     
-        self.title.textColor = [UIColor colorWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
+    self.title.textColor = [UIColor colorWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
     
-        self.title.font = [UIFont systemFontOfSize:17.0f];
+    self.title.font = [UIFont systemFontOfSize:17.0f];
     
     
     //摘要的frame
@@ -198,12 +208,12 @@
     self.collectionNumber.textColor = [UIColor colorWithRed:153.0f/255.0f green:153.0f/255.0f blue:153.0f/255.0f alpha:1.0f];
     
     //评论数量的frame
-//    self.commentNumber.frame = CGRectMake(self.aFrame.size.width - 55, 73.0, 60.0, 20.0);
-//    self.commentNumber.font  = [UIFont systemFontOfSize:12.0];
-//    self.commentNumber.textColor = [UIColor colorWithRed:153.0f/255.0f green:153.0f/255.0f blue:153.0f/255.0f alpha:1.0f];
+    //    self.commentNumber.frame = CGRectMake(self.aFrame.size.width - 55, 73.0, 60.0, 20.0);
+    //    self.commentNumber.font  = [UIFont systemFontOfSize:12.0];
+    //    self.commentNumber.textColor = [UIColor colorWithRed:153.0f/255.0f green:153.0f/255.0f blue:153.0f/255.0f alpha:1.0f];
     
     
-
+    
 }
 
 - (void)awakeFromNib {

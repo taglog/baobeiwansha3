@@ -248,8 +248,14 @@
         cell = [[HomeTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     
+    @try {
+        [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
+
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@",exception);
+    }
     
-    [cell setDataWithDict:self.homeTableViewCell[indexPath.row] frame:self.view.frame];
 
    
     
