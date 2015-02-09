@@ -646,6 +646,7 @@
 -(void)updateUserNickNameText: (NSString *) nicknameText {
     [self.delegate updateUserNickNameText:nicknameText];
     self.nickNameString = nicknameText;
+    [self.dict setValue:nicknameText forKey:@"nickName"];
     [self.tableView reloadData];
 }
 

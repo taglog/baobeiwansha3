@@ -103,13 +103,13 @@
     self.userAgeDate = [self.dict valueForKey:@"babyBirthday"];
     [self updateUserAgeDate:self.userAgeDate];
 
-
-    // register callback for plist storage
-    UIApplication *app = [UIApplication sharedApplication];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillResignActive:)
-                                                 name:UIApplicationWillResignActiveNotification
-                                               object:app];
+//
+//    // register callback for plist storage
+//    UIApplication *app = [UIApplication sharedApplication];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(applicationWillResignActive:)
+//                                                 name:UIApplicationWillResignActiveNotification
+//                                               object:app];
 
     
 }
@@ -418,20 +418,20 @@
     return dictForUpload;
 }
 
+////
+//- (void) applicationWillResignActive:(NSNotification *)notification
+//{
+//    NSString *filePath = [self dataFilePath];
+//    self.dict  = [[self formatUserInfoNeedUpload] mutableCopy];
+//    [self.dict writeToFile:filePath atomically:YES];
+//    // 目前我们将图片也存在plist里面，性能上看不出差别,也可能后续需要修改 TODO
+//    NSString *filePathImage = [self dataFilePathForImage];
+//    [self.dictForImg setObject:UIImagePNGRepresentation(self.userBackgroundImageView.image) forKey:@"bgImage"];
+//    [self.dictForImg setObject:UIImagePNGRepresentation(self.userAvatarImageView.image) forKey:@"avatarImage"];
+//    [self.dictForImg writeToFile:filePathImage atomically:YES];
+//    //NSLog(@"Baby Information is persistented into plist: %@", self.dict);
+//}
 //
-- (void) applicationWillResignActive:(NSNotification *)notification
-{
-    NSString *filePath = [self dataFilePath];
-    self.dict  = [[self formatUserInfoNeedUpload] mutableCopy];
-    [self.dict writeToFile:filePath atomically:YES];
-    // 目前我们将图片也存在plist里面，性能上看不出差别,也可能后续需要修改 TODO
-    NSString *filePathImage = [self dataFilePathForImage];
-    [self.dictForImg setObject:UIImagePNGRepresentation(self.userBackgroundImageView.image) forKey:@"bgImage"];
-    [self.dictForImg setObject:UIImagePNGRepresentation(self.userAvatarImageView.image) forKey:@"avatarImage"];
-    [self.dictForImg writeToFile:filePathImage atomically:YES];
-    //NSLog(@"Baby Information is persistented into plist: %@", self.dict);
-}
-
 
 
 // get plist path

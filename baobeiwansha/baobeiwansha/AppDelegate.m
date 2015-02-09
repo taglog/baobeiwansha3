@@ -129,20 +129,7 @@
         [application registerUserNotificationSettings:settings];
         [application registerForRemoteNotifications];
     }
-    
-    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-        [application registerForRemoteNotificationTypes:
-         UIRemoteNotificationTypeBadge |
-         UIRemoteNotificationTypeAlert |
-         UIRemoteNotificationTypeSound];
-    } else {
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert
-                                                | UIUserNotificationTypeBadge
-                                                | UIUserNotificationTypeSound
-                                                                                 categories:nil];
-        [application registerUserNotificationSettings:settings];
-        [application registerForRemoteNotifications];
-    }
+
 
 
     
@@ -203,13 +190,7 @@
     }];
 
 }
-//- (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-//    AVInstallation *currentInstallation = [AVInstallation currentInstallation];
-//    NSLog(@"applicate device token is called with tocken:%@", deviceToken);
-//    [currentInstallation setDeviceTokenFromData:deviceToken];
-//    [currentInstallation saveInBackground];
-//
-//}
+
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     // 去掉了avos的代码
     AVInstallation *currentInstallation = [AVInstallation currentInstallation];
