@@ -762,7 +762,7 @@
     
     //初始化tableView
     if(_commentTableView == nil){
-        _commentTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + 188.0f, self.view.frame.size.width, 100.0)];
+        _commentTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 60, self.view.frame.size.width, 100.0)];
         
         _commentTableView.scrollEnabled = NO;
         
@@ -775,7 +775,7 @@
     
     //初始化用户评论分隔栏
     if(_commentTableHeader == nil){
-        _commentTableHeader = [[UIView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + 188.0f, self.view.frame.size.width, 40.0f)];
+        _commentTableHeader = [[UIView alloc]initWithFrame:CGRectMake(0, _textViewSize.height + _textViewSize.height* 0.052 + 20, self.view.frame.size.width, 40.0f)];
         _commentTableHeader.backgroundColor = [UIColor colorWithRed:236.0f/255.0f green:236.0f/255.0f blue:236.0f/255.0 alpha:1.0];
         UILabel *commentTableHeaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0f, 10.0f, 100.0f, 20.0f)];
         commentTableHeaderLabel.text = @"用户评论";
