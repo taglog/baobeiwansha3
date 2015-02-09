@@ -68,7 +68,6 @@
     
     [self initUserInfo];
     
-    
     [self initAgeTableView];
     
     [self initBarButtonItem];
@@ -92,9 +91,8 @@
 #pragma mark - 获取用户年龄
 -(void)initUserInfo{
     [self getUserInfo];
-    
+
     if(self.babyBirthday){
-        
         if(self.ageTitleLabel){
             self.ageTitleLabel.text = self.babyBirthday;
         }
@@ -134,7 +132,7 @@
     
     // 取出存储的数据进行初始化
     NSString *filePath = [self dataFilePath];
-    
+
     //如果存在userinfo.plist
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
@@ -149,7 +147,9 @@
         self.babyBirthdayMonth = floor(babyBirthdayStamp/60/60/24/30);
         
         if(self.babyBirthdayMonth >= 24){
+            
             self.babyBirthday = [NSString stringWithFormat:@"%d岁%d个月",self.babyBirthdayMonth/12,self.babyBirthdayMonth%12];
+            
             if(self.babyBirthdayMonth %12 == 0){
                 self.babyBirthday = [NSString stringWithFormat:@"%d岁",self.babyBirthdayMonth/12];
             }

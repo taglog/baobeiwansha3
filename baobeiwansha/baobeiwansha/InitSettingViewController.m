@@ -230,6 +230,9 @@
             NSLog(@"Sync successed: %@", responseObject);
             
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"firstStart"];
+            //加入
+            NSString *filePath = [self dataFilePath];
+            [self.userInfoDict writeToFile:filePath atomically:YES];
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 
@@ -240,15 +243,13 @@
             });
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
                 [HUD dismiss];
                 [self.delegate popInitUserInfoSetting];
-                //加入
-                NSString *filePath = [self dataFilePath];
-                [self.userInfoDict writeToFile:filePath atomically:YES];
                 
             });
+            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
             NSLog(@"Sync Error: %@", error);
             
             HUD.textLabel.text = @"网络失败，请重试";
