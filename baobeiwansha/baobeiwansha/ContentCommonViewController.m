@@ -36,6 +36,7 @@
 @implementation ContentCommonViewController
 
 -(id)initWithURL:(NSDictionary *)dict type:(NSInteger)index{
+    
     self = [super init];
     if(self){
         self.p = 2;
@@ -325,6 +326,7 @@
             }
             
             [_homeTableView reloadData];
+            self.p = 2;
             
         }else{
             [self.delegate showHUD:@"没有内容~"];
@@ -387,20 +389,22 @@
             }
             
             [_homeTableView reloadData];
-            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
             self.p++;
             
         }else{
             //如果是最后一页
             [self.delegate showHUD:@"已经是最后一页了"];
             [self.delegate dismissHUD];
-            [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            
 
             
         }
+        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"%@",error);
+        
         [self.delegate showHUD:@"网络请求失败~"];
         [self.delegate dismissHUD];
         [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];

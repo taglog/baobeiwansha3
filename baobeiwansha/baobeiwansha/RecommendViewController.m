@@ -12,25 +12,23 @@
 
 @interface RecommendViewController ()
 
-@property (nonatomic,strong)JGProgressHUD *HUD;
-@property (nonatomic,assign)BOOL isHudShow;
-
+@property (nonatomic,strong)NSDictionary *requestURL;
+//4个tab页
 @property (nonatomic,strong) ContentFirstViewController *contentViewControllerFirst;
 @property (nonatomic,strong) ContentCommonViewController *contentViewControllerSecond;
 @property (nonatomic,strong) ContentCommonViewController *contentViewControllerThird;
 @property (nonatomic,strong) ContentCommonViewController *contentViewControllerFourth;
-
+//刷新年龄
 @property (nonatomic,strong) UITableView *ageTableView;
-
 @property (nonatomic,retain) UIButton *ageFilterButton;
 @property (nonatomic,retain) UIImageView *ageFilterButtonIcon;
 @property (nonatomic,retain) UILabel *ageTitleLabel;
-
 @property (nonatomic,retain) UIButton *mask;
 @property (nonatomic,assign) BOOL isAgeTableViewShow;
+
 @property (nonatomic,assign) BOOL isFirstLoad;
 @property (nonatomic,assign) NSUInteger activeTabIndex;
-
+//记录上一次和下一次的月份
 @property (nonatomic,assign) NSInteger beforeMonth;
 @property (nonatomic,assign) NSInteger activeMonth;
 
@@ -38,47 +36,23 @@
 @property (nonatomic,retain) UILabel *tabLabel1;
 @property (nonatomic,retain) UILabel *tabLabel2;
 @property (nonatomic,retain) UILabel *tabLabel3;
-
+//用户生日，和转换为字符串的生日
 @property (nonatomic,assign) int babyBirthdayMonth;
 @property (nonatomic,retain) NSString *babyBirthday;
 
-
+//刷新的标识，每次更改年龄后把标识置为NO，这样切换到tab就会自动刷新
 @property (nonatomic,assign) BOOL isRefreshed0;
 @property (nonatomic,assign) BOOL isRefreshed1;
 @property (nonatomic,assign) BOOL isRefreshed2;
 @property (nonatomic,assign) BOOL isRefreshed3;
 
+//指示层
+@property (nonatomic,strong)JGProgressHUD *HUD;
+@property (nonatomic,assign)BOOL isHudShow;
+
 @end
 
 @implementation RecommendViewController
-
-- (void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    self.navigationController.navigationBarHidden = NO;
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    
-    [self initTitleView];
-    
-    [self initUserInfo];
-    
-    [self initAgeTableView];
-    
-    [self initBarButtonItem];
-    
-    self.requestURL = @{@"requestRouter":@"post/category"};
-
-    self.dataSource = self;
-    self.delegate = self;
-    
-    self.isHudShow = NO;
-}
 -(id)init{
     
     self = [super init];
@@ -88,8 +62,41 @@
     return self;
 }
 
-#pragma mark - 获取用户年龄
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+
+    
+    [self initTitleView];
+    
+    [self initUserInfo];
+    
+    self.requestURL = @{@"requestRouter":@"post/category"};
+    [self initContentViewController];
+    
+    [self initAgeTableView];
+    
+    [self initBarButtonItem];
+    
+
+    self.dataSource = self;
+    self.delegate = self;
+    
+    self.isHudShow = NO;
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+}
+
+#pragma mark - 第一次启动，获取用户年龄，显示在title
 -(void)initUserInfo{
+    
     [self getUserInfo];
 
     if(self.babyBirthday){
@@ -102,37 +109,12 @@
     }
     
 }
--(void)updateUserInfo{
-    
-    [self getUserInfo];
-    
-    if(self.ageTitleLabel){
-        self.ageTitleLabel.text = self.babyBirthday;
-    }
-    
-    self.activeMonth = self.babyBirthdayMonth;
-    
-    //更改目录页刷新的age
-    self.contentViewControllerFirst.ageChoosen = self.babyBirthdayMonth;
-    self.contentViewControllerFirst.isAgeSet = YES;
-    self.contentViewControllerSecond.ageChoosen = self.babyBirthdayMonth;
-    self.contentViewControllerSecond.isAgeSet = YES;
-    self.contentViewControllerThird.ageChoosen = self.babyBirthdayMonth;
-    self.contentViewControllerThird.isAgeSet = YES;
-    self.contentViewControllerFourth.ageChoosen = self.babyBirthdayMonth;
-    self.contentViewControllerFourth.isAgeSet = YES;
-    
-    [self.ageTableView reloadData];
-    [self resetRefreshStatus];
-    [self refreshActiveViewController];
-    
-    
-}
+
 -(void)getUserInfo{
     
     // 取出存储的数据进行初始化
     NSString *filePath = [self dataFilePath];
-
+    
     //如果存在userinfo.plist
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
@@ -146,16 +128,7 @@
         int babyBirthdayStamp = now - time;
         self.babyBirthdayMonth = floor(babyBirthdayStamp/60/60/24/30);
         
-        if(self.babyBirthdayMonth >= 24){
-            
-            self.babyBirthday = [NSString stringWithFormat:@"%d岁%d个月",self.babyBirthdayMonth/12,self.babyBirthdayMonth%12];
-            
-            if(self.babyBirthdayMonth %12 == 0){
-                self.babyBirthday = [NSString stringWithFormat:@"%d岁",self.babyBirthdayMonth/12];
-            }
-        }else{
-            self.babyBirthday = [NSString stringWithFormat:@"%d个月",self.babyBirthdayMonth];
-        }
+        self.babyBirthday = [self birthdayMonthToString:self.babyBirthdayMonth];
         
     }
 }
@@ -167,6 +140,30 @@
                                                          NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     return [documentsDirectory stringByAppendingPathComponent:@"userinfo.plist"];
+}
+
+
+//用户修改个人信息之后，要重新设置年龄和刷新状态
+-(void)updateUserInfo{
+    
+    [self getUserInfo];
+    
+    if(self.ageTitleLabel){
+        self.ageTitleLabel.text = self.babyBirthday;
+    }
+    
+    self.activeMonth = self.babyBirthdayMonth;
+    
+    //更改目录页刷新的age
+    [self resetAgeOfContentViewController:self.babyBirthdayMonth];
+    
+    [self.ageTableView reloadData];
+    
+    [self resetRefreshStatus];
+    
+    [self refreshActiveViewController];
+    
+    
 }
 
 
@@ -195,14 +192,37 @@
     
     
 }
-
--(void)initBarButtonItem{
+-(void)initContentViewController{
     
-    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
-    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-    self.navigationItem.leftBarButtonItem = leftBarButton;
+    if (self.contentViewControllerFirst == nil) {
+        self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
+        self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
+        self.contentViewControllerFirst.delegate = self;
+        
+    }
+    if(self.contentViewControllerSecond == nil){
+        
+        self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
+        self.contentViewControllerSecond.delegate = self;
+        
+    }
+    
+    if (self.contentViewControllerThird == nil) {
+        
+        self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
+        self.contentViewControllerThird.delegate = self;
+        
+    }
+    if (self.contentViewControllerFourth == nil) {
+        
+        self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
+        self.contentViewControllerFourth.delegate = self;
+        
+    }
     
 }
+
+
 -(void)initAgeTableView{
     
     //增加一个遮罩层
@@ -233,6 +253,13 @@
     
 }
 
+-(void)initBarButtonItem{
+    
+    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
+    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+    self.navigationItem.leftBarButtonItem = leftBarButton;
+    
+}
 
 -(void)popViewController{
     
@@ -312,39 +339,15 @@
     //4个标签，需要4个实例
     switch (index) {
         case 0:
-            if (self.contentViewControllerFirst == nil) {
-                self.contentViewControllerFirst = [[ContentFirstViewController alloc] init];
-                self.contentViewControllerFirst.requestURL = @{@"requestRouter":@"post/discover"};
-                self.contentViewControllerFirst.delegate = self;
-                
-            }
             viewController = self.contentViewControllerFirst;
             break;
         case 1:
-            if(self.contentViewControllerSecond == nil){
-
-                self.contentViewControllerSecond = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:1];
-                self.contentViewControllerSecond.delegate = self;
-                
-            }
             viewController = self.contentViewControllerSecond;
             break;
         case 2:
-            if (self.contentViewControllerThird == nil) {
-
-                self.contentViewControllerThird = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:2];
-                self.contentViewControllerThird.delegate = self;
-                
-            }
             viewController = self.contentViewControllerThird;
             break;
         case 3:
-            if (self.contentViewControllerFourth == nil) {
-
-                self.contentViewControllerFourth = [[ContentCommonViewController alloc] initWithURL:self.requestURL type:3];
-                self.contentViewControllerFourth.delegate = self;
-                
-            }
             viewController = self.contentViewControllerFourth;
             break;
         default:
@@ -398,92 +401,16 @@
     self.activeTabIndex = index;
     
     [self resetTabColor];
-    
-    switch(self.activeTabIndex){
-            
-        case 0:
-            self.tabLabel0.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-            break;
-            
-        case 1:
-            self.tabLabel1.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-            break;
-            
-        case 2:
-            self.tabLabel2.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];            break;
-            
-        case 3:
-            self.tabLabel3.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-            break;
-        default:
-            break;
-    }
-    
+
     if(self.beforeMonth != self.activeMonth){
         
         [self refreshActiveViewController];
         
     }
     
-    
 }
 
--(void)resetTabColor{
-    
-    self.tabLabel0.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel3.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    
-}
--(void)resetRefreshStatus{
-    //重新设置controller为未刷新状态，这样切换到这个页面的时候就会自动刷新
-    self.isRefreshed0 = NO;
-    self.isRefreshed1 = NO;
-    self.isRefreshed2 = NO;
-    self.isRefreshed3 = NO;
-    //更改日期之后，每个controller实例的刷新参数都要恢复为2
-    self.contentViewControllerFirst.p = 2;
-    self.contentViewControllerSecond.p = 2;
-    self.contentViewControllerThird.p = 2;
-    self.contentViewControllerFourth.p = 2;
-    
-}
--(void)refreshActiveViewController{
-    
-    switch(self.activeTabIndex){
-        case 0:
-            if(!self.isRefreshed0){
-                [self.contentViewControllerFirst simulatePullDownRefresh];
-                self.isRefreshed0 = YES;
-            }
-            break;
-            
-        case 1:
-            if(!self.isRefreshed1){
-                [self.contentViewControllerSecond simulatePullDownRefresh];
-                self.isRefreshed1 = YES;
-            }
-            
-            break;
-            
-        case 2:
-            if(!self.isRefreshed2){
-                [self.contentViewControllerThird simulatePullDownRefresh];
-                self.isRefreshed2 = YES;
-            }
-            break;
-            
-        case 3:
-            if(!self.isRefreshed3){
-                [self.contentViewControllerFourth simulatePullDownRefresh];
-                self.isRefreshed3 = YES;
-            }
-            break;
-        default:
-            break;
-    }
-}
+
 #pragma mark - 修改日期
 -(void)showAgeTableView{
     
@@ -558,18 +485,8 @@
         cell.backgroundColor = [UIColor colorWithRed:19.0/255.0 green:19.0/255.0 blue:19.0/255.0 alpha:0.8];
         
     }        //不是用户当前的月份
-    if(indexPath.row < 24){
-        cell.textLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
-        
-    }else{
-        
-        cell.textLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row%12];
-        if(indexPath.row%12 == 0){
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
-        }
-        
-    }
     
+    cell.textLabel.text = [self birthdayMonthToString:indexPath.row];
     
     cell.textLabel.font = [UIFont systemFontOfSize:16.0f];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -589,35 +506,113 @@
         self.beforeMonth = self.activeMonth;
         self.activeMonth = indexPath.row;
         
-        
         //更改title上的年龄
-        if(indexPath.row <= 23){
-            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld个月",(long)indexPath.row];
-            
-        }else{
-            self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁%ld个月",indexPath.row/12,indexPath.row % 12];
-            if(indexPath.row % 12 == 0){
-                self.ageTitleLabel.text = [NSString stringWithFormat:@"%ld岁",indexPath.row/12];
-            }
-            
-            ;
-        }
+        self.ageTitleLabel.text = [self birthdayMonthToString:indexPath.row];
         
-        //更改目录页刷新的age
-        self.contentViewControllerFirst.ageChoosen = indexPath.row;
-        self.contentViewControllerFirst.isAgeSet = YES;
-        self.contentViewControllerSecond.ageChoosen = indexPath.row;
-        self.contentViewControllerSecond.isAgeSet = YES;
-        self.contentViewControllerThird.ageChoosen = indexPath.row;
-        self.contentViewControllerThird.isAgeSet = YES;
-        self.contentViewControllerFourth.ageChoosen = indexPath.row;
-        self.contentViewControllerFourth.isAgeSet = YES;
+        [self resetAgeOfContentViewController:indexPath.row];
         
         [self resetRefreshStatus];
+        
         //当前active的页面先刷新
         [self refreshActiveViewController];
         
         [self hideAgeTableView];
+    }
+}
+
+#pragma mark -
+-(void)resetTabColor{
+    
+    self.tabLabel0.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.tabLabel3.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    
+    switch(self.activeTabIndex){
+            
+        case 0:
+            self.tabLabel0.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+            break;
+            
+        case 1:
+            self.tabLabel1.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+            break;
+            
+        case 2:
+            self.tabLabel2.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];            break;
+            
+        case 3:
+            self.tabLabel3.textColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
+            break;
+        default:
+            break;
+    }
+    
+}
+
+//重置状态为未刷新
+-(void)resetRefreshStatus{
+    
+    //重新设置controller为未刷新状态，这样切换到这个页面的时候就会自动刷新
+    self.isRefreshed0 = NO;
+    self.isRefreshed1 = NO;
+    self.isRefreshed2 = NO;
+    self.isRefreshed3 = NO;
+    //更改日期之后，每个controller实例的刷新参数都要恢复为2
+    self.contentViewControllerFirst.p = 2;
+    self.contentViewControllerSecond.p = 2;
+    self.contentViewControllerThird.p = 2;
+    self.contentViewControllerFourth.p = 2;
+    
+    
+}
+-(void)resetAgeOfContentViewController:(NSInteger)age{
+    
+    //更改目录页刷新的age
+    self.contentViewControllerFirst.ageChoosen = age;
+    self.contentViewControllerFirst.isAgeSet = YES;
+    self.contentViewControllerSecond.ageChoosen = age;
+    self.contentViewControllerSecond.isAgeSet = YES;
+    self.contentViewControllerThird.ageChoosen = age;
+    self.contentViewControllerThird.isAgeSet = YES;
+    self.contentViewControllerFourth.ageChoosen = age;
+    self.contentViewControllerFourth.isAgeSet = YES;
+    
+}
+//刷新页面
+-(void)refreshActiveViewController{
+    
+    switch(self.activeTabIndex){
+        case 0:
+            if(!self.isRefreshed0){
+                [self.contentViewControllerFirst simulatePullDownRefresh];
+                self.isRefreshed0 = YES;
+            }
+            break;
+            
+        case 1:
+            if(!self.isRefreshed1){
+                [self.contentViewControllerSecond simulatePullDownRefresh];
+                self.isRefreshed1 = YES;
+            }
+            
+            break;
+            
+        case 2:
+            if(!self.isRefreshed2){
+                [self.contentViewControllerThird simulatePullDownRefresh];
+                self.isRefreshed2 = YES;
+            }
+            break;
+            
+        case 3:
+            if(!self.isRefreshed3){
+                [self.contentViewControllerFourth simulatePullDownRefresh];
+                self.isRefreshed3 = YES;
+            }
+            break;
+        default:
+            break;
     }
 }
 
@@ -639,6 +634,23 @@
     self.isHudShow = NO;
 }
 
+
+#pragma mark - 其他
+//数字月份转换字符串
+-(NSString *)birthdayMonthToString:(NSInteger)month{
+    NSString *string;
+    if(month < 24){
+        string = [NSString stringWithFormat:@"%ld个月",(long)month];
+        
+    }else{
+        string = [NSString stringWithFormat:@"%ld岁%ld个月",month / 12,month % 12];
+        if(month %12 == 0){
+            string = [NSString stringWithFormat:@"%ld岁",month / 12];
+        }
+        
+    }
+    return string;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

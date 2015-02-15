@@ -24,14 +24,15 @@
 //scrollView里放入textView和评论的tableView
 @property(nonatomic,retain) UIScrollView *postScrollView;
 @property(nonatomic,retain) DTAttributedTextView *textView;
-@property(nonatomic,retain) UITableView *commentTableView;
 @property(nonatomic,strong)UIView *commentTableHeader;
+@property(nonatomic,retain) UITableView *commentTableView;
 
 @property(nonatomic,assign) CGFloat lastContentOffset;
+
 //底部的bar
 @property(nonatomic,retain)UIView *bottomBar;
-
 @property(nonatomic,retain) UIButton *commentCreateButton;
+
 //接收到的post数据
 @property(nonatomic,strong) NSDictionary *postDict;
 
@@ -43,7 +44,7 @@
 //得到计算过后的textViewSize
 @property(nonatomic,assign)CGSize textViewSize;
 
-//上拉刷新的评论
+//评论的上拉刷新
 @property (nonatomic,retain)EGORefreshCustom *refreshFooterView;
 
 //用来更新tableViewCell的数组
@@ -58,6 +59,7 @@
 //收藏button
 @property(nonatomic,retain)UIButton *collectionButton;
 @property(nonatomic,retain)UIButton *collectionButtonSelected;
+
 //增加一个bool值，防止在收藏还没有收到服务器返回值的时候，用户进行重复点击
 @property(nonatomic,assign)BOOL collectButtonEnabled;
 
@@ -70,20 +72,31 @@
 
 @property (nonatomic,assign)NSInteger p;
 
-
 @end
 
 @implementation PostViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    [self initLeftBarButton];
+    self.collectButtonEnabled = YES;
+    //阻止自动调整滚轮位置，否则导航栏下会出现一段空间
+    self.automaticallyAdjustsScrollViewInsets = NO;
+}
+
+
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
     
 }
 -(void)viewWillDisappear:(BOOL)animated{
     [PostViewTimeAnalytics endLogPageView:self.postID];
     
 }
+
 //初始化Controlller的View
 -(void)initViewWithDict:(NSDictionary *)dict{
     
@@ -116,17 +129,6 @@
 
 
 
--(void)loadView{
-    [super loadView];
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    [self initLeftBarButton];
-    self.collectButtonEnabled = YES;
-    //阻止自动调整滚轮位置，否则导航栏下会出现一段空间
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    
-}
 -(void)initLeftBarButton{
     
     UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];
@@ -134,6 +136,7 @@
     self.navigationItem.leftBarButtonItem = leftBarButton;
     
 }
+
 -(void)popViewController{
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -142,8 +145,9 @@
     
     if(self.collectButtonEnabled == YES){
         self.collectButtonEnabled = NO;
-        UIApplication *app=[UIApplication sharedApplication];
-        app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
+        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
         
         UIButton *collectButtonSender =(UIButton *)sender;
         self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
@@ -209,10 +213,8 @@
                     [self.HUD dismiss];
                 });
             }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-                
-            });
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
         }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             
             NSLog(@"%@",error);
@@ -222,10 +224,8 @@
             [self.HUD dismissAfterDelay:1.0];
             self.collectButtonEnabled = YES;
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                app.networkActivityIndicatorVisible=!app.networkActivityIndicatorVisible;
-                
-            });        }];
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        }];
         
     }
     
@@ -243,10 +243,6 @@
     
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-}
 
 -(void)showHUD{
     //显示hud层
@@ -324,9 +320,6 @@
             self.collectionButton.hidden = NO;
             self.collectionButtonSelected.hidden = YES;
         }
-        
-        
-        
         
         
         [self.view addSubview:self.bottomBar];
@@ -651,10 +644,10 @@
         // update attachments that have no original size, that also sets the display size
         
         oneAttachment.originalSize = imageSize;
-        float ratio = imageSize.width/imageSize.height;
-        CGFloat imageHeight = _frame.size.width/ratio;
-        if(imageHeight/(_frame.size.width - 30) > 1.2){
-            imageHeight =(_frame.size.width - 100)/ratio;
+        float ratio = imageSize.height/imageSize.width;
+        CGFloat imageHeight = (_frame.size.width - 30) * ratio;
+        if(ratio > 1.2){
+            imageHeight = (_frame.size.width - 100) * ratio;
             oneAttachment.displaySize = CGSizeMake(_frame.size.width - 100, imageHeight);
         }else{
             oneAttachment.displaySize = CGSizeMake(_frame.size.width - 30, imageHeight);

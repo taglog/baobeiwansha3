@@ -10,9 +10,10 @@
 
 @protocol InitSettingViewDelegate
 
--(void)popInitUserInfoSetting;
+-(void)popInitSettingViewController;
 
 @end
+
 @interface InitSettingViewController : UIViewController<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIActionSheetDelegate>
 
 @property (nonatomic,retain) id <InitSettingViewDelegate> delegate;

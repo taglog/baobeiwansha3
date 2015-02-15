@@ -7,9 +7,9 @@
 //
 
 #import "TagViewController.h"
-#import "TagCollectionViewController.h"
 #import "TagSearchViewController.h"
-
+#import "JGProgressHUD.h"
+#import "JGProgressHUDSuccessIndicatorView.h"
 
 @interface TagViewController ()
 
@@ -24,6 +24,11 @@
 @property (nonatomic,retain) UILabel *tabLabel0;
 @property (nonatomic,retain) UILabel *tabLabel1;
 @property (nonatomic,retain) UILabel *tabLabel2;
+
+
+//指示层
+@property (nonatomic,strong)JGProgressHUD *HUD;
+@property (nonatomic,assign)BOOL isHudShow;
 
 @end
 
@@ -80,16 +85,21 @@
     
     if(!self.tagCollectionView0){
         self.tagCollectionView0 = [[TagCollectionViewController alloc]init];
-        self.tagCollectionView0.index = 0;
+        self.tagCollectionView0.type = 0;
+        self.tagCollectionView0.delegate = self;
     }
     if(!self.tagCollectionView1){
         self.tagCollectionView1 = [[TagCollectionViewController alloc]init];
-        self.tagCollectionView1.index = 1;
+        self.tagCollectionView1.type = 1;
+        self.tagCollectionView1.delegate = self;
+
 
     }
     if(!self.tagCollectionView2){
         self.tagCollectionView2 = [[TagCollectionViewController alloc]init];
-        self.tagCollectionView2.index = 2;
+        self.tagCollectionView2.type = 2;
+        self.tagCollectionView2.delegate = self;
+
 
     }
    
@@ -223,6 +233,16 @@
     
     [self resetTabColor];
     
+    
+    
+}
+
+-(void)resetTabColor{
+    
+    self.tabLabel0.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    
     switch(self.activeTabIndex){
             
         case 0:
@@ -240,16 +260,24 @@
             break;
     }
     
-    
 }
 
--(void)resetTabColor{
+#pragma mark - 指示层delegate
+-(void)showHUD:(NSString*)text{
+    //初始化HUD
+    if(self.isHudShow == YES){
+        [self.HUD dismissAnimated:NO];
+    }
     
-    self.tabLabel0.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel1.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
-    self.tabLabel2.textColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0/255.0f alpha:1.0];
+    self.HUD = [JGProgressHUD progressHUDWithStyle:JGProgressHUDStyleDark];
+    self.HUD.textLabel.text = text;
+    [self.HUD showInView:self.view];
+    self.isHudShow = YES;
     
 }
-
+-(void)dismissHUD{
+    [self.HUD dismissAfterDelay:1.0];
+    self.isHudShow = NO;
+}
 
 @end

@@ -7,9 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EGORefreshCustom.h"
 
-@interface TagCollectionViewController : UIViewController<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
+@protocol TagCollectionViewDelegate
 
-@property (nonatomic,assign) NSInteger index;
+-(void)showHUD:(NSString *)text;
+-(void)dismissHUD;
+
+@end
+
+@interface TagCollectionViewController : UIViewController<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout,EGORefreshDelegate>
+
+@property (nonatomic,assign)NSInteger p;
+@property (nonatomic,assign) NSInteger type;
+@property (nonatomic,strong)NSDictionary *requestURL;
+
+@property(nonatomic,retain)id<TagCollectionViewDelegate> delegate;
 
 @end

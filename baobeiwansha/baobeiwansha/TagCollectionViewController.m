@@ -9,102 +9,46 @@
 #import "TagCollectionViewController.h"
 #import "TagCollectionViewCell.h"
 #import "TagPostTableViewController.h"
+#import "AppDelegate.h"
+#import "AFNetworking.h"
 
 @interface TagCollectionViewController ()
+
+@property (nonatomic,assign)BOOL reloading;
 
 @property (nonatomic,retain) UISearchBar *searchBar;
 
 @property (nonatomic,retain) UICollectionView *collectionView;
 
-@property (nonatomic,retain) NSDictionary *responseData;
+@property (nonatomic,retain) NSMutableArray *responseData;
 
 @property (nonatomic,retain) NSMutableArray * sectionFoldFlags;
 
+@property (nonatomic,retain)EGORefreshCustom *refreshHeaderView;
+
+@property (nonatomic,retain)EGORefreshCustom *refreshFooterView;
+
+@property (nonatomic,retain)AppDelegate *appDelegate;
 
 @end
 
 @implementation TagCollectionViewController
-
+-(id)init{
+    self = [super init];
+    
+    self.p = 2;
+    
+    return self;
+    
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor  = [UIColor whiteColor];
-    
-    self.navigationItem.backBarButtonItem = nil;
-    UIBarButtonItem *leftBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(popViewController)];    leftBarButton.tintColor = [UIColor colorWithRed:40.0f/255.0f green:185.0f/255.0f blue:255.0f/255.0f alpha:1.0];
-    self.navigationItem.leftBarButtonItem = leftBarButton;
-    
-    if(self.index == 0){
-        self.responseData =
-        @{@"sectionTitle":@"潜能",
-          @"sectionItems":@[
-                  @{@"label":@"动手操作",@"image":@"hand"},
-                  @{@"label":@"认知",@"image":@"acknowledge"},
-                  @{@"label":@"观察能力",@"image":@"observe"},
-                  @{@"label":@"专注力",@"image":@"focus"},
-                  @{@"label":@"想象与创造",@"image":@"bulb"},
-                  @{@"label":@"好奇心",@"image":@"curios"},
-                  @{@"label":@"情感与爱",@"image":@"heart"},
-                  @{@"label":@"手眼协调",@"image":@"handeye"},
-                  @{@"label":@"视听能力",@"image":@"listen"},
-                  @{@"label":@"逻辑思维",@"image":@"logic"},
-                  @{@"label":@"自信心",@"image":@"confidence"},
-                  @{@"label":@"社交",@"image":@"cooperation"},
-                  @{@"label":@"运动",@"image":@"football"},
-                  @{@"label":@"耐心与坚持",@"image":@"insistence"},
-                  @{@"label":@"模仿能力",@"image":@"simulate"}
-                  ]
-          };
-
-            }else if(self.index == 1){
-                self.responseData =
-                @{@"sectionTitle":@"场景",
-                  @"sectionItems":@[
-                          @{@"label":@"家里",@"image":@"home"},
-                          @{@"label":@"和父母玩",@"image":@"mother"},
-                          @{@"label":@"和小朋友玩",@"image":@"playwithkids"},
-                          @{@"label":@"周末",@"image":@"weekend"},
-                          @{@"label":@"饭后半小时",@"image":@"aftermeal"},
-                          @{@"label":@"晚上",@"image":@"night"},
-                          @{@"label":@"暑假",@"image":@"summer"},
-                          @{@"label":@"三代同堂",@"image":@"family"},
-                          @{@"label":@"寒假",@"image":@"snowflake"},
-                          @{@"label":@"小区里",@"image":@"community"},
-                          @{@"label":@"公园里",@"image":@"park"},
-                          @{@"label":@"睡觉",@"image":@"getup"},
-                          @{@"label":@"早晨",@"image":@"morning"},
-                          @{@"label":@"交通工具上",@"image":@"car"},
-                          @{@"label":@"在郊外",@"image":@"tree"},
-                          ]
-                  };
-
-            }else if (self.index == 2){
-                self.responseData =
-                @{@"sectionTitle":@"主题",
-                  @"sectionItems":@[
-                          @{@"label":@"科学启蒙",@"image":@"order"},
-                          @{@"label":@"感官发育",@"image":@"eye"},
-                          @{@"label":@"小动物",@"image":@"cat"},
-                          @{@"label":@"机械与力",@"image":@"machine"},
-                          @{@"label":@"认识身体",@"image":@"scroll"},
-                          @{@"label":@"认识亲人",@"image":@"relative"},
-                          @{@"label":@"绘画",@"image":@"painting"},
-                          @{@"label":@"学会合作",@"image":@"cooperation"},
-                          @{@"label":@"学步",@"image":@"walk"},
-                          @{@"label":@"涂鸦与写字",@"image":@"draw"},
-                          @{@"label":@"电与磁",@"image":@"electric"},
-                          @{@"label":@"爱上吃饭",@"image":@"food"},
-                          @{@"label":@"光影成像",@"image":@"light"},
-                          @{@"label":@"学会分享",@"image":@"share"},
-                          @{@"label":@"学会整理",@"image":@"quilt"},
-                          ]
-                  };
-
-            }
-    
-    
-    
+    self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.requestURL = @{@"requestRouter":@"tag/get"};
+    self.responseData = [[NSMutableArray alloc]init];
     [self initViews];
     
 }
@@ -115,22 +59,33 @@
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     
-    
 }
 
 
 
 -(void)initViews{
     
+    [self initCollectionView];
+    [self initRefreshHeaderView];
+    [self simulatePullDownRefresh];
+    
+}
+
+
+
+-(void)initCollectionView{
+    
     UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.itemSize = CGSizeMake(self.view.frame.size.width/3,self.view.frame.size.width/3);
     flowLayout.minimumInteritemSpacing = 0;
     flowLayout.minimumLineSpacing = 0;
+
     if(!self.collectionView){
-        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 109) collectionViewLayout:flowLayout];
-        [self.collectionView registerClass:[TagCollectionViewCell class] forCellWithReuseIdentifier:@"ttcell"];
         
+        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 64) collectionViewLayout:flowLayout];
+        [self.collectionView registerClass:[TagCollectionViewCell class] forCellWithReuseIdentifier:@"ttcell"];
+        [self.collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"footerView"];
         
         self.collectionView.backgroundColor = [UIColor whiteColor];
         
@@ -139,8 +94,31 @@
         
         [self.view addSubview:self.collectionView];
     }
+
+}
+
+//初始化下拉刷新header
+-(void)initRefreshHeaderView{
     
+    //初始化headerView
+    if(_refreshHeaderView == nil){
+        _refreshHeaderView = [[EGORefreshCustom alloc] initWithScrollView:self.collectionView position:EGORefreshHeader ];
+        _refreshHeaderView.delegate = self;
+        
+        [self.collectionView addSubview:_refreshHeaderView];
+        
+    }
     
+}
+
+-(void)initRefreshFooterView{
+    
+    if(_refreshFooterView == nil){
+        
+        _refreshFooterView = [[EGORefreshCustom alloc] initWithScrollView:self.collectionView position:EGORefreshFooter];
+        _refreshFooterView.delegate = self;
+        
+    }
     
 }
 
@@ -153,20 +131,12 @@
     return 1;
 }
 
+
 //每个分区上的元素个数
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
-    
-    //    if (YES == [[self.sectionFoldFlags objectAtIndex:section] boolValue]) {
-    //
-    //        return 3;
-    //    } else {
-    //
-    //        return items.count;
-    //    }
-    return  items.count;
+    return  self.responseData.count;
 }
 
 
@@ -179,19 +149,24 @@
     TagCollectionViewCell *cell = [tcollectionView dequeueReusableCellWithReuseIdentifier:identify forIndexPath:indexPath];
     
     
-    NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
-    //
-    //    cell.label.text = [[items objectAtIndex:indexPath.row] objectForKey:@"title"];
-    //    cell.tags = [[items objectAtIndex:indexPath.row] objectForKey:@"tags"];
-    
-    [cell setDataWithDict:[items objectAtIndex:indexPath.row] frame:self.view.frame];
-    
-    //    if (indexPath.row == 2 && (YES == [[self.sectionFoldFlags objectAtIndex:indexPath.section] boolValue])) {
-    //    }
-    
+    NSDictionary *item =  [self.responseData objectAtIndex:indexPath.row];
+    [cell setDataWithDict:item frame:self.view.frame];
     
     return cell;
     
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionReusableView *reusableview = nil;
+    if (kind == UICollectionElementKindSectionFooter) {
+        UICollectionReusableView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"footerView" forIndexPath:indexPath];
+        [self initRefreshFooterView];
+        [footerView addSubview:_refreshFooterView];
+        reusableview = footerView;
+    }
+    
+    return reusableview;
 }
 
 #pragma mark - UICollectionLayout Setting
@@ -202,13 +177,6 @@
     return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
-//设置顶部的大小
-//
-//-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-//
-//    CGSize size= CGSizeMake(self.view.frame.size.width, 50);
-//    return size;
-//}
 
 //设置元素大小
 
@@ -217,21 +185,23 @@
     return CGSizeMake(self.view.frame.size.width/3,self.view.frame.size.width/3);
 }
 
+//设置底部的大小
+
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+    
+    CGSize size= {self.view.frame.size.width,40};
+    return size;
+}
 
 - (void)collectionView:(UICollectionView *)colView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    //    TagCollectionViewCell* cell = (TagCollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
-    //
-    
+
     
 }
 
 
 
 - (void)collectionView:(UICollectionView *)colView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    //    CollectionViewCell* cell = (CollectionViewCell *)[colView cellForItemAtIndexPath:indexPath];
-    
+
     
 }
 
@@ -239,11 +209,13 @@
 
 - (void)collectionView:(UICollectionView *)colView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    //    NSLog(@"Selected item of section:%d, row:%d", indexPath.section, indexPath.row);
     // TODO: add a selected mark
-    NSArray* items =  [self.responseData objectForKey:@"sectionItems"];
-    NSString *tag = [[items objectAtIndex:indexPath.row] valueForKey:@"label"];
+    NSDictionary *item =  [self.responseData objectAtIndex:indexPath.row];
+    
+    NSString *tag = [item  valueForKey:@"name"];
+    
     TagPostTableViewController *tagPostViewController = [[TagPostTableViewController alloc]initWithURL:@{@"requestRouter":@"post/tag"} tag:tag];
+    
     [self.navigationController pushViewController: tagPostViewController animated:YES];
     
 }
@@ -254,26 +226,179 @@
 }
 
 
--(void)popViewController{
+
+#pragma mark EGORefreshReloadData
+- (void)reloadTableViewDataSource{
     
-    CATransition *transition = [CATransition animation];
+    //下拉刷新的数据处理
+    if(_refreshHeaderView.pullDown){
+        [self performPullDownRefresh];
+    }
+    //上拉刷新的数据处理
+    if(_refreshFooterView.pullUp){
+        [self performPullUpRefresh];
+    }
+}
+
+-(void)simulatePullDownRefresh{
     
-    transition.duration = 0.2f;
+    [_refreshHeaderView setState:EGOOPullRefreshLoading];
+    self.collectionView.contentOffset = CGPointMake(0, -60);
     
-    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    [self performPullDownRefresh];
+}
+
+-(void)performPullDownRefresh{
     
-    transition.type = kCATransitionPush;
+    _reloading = YES;
     
-    transition.subtype = kCATransitionFromLeft;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-    transition.delegate = self;
+    //请求的地址
+    NSString *postRouter = [self.requestURL valueForKey:@"requestRouter"];
+    NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
-    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    NSDictionary *postParam =[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInt:1],@"p",nil];
     
-    [self.navigationController popViewControllerAnimated:NO];
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer.timeoutInterval = 20;
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+        
+        NSArray *responseArray = [responseObject valueForKey:@"data"];
+        
+        //如果存在数据，那么就初始化tableView
+        if(responseArray != (id)[NSNull null] ){
+            
+            [self.responseData removeAllObjects];
+            for(NSDictionary *responseDict in responseArray){
+                [self.responseData addObject:responseDict];
+
+            }
+            [self.collectionView reloadData];
+            self.p = 2;
+        }
+        
+        
+        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.4f];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [_refreshHeaderView removeFromSuperview];
+        });
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        
+    }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",error);
+        
+        
+        [self.delegate showHUD:@"网络请求失败~"];
+        [self.delegate dismissHUD];
+        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    }];
+
     
 }
 
+-(void)performPullUpRefresh{
+    
+    _reloading = YES;
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    
+    
+    //请求的地址
+    NSString *postRouter = [self.requestURL valueForKey:@"requestRouter"];
+    NSString *postRequestUrl = [self.appDelegate.rootURL stringByAppendingString:postRouter];
+    NSString *urlString = [postRequestUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSDictionary *postParam =[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:self.type],@"type",[NSNumber numberWithInteger:self.p],@"p",nil];
+    
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.requestSerializer.timeoutInterval = 20;
+    [manager POST:urlString parameters:postParam success:^(AFHTTPRequestOperation *operation,id responseObject) {
+        
+        NSArray *responseArray = [responseObject valueForKey:@"data"];
+        
+        //如果存在数据，那么就初始化tableView
+        if(responseArray != (id)[NSNull null] ){
+            
+            for(NSDictionary *responseDict in responseArray){
+                [self.responseData addObject:responseDict];
+                
+            }
+            
+            [self.collectionView reloadData];
+
+            ++self.p;
+            
+        }else{
+                
+                [self.delegate showHUD:@"已经是最后一页了~"];
+                [self.delegate dismissHUD];
+        }
+        
+        
+        
+        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.3f];
+        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        
+    }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",error);
+        
+        [self.delegate showHUD:@"网络请求失败~"];
+        [self.delegate dismissHUD];
+        [self performSelector:@selector(doneLoadingTableViewData) withObject:nil afterDelay:0.0f];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    }];
+    
+
+    
+}
+- (void)doneLoadingTableViewData{
+    
+    _reloading = NO;
+    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.collectionView];
+    [_refreshFooterView egoRefreshScrollViewDataSourceDidFinishedLoading:self.collectionView];
+    
+    
+}
+
+
+#pragma mark - EGOPullRefreshDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    
+    //[_refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
+    [_refreshFooterView egoRefreshScrollViewDidScroll:scrollView];
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    
+    //[_refreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+    [_refreshFooterView egoRefreshScrollViewDidEndDragging:scrollView];
+    
+}
+
+#pragma mark - EGORefreshTableHeaderDelegate Methods
+
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshCustom *)view{
+    
+    [self reloadTableViewDataSource];
+    
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshCustom *)view{
+    
+    return _reloading;
+}
+
+- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshCustom *)view{
+    return [NSDate date];
+    
+}
 
 
 - (void)didReceiveMemoryWarning {

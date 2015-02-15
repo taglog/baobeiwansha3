@@ -7,6 +7,7 @@
 //
 
 #import "TagCollectionViewCell.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface TagCollectionViewCell()
 {
@@ -83,12 +84,20 @@
     self.imageView.layer.masksToBounds = YES;
     
     self.iconView.frame = CGRectMake((aframe.size.width/3 - 40)/2, 23, 40, 40);
-    self.iconView.image = [UIImage imageNamed:[self.dict valueForKey:@"image"]];
     self.iconView.layer.cornerRadius = 20;
     self.iconView.layer.masksToBounds = YES;
+    
+    if([self.dict valueForKey:@"tag_imgurl"]){
+        NSString *imgUrlString = [NSString stringWithFormat:@"http://61.174.9.214/www/imgs/tagicon/%@.png",[self.dict valueForKey:@"tag_imgurl"]];
+        NSURL *imgUrl = [NSURL URLWithString:[imgUrlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        [self.iconView  setImageWithURL:imgUrl placeholderImage:nil];
+        
+    }
+
+
 
     self.label.frame = CGRectMake(0,80, aframe.size.width/3,20);
-    self.label.text = [self.dict valueForKey:@"label"];
+    self.label.text = [self.dict valueForKey:@"name"];
     self.label.textColor = [UIColor colorWithRed:109.0/255.0 green:109.0/255.0 blue:109.0/255.0 alpha:1.0];
 
     self.label.font = [UIFont systemFontOfSize:13.0f];

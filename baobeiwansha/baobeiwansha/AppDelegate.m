@@ -35,10 +35,6 @@
     
     // generate UserID using VenderID
     
-    
-    
-    
-    
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"generatedUserID"] == nil) {
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
             self.generatedUserID = [UIDevice currentDevice].identifierForVendor.UUIDString;
@@ -112,7 +108,7 @@
         
     }else{
         
-        [self getBubbleFromServer];
+        self.window.rootViewController = self.mainNavigation;
     }
 
 
@@ -179,13 +175,13 @@
     
     
 }
--(void)popInitUserInfoSetting{
+-(void)popInitSettingViewController{
     
-    [self getBubbleFromServer];
 
     [UIView animateWithDuration:0.4 animations:^{
         self.initialNav.view.alpha = 0;
     } completion:^(BOOL finished) {
+        self.window.rootViewController = self.mainNavigation;
         [self.initialNav removeFromParentViewController];
     }];
 
@@ -225,105 +221,4 @@
     NSLog(@"register notification failed with code: %@", error);
 }
 
--(void)getBubbleFromServer{
-    
-    //显示等待
-    self.window.rootViewController = self.mainNavigation;
-    [self.mainViewController showWaitingSign];
-    
-    //网络活动指示器
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-
-    
-    //请求的地址
-    NSString *postRouter = @"tag/hotSix";
-    NSString *postRequestUrl = [self.rootURL stringByAppendingString:postRouter];
-
-    //发送请求
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.requestSerializer.timeoutInterval = 20;
-    [manager GET:postRequestUrl parameters:nil success:^(AFHTTPRequestOperation *operation,id responseObject) {
-
-        NSArray *responseArray = [responseObject valueForKey:@"data"];
-        
-        //返回不为空
-        if(responseArray != (id)[NSNull null]){
-            
-            NSMutableArray *bubbleTitle = [[NSMutableArray alloc]initWithCapacity:6];
-            
-            for(NSDictionary *bubbleName in responseArray){
-                [bubbleTitle addObject:[bubbleName objectForKey:@"name"]];
-            }
-            //返回不为空
-            if(bubbleTitle != nil){
-                
-                self.mainViewController.bubbleTitles = bubbleTitle;
-                //存入本地
-                NSString *filePath = [self dataFilePath];
-                [bubbleTitle writeToFile:filePath atomically:YES];
-                
-            //返回为空
-            }else{
-                
-                NSString *filePath = [self dataFilePath];
-                //文件存在
-                if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-                    
-                    NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
-                    self.mainViewController.bubbleTitles = bubbles;
-                    
-                }else{
-                    
-                    self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
-                }
-                
-            }
-            
-        }else{
-            
-            NSString *filePath = [self dataFilePath];
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-                
-                NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
-                self.mainViewController.bubbleTitles = bubbles;
-                
-            }else{
-                
-                self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
-            }
-        }
-        
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-        
-    }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        NSLog(@"%@",error);
-        
-        NSString *filePath = [self dataFilePath];
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-            
-            NSArray *bubbles = [[NSArray alloc]initWithContentsOfFile:filePath];
-            self.mainViewController.bubbleTitles = bubbles;
-            
-        }else{
-            
-            self.mainViewController.bubbleTitles = @[@"创造力",@"手眼协调",@"认知",@"专注力",@"智力",@"运动"];
-        }
-        self.window.rootViewController = self.mainNavigation;
-
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-        
-    }];
-    
-    
-}
-- (NSString *)dataFilePath
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(
-                                                         NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    return [documentsDirectory stringByAppendingPathComponent:@"initTag.plist"];
-}
 @end

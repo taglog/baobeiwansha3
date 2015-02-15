@@ -52,9 +52,11 @@
     self = [super init];
     
     if(self){
+        
         self.p = 2;
         //变量设置,如果不放在init里面，在view没有load的时候是不能执行刷新页面操作的，所以在同步完用户年龄进行读取的时候，会报错
         self.appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
     }
     return self;
     
@@ -72,13 +74,12 @@
             }
       };
     
-    
     //初始化views
     [self initViews];
     
 }
 
-
+#pragma mark 初始化Views
 -(void)initViews{
     
     //初始化homeTableViewCell
@@ -93,6 +94,7 @@
 }
 
 -(void)initScrollView{
+    
     if(_scrollView == nil){
         _scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height - 104.0f)];
         _scrollView.contentSize = CGSizeMake(self.view.frame.size.width, 1000);
@@ -102,6 +104,7 @@
     }
     
 }
+
 -(void)initCarousel{
     
     self.carouselItems = [NSMutableArray array];
@@ -145,6 +148,7 @@
     
     
 }
+
 -(void)initTableView{
     
     if(_homeTableView == nil){
@@ -174,6 +178,7 @@
     [self.carousel scrollToItemAtIndex:i animated:YES];
     i++;
 }
+
 
 //初始化下拉刷新header
 -(void)initRefreshHeaderView{
@@ -254,11 +259,6 @@
     @catch (NSException *exception) {
         NSLog(@"%@",exception);
     }
-    
-
-   
-    
-    
     
     
     return cell;
@@ -416,7 +416,7 @@
             }
             
             [_homeTableView reloadData];
-            
+            self.p = 2;
             
         }else{
             

@@ -13,7 +13,6 @@
 
 @interface RecommendViewController : ViewPagerController <ViewPagerDataSource, ViewPagerDelegate,ContentCommonViewDelegate,ContentFirstViewDelegate,UITableViewDataSource,UITableViewDelegate>
 
-@property (nonatomic,strong)NSDictionary *requestURL;
 -(void)updateUserInfo;
 
 @end

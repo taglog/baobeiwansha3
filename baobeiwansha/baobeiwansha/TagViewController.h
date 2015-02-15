@@ -7,7 +7,8 @@
 //
 
 #import "ViewPagerController.h"
+#import "TagCollectionViewController.h"
 
-@interface TagViewController : ViewPagerController <ViewPagerDataSource, ViewPagerDelegate>
+@interface TagViewController : ViewPagerController <ViewPagerDataSource, ViewPagerDelegate,TagCollectionViewDelegate>
 
 @end
